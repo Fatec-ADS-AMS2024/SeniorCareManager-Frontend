@@ -12,7 +12,7 @@ import AcessibilityPage from "../pages/AcessibilityPage";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="" element={<Layout />} errorElement={<GlobalErrorBoundary />}>
-      <Route path={routes.ACESSIBILITY} element={<AcessibilityPage />} />
+      <Route path={routes.ACCESSIBILITY} element={<AcessibilityPage />} />
     </Route>
   )
 );
