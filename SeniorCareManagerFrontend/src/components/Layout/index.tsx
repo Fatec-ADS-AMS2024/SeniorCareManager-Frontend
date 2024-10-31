@@ -6,8 +6,9 @@ export default function Layout() {
     <div className='flex flex-col text-text bg-background min-h-screen'>
       <Header />
 
-      {/* Conteúdo */}
-
+      <div className="flex-1 flex flex-row">
+        {/* Conteúdo principal */}
+      </div>
       <Footer />
     </div>
   );
