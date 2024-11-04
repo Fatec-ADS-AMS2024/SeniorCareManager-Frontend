@@ -1,6 +1,12 @@
+import { useContext } from "react";
+import fotoEntradaSistema from "../../assets/fotoEntradaSistema.png";
+import { ThemeContext } from "../../context/ThemeContext";
+
 export default function LandingPage() {
+  const { theme } = useContext(ThemeContext);
+
   return (
-    <div className="">
+    <div className="flex">
       <div className="w-[40%] h-full bg-surface flex flex-col justify-center">
         <h1 className="text-secondary font-bold text-4xl mx-16">
           Plataforma de ferramentas para gerenciar o cuidado e bem-estar de
@@ -14,7 +20,11 @@ export default function LandingPage() {
           Fazer login
         </button>
       </div>
-      <img src="" alt="" />
+      <img
+        src={fotoEntradaSistema}
+        alt="Foto Entrada do Sistema"
+        className={`w-[60%] h-full object-cover ${theme === "high-contrast" ? "grayscale" : "grayscale-0"}`}
+      />
     </div>
   );
 }
