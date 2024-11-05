@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/images/logo.png";
 import AccessibilityBar from "./AccessibilityBar";
 
 export default function Header() {
