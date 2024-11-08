@@ -7,6 +7,10 @@
       --font-size: 16px;
       font-size: var(--font-size);
     }
+
+    input::-ms-clear, input::-ms-reveal {
+      display: none;
+    }
   
     :root {
       --color-primary: #009F96;
@@ -16,6 +20,7 @@
       --color-text-secondary: #6D8385;
       --color-surface: #FFFFFF;
       --color-surface-user: #D2EDEB;
+      --color-hoverButton: #10C5BB;
     }
     
     [data-theme="high-contrast"] {
@@ -26,5 +31,6 @@
       --color-text-secondary: #3F3F3F;
       --color-surface: #FFFFFF;
       --color-surface-user: #D2D2D2;
+      --color-hoverButton: #242424;
     }
   }
