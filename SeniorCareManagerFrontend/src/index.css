@@ -1,3 +1,5 @@
+@import url("assets/fonts/inter.css");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,6 +8,7 @@
     html {
       --font-size: 16px;
       font-size: var(--font-size);
+      font-family: Inter, sans-serif;
     }
 
     input::-ms-clear, input::-ms-reveal {
