@@ -3,4 +3,5 @@ export const routes = {
   LANDING: '/',
   LOGIN: '/login',
   GENERALADM: '/generalAdministrator',
+  REGISTRATIONS: '/registrations',
 }
