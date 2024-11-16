@@ -48,7 +48,7 @@ export default function Sidebar() {
             className={`flex items-center gap-2 px-4 py-3 whitespace-nowrap border-r-transparent ${
               location.pathname === button.route
                 ? 'bg-secondary text-surface border-r-primary border-r-4' // Estilo para a página ativa
-                : 'text-primary hover:bg-secondary hover:text-surface hover:border-r-primary hover:border-r-4'
+                : 'text-primary hover:bg-[#F3F3F3] hover:text-primary hover:border-r-primary hover:border-r-4'
             }`}
           >
             {button.icon}
