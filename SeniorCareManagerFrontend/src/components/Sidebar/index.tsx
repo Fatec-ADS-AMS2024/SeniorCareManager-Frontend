@@ -11,12 +11,12 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 const buttons = [
-  { id: 'home', label: 'Visão Geral', icon: <HouseLine className="size-8" weight="fill" />, route: '/' },
-  { id: 'professionals', label: 'Profissionais', icon: <UserCheck className="size-8" weight="fill" />, route: '/professionals' },
-  { id: 'elderly', label: 'Idosos', icon: <Users className="size-8" weight="fill" />, route: '/elderly' },
-  { id: 'calendar', label: 'Calendário', icon: <CalendarDots className="size-8" weight="fill" />, route: '/calendar' },
-  { id: 'careProvided', label: 'Cuidados Prestados', icon: <HandHeart className="size-8" weight="fill" />, route: '/careProvided' },
-  { id: 'registrations', label: 'Cadastros', icon: <UserCirclePlus className="size-8" weight="fill" />, route: '/registrations' },
+  { id: 'home', label: 'Visão Geral', icon: <HouseLine className="size-8 shrink-0" weight="fill" />, route: '/' },
+  { id: 'professionals', label: 'Profissionais', icon: <UserCheck className="size-8 shrink-0" weight="fill" />, route: '/professionals' },
+  { id: 'elderly', label: 'Idosos', icon: <Users className="size-8 shrink-0" weight="fill" />, route: '/elderly' },
+  { id: 'calendar', label: 'Calendário', icon: <CalendarDots className="size-8 shrink-0" weight="fill" />, route: '/calendar' },
+  { id: 'careProvided', label: 'Cuidados Prestados', icon: <HandHeart className="size-8 shrink-0" weight="fill" />, route: '/careProvided' },
+  { id: 'registrations', label: 'Cadastros', icon: <UserCirclePlus className="size-8 shrink-0" weight="fill" />, route: '/registrations' },
 ];
 
 export default function Sidebar() {
@@ -43,10 +43,10 @@ export default function Sidebar() {
           <button
             key={button.id}
             onClick={() => navigate(button.route)}
-            className="flex items-center gap-2 px-4 py-3 text-primary hover:bg-secondary hover:text-surface"
+            className="flex items-center gap-2 px-4 py-3 text-primary hover:bg-secondary hover:text-surface whitespace-nowrap"
           >
             {button.icon}
-            {isOpen && <span className="text-lg text-textPrimary hover:text-surface">{button.label}</span>}
+            {isOpen && <span className="text-lg">{button.label}</span>}
           </button>
         ))}
       </div>
