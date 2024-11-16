@@ -11,6 +11,7 @@ import AcessibilityPage from "../pages/AcessibilityPage";
 
 import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/LoginPage";
+import GeneralAdministrator from "../pages/GeneralAdministrator";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -19,6 +20,7 @@ const router = createBrowserRouter(
 
       <Route path={routes.LANDING} element={<LandingPage />} />
       <Route path={routes.LOGIN} element={<LoginPage />} />
+      <Route path={routes.GENERALADM} element={<GeneralAdministrator />} />
 
     </Route>
   )
