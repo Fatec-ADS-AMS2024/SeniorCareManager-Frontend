@@ -6,6 +6,7 @@ import {
   CalendarDots,
   HandHeart,
   UserCirclePlus,
+  X,
   List,
 } from '@phosphor-icons/react';
 import { useNavigate } from 'react-router-dom';
@@ -32,9 +33,9 @@ export default function Sidebar() {
       {/* Botão de Menu */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center h-16 text-primary hover:bg-secondary hover:text-surface"
+        className="flex w-full items-center justify-center h-16 text-primary hover:bg-secondary hover:text-surface relative"
       >
-        <List className="size-8" />
+        {isOpen? <X className="size-6 absolute right-4"/> : <List className="size-8" />}
       </button>
 
       {/* Botões do Sidebar */}
@@ -43,7 +44,7 @@ export default function Sidebar() {
           <button
             key={button.id}
             onClick={() => navigate(button.route)}
-            className="flex items-center gap-2 px-4 py-3 text-primary hover:bg-secondary hover:text-surface whitespace-nowrap"
+            className="flex items-center gap-2 px-4 py-3 text-primary hover:bg-secondary hover:text-surface whitespace-nowrap border-r-transparent hover:border-r-4 hover:border-r-primary"
           >
             {button.icon}
             {isOpen && <span className="text-lg">{button.label}</span>}
