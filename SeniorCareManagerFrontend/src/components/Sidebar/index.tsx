@@ -47,7 +47,7 @@ export default function Sidebar() {
             onClick={() => navigate(button.route)}
             className={`flex items-center gap-2 px-4 py-3 whitespace-nowrap border-r-transparent ${
               location.pathname === button.route
-                ? 'bg-secondary text-surface border-r-primary border-r-4' // Estilo para a página ativa
+                ? 'bg-secondary text-surface' // Estilo para a página ativa
                 : 'text-primary hover:bg-[#F3F3F3] hover:border-r-4 hover:border-r-primary'
             }`}
           >
