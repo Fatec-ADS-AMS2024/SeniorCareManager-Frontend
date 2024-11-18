@@ -13,6 +13,7 @@ import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/LoginPage";
 import GeneralAdministrator from "../pages/GeneralAdministrator";
 import Registrations from "../pages/Registrations";
+import ReligionRegistration from "../pages/ReligionRegistration";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -23,6 +24,7 @@ const router = createBrowserRouter(
       <Route path={routes.LOGIN} element={<LoginPage />} />
       <Route path={routes.GENERALADM} element={<GeneralAdministrator />} />
       <Route path={routes.REGISTRATIONS} element={<Registrations />} />
+      <Route path={routes.RELIGIONREGISTRATION} element={<ReligionRegistration />} />
 
     </Route>
   )
