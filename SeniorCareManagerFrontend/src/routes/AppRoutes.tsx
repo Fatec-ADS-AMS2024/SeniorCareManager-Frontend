@@ -13,7 +13,7 @@ import LandingPage from "../pages/LandingPage";
 import LoginPage from "../pages/LoginPage";
 import GeneralAdministrator from "../pages/GeneralAdministrator";
 import Registrations from "../pages/Registrations";
-import ReligionRegistration from "../pages/ReligionRegistration";
+import ReligionRegistration from "../pages/Registrations/ReligionRegistration";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
