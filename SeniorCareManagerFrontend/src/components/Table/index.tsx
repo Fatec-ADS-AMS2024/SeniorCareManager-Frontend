@@ -1,3 +1,5 @@
+import { Plus } from "@phosphor-icons/react";
+import IconButton from "../Button";
 import TableFooter from "./TableFooter";
 import TableHeader from "./TableHeader";
 import TableRow from "./TableRow";
@@ -21,6 +23,7 @@ export default function Table({ columns, data }: TableProps) {
         ))}
       </tbody>
       <TableFooter />
+      <IconButton color="danger" label="Cadastrar" icon={<Plus />} size="large"/>
     </table>
   );
 }
