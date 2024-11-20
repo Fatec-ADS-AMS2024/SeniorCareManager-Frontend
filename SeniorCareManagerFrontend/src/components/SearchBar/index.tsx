@@ -1,5 +1,5 @@
+import { MagnifyingGlass } from '@phosphor-icons/react';
 import { useState } from 'react';
-import SearchIcon from '../../assets/icons/search-icon.png';
 
 // Parametros da barra de pesquisa
 interface SearchBarProps {
@@ -41,9 +41,7 @@ export default function SearchBar({ placeholder, icon, action }: SearchBarProps)
           onClick={handleSearch}
         >
           {/* Icone da barra de pesquisa */}
-          {
-            icon? <img className="w-5 h-5" src={icon}/> : <img className="w-5 h-5" src={SearchIcon}/> 
-          }
+          <MagnifyingGlass className='size-5'/>
         </button>
       </form>
     </div>

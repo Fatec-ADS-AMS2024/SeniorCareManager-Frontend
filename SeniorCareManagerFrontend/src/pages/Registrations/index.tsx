@@ -1,12 +1,34 @@
-import { FolderPlus } from "@phosphor-icons/react";
-import Card from "../../components/Card";
+import { FolderPlus } from '@phosphor-icons/react';
 import { routes } from "../../routes/routes";
+import Card from "../../components/Card";
+import SearchBar from "../../components/SearchBar";
 
-export default function Registrations() {
-    return (
-      <div className="p-4">
-        <h1 className="text-2xl font-bold">Página de Cadastros</h1>
-        <Card text="Religião" subText="Religiões Cadastradas" icon={<FolderPlus/>} page={routes.RELIGIONREGISTRATION}/>
-      </div>
-    );
+const cards = [
+  {
+    text: 'Religião',
+    subText: 'Religiões Cadastradas',
+    icon: <FolderPlus className='shrink-0 size-full' />,
+    page: routes.RELIGIONREGISTRATION,
   }
+];
+
+export default function RegisterPage() {
+  return (
+    <div className="min-h-screen bg-gray-100 py-8 px-4">
+      {/* Search Bar Section */}
+      <SearchBar placeholder="Digite aqui..." action={console.log} />
+
+      {/* Card Grid */}
+      <div className="mt-8 flex flex-wrap items-center gap-8">
+        {cards.map(({ text, icon, page, subText }) => (
+          <Card
+            subText={subText}
+            text={text}
+            icon={icon}
+            page={page}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
