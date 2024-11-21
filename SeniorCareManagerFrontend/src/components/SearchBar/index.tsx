@@ -30,18 +30,18 @@ export default function SearchBar({ placeholder, icon, action }: SearchBarProps)
       <input
         type="text"
         placeholder={placeholder ? placeholder : 'Digite aqui...'}
-        className="w-full py-2 pl-4 text-sm text-gray-600 rounded-l border-2 border-white bg-white focus:outline-none focus:border-gray-400"
+        className="w-full py-2 pl-4 text-sm text-textSecundary rounded-l border-2 border-white bg-white focus:outline-none focus:border-[#D9D9D9]"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
         {/* Botão pra envio do formulário com a ação de pesquisa */}
         <button
           type="button"
-          className="py-1 px-5 text-xl text-textPrimary rounded-r bg-[#D9D9D9] hover:bg-[#c6c6c6] focus:outline-none"
+          className="py-1 px-5 text-xl text-surface rounded-r bg-[#D9D9D9] hover:bg-[#c6c6c6] focus:outline-none"
           onClick={handleSearch}
         >
           {/* Icone da barra de pesquisa */}
-          <MagnifyingGlass className='size-5'/>
+          <MagnifyingGlass weight='bold' className='size-5'/>
         </button>
       </form>
     </div>
