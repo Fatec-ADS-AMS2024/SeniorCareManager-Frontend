@@ -1,8 +1,12 @@
 export default function TableFooter() {
     return (
-        <div>
+        <tfoot className="text-textPrimary">
             {/* Aqui ficará a parte de paginação */}
-            <h1>Footer</h1>
-        </div>
+            <tr className="h-12">
+                <td>
+                    Rodapé
+                </td>
+            </tr>
+        </tfoot>
     )    
 }

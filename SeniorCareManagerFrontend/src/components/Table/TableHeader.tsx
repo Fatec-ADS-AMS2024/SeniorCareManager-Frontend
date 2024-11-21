@@ -1,25 +1,29 @@
+import { JSX } from "react";
+
 interface TableHeaderProps {
   columns: string[];
+  actions?: JSX.Element;
 }
 
-export default function TableHeader({ columns }: TableHeaderProps) {
+export default function TableHeader({ columns, actions }: TableHeaderProps) {
   return (
-    <thead className="bg-[#FAFAFA] text-textPrimary">
+    <thead className="text-textPrimary">
       <tr className="h-12">
-        <th
-          className={`h-full flex w-10`}
-        >
-        </th>
+        {/* Coluna reservada para as checkbox */}
+        <th className="w-10"></th>
         {columns.map((column, index) => (
           <th
             key={index}
-            className={`h-full flex ${
-              index === columns.length - 1 ? "text-center" : "text-left"
-            } ${index === 0 ? "w-10" : ""}`}
+            className="text-left"
           >
             {column}
           </th>
         ))}
+        {actions && (
+          <th className="text-center w-2/12">
+            Ações
+          </th>
+        )}
       </tr>
     </thead>
   );
