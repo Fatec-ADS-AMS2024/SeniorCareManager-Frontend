@@ -37,7 +37,7 @@ export default function SearchBar({ placeholder, icon, action }: SearchBarProps)
         {/* Botão pra envio do formulário com a ação de pesquisa */}
         <button
           type="button"
-          className="py-1 px-5 text-xl text-white rounded-r bg-gray-300 hover:bg-gray-400 focus:outline-none"
+          className="py-1 px-5 text-xl text-textPrimary rounded-r bg-[#D9D9D9] hover:bg-[#c6c6c6] focus:outline-none"
           onClick={handleSearch}
         >
           {/* Icone da barra de pesquisa */}
