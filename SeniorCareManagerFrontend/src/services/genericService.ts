@@ -9,13 +9,13 @@ export default abstract class GenericService<T> {
         this.baseUrl = `https://localhost:7053/api/v1/${modelName}/`;
     }
 
-    async getAll(): Promise<ServiceResult<T>> {
+    async getAll(): Promise<ServiceResult<T[]>> {
         try {
             const res = await axios.get(this.baseUrl);
-            return new ServiceResult<T>(res.status, "Registros encontrados", res.data);
+            return new ServiceResult<T[]>(res.status, "Registros encontrados", res.data);
         } catch (error) {
             const { code, message } = this.handleError(error);
-            return new ServiceResult<T>(code, message);
+            return new ServiceResult<T[]>(code, message);
         }
     }
 

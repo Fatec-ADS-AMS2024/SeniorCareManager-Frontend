@@ -7,7 +7,7 @@ const cards = [
   {
     text: 'Religião',
     subText: 'Religiões Cadastradas',
-    icon: <FolderPlus className='shrink-0 size-full' />,
+    icon: <FolderPlus weight='bold' className='shrink-0 size-full' />,
     page: routes.RELIGIONREGISTRATION,
   }
 ];
@@ -22,6 +22,7 @@ export default function RegisterPage() {
       <div className="mt-8 flex flex-wrap items-center gap-8">
         {cards.map(({ text, icon, page, subText }) => (
           <Card
+            key={text}
             subText={subText}
             text={text}
             icon={icon}
