@@ -18,7 +18,7 @@ export default function Card({ text, subText, icon, page }: CardProps) {
     >
       {/* Ícone */}
       <div className="h-1/4 relative">
-        <div className="flex items-center justify-center w-14 h-14 rounded-full mb-2 text-surface p-3 absolute top-3 left-3 bg-[#D9D9D9]">
+        <div className="flex items-center justify-center w-14 h-14 rounded-full mb-2 text-surface p-3 absolute top-3 left-3 bg-neutralDarker">
           {icon}
         </div>
       </div>
