@@ -2,6 +2,8 @@ import { FolderPlus } from '@phosphor-icons/react';
 import { routes } from "../../routes/routes";
 import Card from "../../components/Card";
 import SearchBar from "../../components/SearchBar";
+import PageTitle from '../../components/PageTitle';
+import Breadcrumb from '../../components/Breadcrumb';
 
 const cards = [
   {
@@ -15,6 +17,9 @@ const cards = [
 export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
+
+      <PageTitle title='Cadastros' />
+      <Breadcrumb/>
       {/* Search Bar Section */}
       <SearchBar placeholder="Digite aqui..." action={console.log} />
 
