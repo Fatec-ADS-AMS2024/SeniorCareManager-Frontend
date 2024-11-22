@@ -22,10 +22,10 @@ export default function ReligionRegistration() {
 
   const Actions = () => (
     <>
-      <button className="text-[#5DB6DC] hover:text-[#42a2cc]">
+      <button className="text-edit hover:text-hoverEdit">
         <Pencil size={24} weight="fill" />
       </button>
-      <button className="text-red-500 hover:text-red-700">
+      <button className="text-danger hover:text-hoverDanger">
         <Trash size={24} weight="fill" />
       </button>
     </>

@@ -39,7 +39,7 @@ function GlobalErrorBoundary() {
 
   return (
     <main className="min-h-screen w-screen p-4">
-      <h1 className="text-2xl text-red-500">
+      <h1 className="text-2xl text-danger">
         Erro ao tentar acessar a página!
       </h1>
     </main>
