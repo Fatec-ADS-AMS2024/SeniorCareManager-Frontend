@@ -7,6 +7,11 @@ export default {
   theme: {
     extend: {
       colors: {
+        neutralLighter: 'var(--color-neutral-lighter)',
+        neutral: 'var(--color-neutral)',
+        neutralDarker: 'var(--color-neutral-darker)',
+        neutralDark: 'var(--color-neutral-dark)',
+
         primary: 'var(--color-primary)',
         secondary: 'var(--color-secondary)',
         background: 'var(--color-background)',
