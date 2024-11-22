@@ -1,12 +1,11 @@
-interface TitleProps {
-    title: string;
+interface PageTitleProps {
+  title: string;
 }
 
-export default function PageTitle({ title }: TitleProps) {
-    return (
-      <div className="pt-2 pl-4">
-        <h1 className="text-2xl font-bold text-textPrimary">{title}</h1>
-      </div>
-    );
-  }
-  
+export default function PageTitle({ title }: PageTitleProps) {
+  return (
+    <div>
+      <h1 className="text-2xl font-bold text-textPrimary">{title}</h1>
+    </div>
+  );
+}

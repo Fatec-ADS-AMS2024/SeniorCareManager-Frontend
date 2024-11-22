@@ -3,6 +3,7 @@ import ReligionService from '../../services/religionService';
 import Religion from '../../types/models/Religion';
 import Table from '../../components/Table';
 import { Pencil, Trash } from '@phosphor-icons/react';
+import BreadcrumbPageTitle from '../../components/BreadcrumbPageTitle';
 
 export default function ReligionRegistration() {
   const columns = ['Nome'];
@@ -31,8 +32,11 @@ export default function ReligionRegistration() {
   )
 
   return (
-    <div className="p-4">
-      <Table columns={columns} data={data} actions={<Actions />} />
+    <div>
+      <BreadcrumbPageTitle title="Cadastro de Religião" />
+      <div className="px-4">
+        <Table columns={columns} data={data} actions={<Actions />} />
+      </div>
     </div>
   );
 }

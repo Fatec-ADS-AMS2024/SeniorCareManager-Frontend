@@ -1,11 +1,9 @@
-import Breadcrumb from "../../components/Breadcrumb";
-import PageTitle from "../../components/PageTitle";
+import BreadcrumbPageTitle from "../../components/BreadcrumbPageTitle";
 
 export default function GeneralAdministrator() {
     return (
         <div>
-            <PageTitle title={"Visão Geral"} />
-            <Breadcrumb/>
+            <BreadcrumbPageTitle title="Visão Geral" />
         </div>
     );
 } 
