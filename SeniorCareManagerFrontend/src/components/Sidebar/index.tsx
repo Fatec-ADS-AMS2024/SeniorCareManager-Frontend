@@ -34,7 +34,7 @@ export default function Sidebar() {
       {/* Botão de Menu */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-center h-16 text-primary hover:bg-[#F3F3F3] border-x-4 border-x-transparent hover:border-r-primary relative "
+        className="flex w-full items-center justify-center h-16 text-primary hover:bg-neutralLighter border-x-4 border-x-transparent hover:border-r-primary relative "
       >
         {isOpen ? <X className="size-6 absolute right-4" /> : <List className="size-8" />}
       </button>
@@ -48,7 +48,7 @@ export default function Sidebar() {
             className={`flex items-center gap-2 h-14 whitespace-nowrap border-x-transparent border-x-4 ${isOpen ? 'px-4' : 'justify-center'} ${
               location.pathname === button.route
                 ? 'bg-secondary text-surface' // Estilo para a página ativa
-                : 'text-primary hover:bg-[#F3F3F3] hover:border-r-primary'
+                : 'text-primary hover:bg-neutralLighter hover:border-r-primary'
             }`}
           >
             {button.icon}
