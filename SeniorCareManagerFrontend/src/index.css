@@ -34,14 +34,14 @@
       --color-hoverButton: #10C5BB;
 
       /* Cores Especiais */
-      --color-danger: #d30202;
-      --color-hoverDanger: #b80202;
+      --color-danger: #BD0000;
+      --color-hoverDanger: #870101;
 
       --color-edit: #5DB6DC;
-      --color-hoverEdit: #278bb6;
+      --color-hoverEdit: #279bcd;
 
-      --color-success: #009F55;
-      --color-hoverSuccess: #198754;
+      --color-success: #198754;
+      --color-hoverSuccess: #14623d;
 
       --color-warning: #ffc107;
 
