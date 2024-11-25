@@ -23,7 +23,7 @@
       --color-neutral: #f3f3f3; /* Tons intermediários */
       --color-neutral-darker: #d9d9d9; /* Tons mais escuros */
       --color-neutral-dark: #c6c6c6; /* Ideal para contraste suave */
-      --color-surface: #FFFFFF;
+      --color-neutral-white: #FFFFFF;
       --color-text-primary: #495453;
       --color-text-secondary: #6D8385;
 

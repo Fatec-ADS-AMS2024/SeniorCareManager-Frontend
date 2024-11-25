@@ -10,7 +10,7 @@ export default function TableRow({ data, index, actions }: TableRowProps) {
   return (
     <tr 
       className={`border-y text-textSecondary h-12 ${
-        index % 2 === 1 ? "bg-surface" : "bg-neutralLighter"
+        index % 2 === 1 ? "bg-neutralWhite" : "bg-neutralLighter"
       }`}
     >
       {/* Célula da checkbox */}
