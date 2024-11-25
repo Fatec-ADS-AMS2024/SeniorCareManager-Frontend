@@ -13,7 +13,6 @@ export default {
         neutral: 'var(--color-neutral)',
         neutralDarker: 'var(--color-neutral-darker)',
         neutralDark: 'var(--color-neutral-dark)',
-        background: 'var(--color-background)',
         neutralWhite: 'var( --color-neutral-white)',
         textPrimary: 'var(--color-text-primary)',
         textSecondary: 'var(--color-text-secondary)',

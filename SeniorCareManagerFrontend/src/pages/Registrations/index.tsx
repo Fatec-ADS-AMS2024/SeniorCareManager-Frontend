@@ -15,7 +15,7 @@ const cards = [
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-neutralLighter">
 
       <BreadcrumbPageTitle title="Cadastros" />
       {/* Search Bar Section */}
