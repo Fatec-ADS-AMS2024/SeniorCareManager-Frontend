@@ -27,7 +27,7 @@ export default function Sidebar() {
 
   return (
     <div
-      className={`flex flex-col ${
+      className={`flex flex-col z-10 ${
         isOpen ? 'w-72' : 'w-16'
       } h-full bg-neutralWhite shadow-lg transition-all duration-500 overflow-hidden`}
     >
