@@ -36,7 +36,7 @@ export default function ReligionRegistration() {
   return (
     <div>
     <BreadcrumbPageTitle title="Cadastro de Religião" />
-    <div className="bg-neutralWhite px-6 py-6 max-w-[1400px] mx-auto rounded-lg shadow-md mt-10">
+    <div className="bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10">
       <div className="flex items-center justify-between mb-4">
         <SearchBar />
         <Button label="Adicionar" icon={<Plus />} iconPosition="left" color="success" size="medium" />
