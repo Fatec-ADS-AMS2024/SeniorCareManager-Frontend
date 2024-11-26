@@ -22,7 +22,7 @@ export default function SearchBar({ placeholder, action }: SearchBarProps) {
   };
 
   return (
-    <div className="flex justify-center items-center w-full">
+    <div className="w-full">
       {/* Search bar */}
       {/* Formulário de pesquisa */}
       <form className="flex w-full max-w-2xl shadow-md">
