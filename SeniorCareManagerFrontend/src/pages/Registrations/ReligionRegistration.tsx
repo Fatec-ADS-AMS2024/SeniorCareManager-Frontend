@@ -10,23 +10,30 @@ import Modal from "../../components/GenericModal";
 
 const inputs = [
   {
-    label: "Nome religião",
+    label: "Nome da religião",
+    attribute: "name",
   },
 ];
 
 export default function ReligionRegistration() {
   const columns = ["Nome"];
   const [data, setData] = useState<Religion[]>([]);
+  const [modalRegister, setModalRegister] = useState(false);
 
-  const [showModal, setShowModal] = useState(false);
-
-  const openModal = () => {
-    setShowModal(true);
+  const openCloseModalRegister = () => {
+    setModalRegister((isOpen) => !isOpen);
   };
 
-  const closeModal = () => {
-    setShowModal(false);
-  };
+  const registerReligion = async (model: Religion) => {
+    const religionService = new ReligionService();
+    const res = await religionService.create(model);
+    if (res.code === 200) {
+      alert(`Religião ${res.data?.name} criada com sucesso!`);
+      setModalRegister(false);
+    } else {
+      alert(res.message);
+    }
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -34,8 +41,6 @@ export default function ReligionRegistration() {
       const res = await religionService.getAll();
       if (res.code === 200 && res.data) setData([...res.data]);
     }
-
-  
 
     fetchData();
   }, []);
@@ -63,14 +68,14 @@ export default function ReligionRegistration() {
             iconPosition="left"
             color="success"
             size="medium"
-            onClick={openModal}
+            onClick={openCloseModalRegister}
           />
           <Modal
             title="Religião"
             inputs={inputs}
-            action={console.log}
-            statusModal={showModal}
-            closeModal={closeModal}
+            action={registerReligion}
+            statusModal={modalRegister}
+            closeModal={openCloseModalRegister}
           />
         </div>
         <Table columns={columns} data={data} actions={<Actions />} />

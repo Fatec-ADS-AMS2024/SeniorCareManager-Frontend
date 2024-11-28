@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import Input from '../InputText';
 import Button from '../Button';
-import { Plus } from '@phosphor-icons/react';
-import { X } from '@phosphor-icons/react';
+import { Plus, X } from '@phosphor-icons/react';
 
 interface ModalProps {
   title?: string;
-  inputs?: { label: string }[];
+  inputs?: { label: string, attribute: string }[];
   action?: (data: { [key: string]: string }) => void;
   statusModal?: boolean;
   closeModal?: () => void;
@@ -43,7 +42,7 @@ export default function Modal({title = "Título", inputs = [], action, statusMod
             <Input
               key={input.label}
               label={input.label}
-              action={(value: string) => handleFormSubmit(input.label, value)}
+              action={(value: string) => handleFormSubmit(input.attribute, value)}
             />
           ))}
         </div>
