@@ -8,7 +8,7 @@ interface TableProps {
   data: {
     id: number;
   }[];
-  actions?: JSX.Element;
+  actions?: (id: number) => JSX.Element;
 }
 
 export default function Table({ columns, data, actions }: TableProps) {
@@ -31,7 +31,7 @@ export default function Table({ columns, data, actions }: TableProps) {
   return (
     <table className="w-full bg-neutralWhite rounded-lg shadow-md overflow-hidden">
       {/* Cabeçalho da tabela */}
-      <TableHeader columns={columns} actions={actions} />
+      <TableHeader columns={columns} actions={!!actions} />
       {/* Corpo da tabela */}
       <tbody>
         {data.map((row, rowIndex) => (
@@ -39,7 +39,7 @@ export default function Table({ columns, data, actions }: TableProps) {
             key={row.id}
             data={row}
             index={rowIndex}
-            actions={actions}
+            actions={actions ? actions(row.id) : undefined}
             onSelect={handleRowSelection}
             isSelected={selectedRows.includes(row.id)}
           />
