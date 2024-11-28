@@ -19,9 +19,14 @@ export default function ReligionRegistration() {
   const columns = ["Nome"];
   const [data, setData] = useState<Religion[]>([]);
   const [modalRegister, setModalRegister] = useState(false);
+  const [modalEdit, setModalEdit] = useState(false);
 
   const openCloseModalRegister = () => {
     setModalRegister((isOpen) => !isOpen);
+  };
+
+  const openCloseModalEdit = () => {
+    setModalEdit((isOpen) => !isOpen);
   };
 
   const registerReligion = async (model: Religion) => {
@@ -30,6 +35,17 @@ export default function ReligionRegistration() {
     if (res.code === 200) {
       alert(`Religião ${res.data?.name} criada com sucesso!`);
       setModalRegister(false);
+    } else {
+      alert(res.message);
+    }
+  };
+
+  const editReligion = async (id: number, model: Religion) => {
+    const religionService = new ReligionService();
+    const res = await religionService.update(id, model);
+    if (res.code === 200) {
+      alert(`Religião ${res.data?.name} atualizada com sucesso!`);
+      setModalEdit(false);
     } else {
       alert(res.message);
     }
@@ -48,7 +64,7 @@ export default function ReligionRegistration() {
   const Actions = ({ id }: { id: number }) => (
     <>
       <button
-        onClick={() => console.log(id)}
+        onClick={openCloseModalEdit}
         className="text-edit hover:text-hoverEdit"
       >
         <Pencil className="size-6" weight="fill" />
@@ -77,11 +93,18 @@ export default function ReligionRegistration() {
             onClick={openCloseModalRegister}
           />
           <Modal
-            title="Religião"
+            title="Cadastrar Religião"
             inputs={inputs}
             action={registerReligion}
             statusModal={modalRegister}
             closeModal={openCloseModalRegister}
+          />
+          <Modal 
+            title="Editar Religião"
+            inputs={inputs}
+            action={editReligion}
+            statusModal={modalEdit}
+            closeModal={openCloseModalEdit}
           />
         </div>
         <Table
