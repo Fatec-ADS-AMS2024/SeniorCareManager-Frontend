@@ -33,7 +33,7 @@ export default function ReligionRegistration() {
     } else {
       alert(res.message);
     }
-  }
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -45,12 +45,18 @@ export default function ReligionRegistration() {
     fetchData();
   }, []);
 
-  const Actions = () => (
+  const Actions = ({ id }: { id: number }) => (
     <>
-      <button className="text-edit hover:text-hoverEdit">
+      <button
+        onClick={() => console.log(id)}
+        className="text-edit hover:text-hoverEdit"
+      >
         <Pencil className="size-6" weight="fill" />
       </button>
-      <button className="text-danger hover:text-hoverDanger">
+      <button
+        onClick={() => console.log(id)}
+        className="text-danger hover:text-hoverDanger"
+      >
         <Trash className="size-6" weight="fill" />
       </button>
     </>
@@ -78,7 +84,11 @@ export default function ReligionRegistration() {
             closeModal={openCloseModalRegister}
           />
         </div>
-        <Table columns={columns} data={data} actions={<Actions />} />
+        <Table
+          columns={columns}
+          data={data}
+          actions={(id) => <Actions id={id} />}
+        />
       </div>
     </div>
   );
