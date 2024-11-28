@@ -1,44 +1,22 @@
 import { useState } from 'react';
-
-interface InputProps {
-  label: string;
-  value?: string;
-  action: (value: string) => void;
-}
-
-function Input({ label, value, action }: InputProps) {
-  return (
-    <div className="mb-4">
-      <label className="block text-gray-600 text-sm mb-1 break-all">{label}:</label>
-      <input
-        type="text"
-        className="w-full py-2 pl-4 text-sm text-gray-600 rounded border border-gray-100 focus:outline-none focus:border-gray-300"
-        value={value}
-        onChange={(e) => {
-          action(e.target.value);
-        }}
-      />
-    </div>
-  );
-}
+import Input from '../InputText';
+import Button from '../Button';
+import { Plus } from '@phosphor-icons/react';
+import { X } from '@phosphor-icons/react';
 
 interface ModalProps {
   title?: string;
   inputs?: { label: string }[];
   action?: (data: { [key: string]: string }) => void;
   statusModal?: boolean;
+  closeModal?: () => void;
 }
 
-export default function Modal({title = "Título", inputs = [], action, statusModal = false}: ModalProps) {
+export default function Modal({title = "Título", inputs = [], action, statusModal = true, closeModal}: ModalProps) {
   const [formData, setFormData] = useState({});
-  const [showModal, setShowModal] = useState(statusModal);
 
   const handleFormSubmit = (label: string, value: string) => {
     setFormData((prev) => ({ ...prev, [label]: value }));
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
   };
 
   const handleSubmit = () => {
@@ -47,49 +25,51 @@ export default function Modal({title = "Título", inputs = [], action, statusMod
     }
   };
 
-  if (!showModal)
+  if (!statusModal)
     return null;  
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-      <form className="bg-white rounded-lg shadow-lg w-full max-w-lg p-4">
+    <div className="fixed inset-0 flex items-center justify-center bg-transparent/50 z-50">
+      <form className="bg-surface rounded-lg shadow-lg w-full max-w-xl p-4 bg-white">
         {/* Cabeçalho do Modal */}
-        <div className="flex justify-center items-center px-4 py-0 mr-0 border-0">
-          <h2 className="text-xl font-semibold ">{title}</h2>
+        <div className="flex items-center px-2">
+          <h2 className="text-xl font-semibold text-textPrimary">{title}</h2>
         </div>
-
         {/* Separador */}
-        <hr className="border-t border-gray-300 w-5/6 mx-auto my-4" />
+        <hr className="border-t border-neutralDarker w-[99%] mx-auto my-4" />
 
         {/* Corpo do Modal */}
-        <div>
+        <div className="mb-4 px-2">
           {inputs.map((input) => (
             <Input
               key={input.label}
               label={input.label}
-              action={(value) => handleFormSubmit(input.label, value)}
+              action={(value: string) => handleFormSubmit(input.label, value)}
             />
           ))}
         </div>
 
         {/* Separador */}
-        <hr className="border-t border-gray-300 w-5/6 mx-auto my-4" />
+        <hr className="border-t border-neutralDarker w-[99%] mx-auto my-4" />
 
         {/* Rodapé do Modal */}
-        <div className="flex justify-end px-4 py-2">
-          <button
-            type="button"
-            className="bg-red-600 text-white px-5 py-1 rounded hover:bg-red-700 transition"
+        <div className="flex justify-end px-4 py-2 gap-7">
+          <Button
+            icon={<X size={20} color='white'/>}
+            label="Cancelar"
             onClick={closeModal}
-          >
-            x Cancelar
-          </button>
-          <button
-            type="button"
-            className="bg-green-600 text-white px-5 py-1 rounded hover:bg-green-700 transition ml-3"
+            color='danger'
+            size='medium'
+            className='rounded-[5px] w-32'
+          />
+          <Button
+            icon={<Plus size={20} color='white'/>}
+            label="Salvar"
             onClick={handleSubmit}
-          >
-            + Enviar
-          </button>
+            color='success'
+            size='medium'
+            className='rounded-[5px] w-32'
+            type='button'
+          />
         </div>
       </form>
     </div>
