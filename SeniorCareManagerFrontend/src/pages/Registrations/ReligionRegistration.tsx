@@ -51,6 +51,17 @@ export default function ReligionRegistration() {
     }
   };
 
+  const deleteReligion = async (id: number) => {
+    const religionService = new ReligionService();
+    const res = await religionService.delete(id);
+    if (res.code === 200) {
+      alert(`Religião atualizada com sucesso!`);
+      setModalEdit(false);
+    } else {
+      alert(res.message);
+    }
+  };
+
   useEffect(() => {
     async function fetchData() {
       const religionService = new ReligionService();
