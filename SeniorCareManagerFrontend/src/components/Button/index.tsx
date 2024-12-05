@@ -8,7 +8,7 @@ interface ButtonProps
   label: string;
   icon?: JSX.Element;
   iconPosition?: "left" | "right";
-  color?: "primary" | "secondary" | "success" | "danger" | "edit";
+  color?: "primary" | "secondary" | "textSecundary" | "success" | "danger" | "edit";
   size?: "small" | "medium" | "large";
 }
 
@@ -24,6 +24,7 @@ export default function Button({
   const colorClasses = {
     primary: "bg-primary hover:bg-secondary text-neutralWhite",
     secondary: "bg-secondary hover:bg-primary text-neutralWhite",
+    textSecundary:"bg-textSecundary text-neutralWhite",
     success: "bg-success hover:bg-hoverSuccess text-neutralWhite",
     danger: "bg-danger hover:bg-hoverDanger text-neutralWhite",
     edit: "bg-edit hover:bg-hoverEdit text-neutralWhite",
