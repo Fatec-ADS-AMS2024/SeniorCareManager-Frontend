@@ -12,6 +12,7 @@ const inputs = [
   {
     label: "Nome da religião",
     attribute: "name",
+    //defaultValue: 
   },
 ];
 
@@ -20,6 +21,7 @@ export default function ReligionRegistration() {
   const [data, setData] = useState<Religion[]>([]);
   const [modalRegister, setModalRegister] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
+  const [modalDelete, setModalDelete] = useState(false);
 
   const openCloseModalRegister = () => {
     setModalRegister((isOpen) => !isOpen);
@@ -27,6 +29,10 @@ export default function ReligionRegistration() {
 
   const openCloseModalEdit = () => {
     setModalEdit((isOpen) => !isOpen);
+  };
+
+  const openCloseModalDelete = () => {
+    setModalDelete((isOpen) => !isOpen)
   };
 
   const registerReligion = async (model: Religion) => {
@@ -56,7 +62,7 @@ export default function ReligionRegistration() {
     const res = await religionService.delete(id);
     if (res.code === 200) {
       alert(`Religião atualizada com sucesso!`);
-      setModalEdit(false);
+      setModalDelete(false);
     } else {
       alert(res.message);
     }
@@ -81,7 +87,7 @@ export default function ReligionRegistration() {
         <Pencil className="size-6" weight="fill" />
       </button>
       <button
-        onClick={() => console.log(id)}
+        onClick={openCloseModalDelete}
         className="text-danger hover:text-hoverDanger"
       >
         <Trash className="size-6" weight="fill" />
@@ -104,11 +110,12 @@ export default function ReligionRegistration() {
             onClick={openCloseModalRegister}
           />
           <Modal
-            title="Cadastrar Religião"
-            inputs={inputs}
-            action={registerReligion}
-            statusModal={modalRegister}
-            closeModal={openCloseModalRegister}
+          title="Cadastrar Religião"
+          inputs={inputs}
+          action={registerReligion}
+          statusModal={modalRegister}
+          closeModal={openCloseModalRegister}
+          type="create" 
           />
           <Modal 
             title="Editar Religião"
@@ -116,6 +123,15 @@ export default function ReligionRegistration() {
             action={editReligion}
             statusModal={modalEdit}
             closeModal={openCloseModalEdit}
+            type="update" 
+          />
+          <Modal 
+            title="Deseja excluir essa religião?"
+            msgConfirm="Ao excluir esta religião, ela será removida permanentemente do sistema."
+            action={deleteReligion}
+            statusModal={modalDelete}
+            closeModal={openCloseModalDelete}
+            type="delete" 
           />
         </div>
         <Table

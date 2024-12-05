@@ -8,7 +8,7 @@ interface ButtonProps
   label: string;
   icon?: JSX.Element;
   iconPosition?: "left" | "right";
-  color?: "primary" | "secondary" | "textSecondary" | "success" | "danger" | "edit";
+  color?: "primary" | "secondary" | "textSecondary" | "success" | "danger" | "edit" | "neutralLighter";
   size?: "small" | "medium" | "large";
 }
 
@@ -24,10 +24,11 @@ export default function Button({
   const colorClasses = {
     primary: "bg-primary hover:bg-secondary text-neutralWhite",
     secondary: "bg-secondary hover:bg-primary text-neutralWhite",
-    textSecondary:"bg-textSecundary text-neutralWhite",
+    textSecondary:"bg-textSecondary text-neutralWhite",
     success: "bg-success hover:bg-hoverSuccess text-neutralWhite",
     danger: "bg-danger hover:bg-hoverDanger text-neutralWhite",
     edit: "bg-edit hover:bg-hoverEdit text-neutralWhite",
+    neutralLighter: "bg-neutralLighter hover:bg-neutralDark text-textPrimary",
   };
 
   const sizeClasses = {
