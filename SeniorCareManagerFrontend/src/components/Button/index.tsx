@@ -8,7 +8,7 @@ interface ButtonProps
   label: string;
   icon?: JSX.Element;
   iconPosition?: "left" | "right";
-  color?: "primary" | "secondary" | "textSecundary" | "success" | "danger" | "edit";
+  color?: "primary" | "secondary" | "textSecondary" | "success" | "danger" | "edit";
   size?: "small" | "medium" | "large";
 }
 
