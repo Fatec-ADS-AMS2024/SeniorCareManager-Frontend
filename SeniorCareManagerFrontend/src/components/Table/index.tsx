@@ -8,11 +8,26 @@ interface TableProps {
   data: {
     id: number;
   }[];
+  rowsPerPage?: number;
   actions?: (id: number) => JSX.Element;
 }
 
-export default function Table({ columns, data, actions }: TableProps) {
+export default function Table({
+  columns,
+  data,
+  rowsPerPage = 10,
+  actions,
+}: TableProps) {
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const totalPages = Math.ceil(data.length / rowsPerPage);
+  const paginatedData = data.slice(startIndex, startIndex + rowsPerPage);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
 
   const handleRowSelection = (rowId: number) => {
     setSelectedRows((prevSelectedRows) => {
@@ -20,7 +35,7 @@ export default function Table({ columns, data, actions }: TableProps) {
 
       if (prevSelectedRows.includes(rowId)) {
         // Se a linha já estiver selecionada, desmarque
-        return prevSelectedRows.filter(id => id !== rowId);
+        return prevSelectedRows.filter((id) => id !== rowId);
       } else {
         // Caso contrário, adicione a linha aos selecionados
         return [...prevSelectedRows, rowId];
@@ -34,8 +49,8 @@ export default function Table({ columns, data, actions }: TableProps) {
       <TableHeader columns={columns} actions={!!actions} />
       {/* Corpo da tabela */}
       <tbody>
-        {data.map((row, rowIndex) => (
-          <TableRow 
+        {paginatedData.map((row, rowIndex) => (
+          <TableRow
             key={row.id}
             data={row}
             index={rowIndex}
@@ -45,7 +60,12 @@ export default function Table({ columns, data, actions }: TableProps) {
           />
         ))}
       </tbody>
-      <TableFooter rowsSelected={selectedRows.length} />
+      <TableFooter
+        rowsSelected={selectedRows.length}
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+      />
     </table>
   );
 }

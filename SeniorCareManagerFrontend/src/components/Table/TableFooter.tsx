@@ -1,35 +1,33 @@
-import { useState } from "react";
 import TablePagination from "./TablePagination";
 
 interface TableFooterProps {
-    rowsSelected: number;
-    totalPages: number;
+  rowsSelected: number;
+  totalPages: number;
+  currentPage: number;
+  onPageChange: (page: number) => void;
 }
 
-export default function TableFooter({ rowsSelected, totalPages }: TableFooterProps) {
-    const [currentPage, setCurrentPage] = useState(1);
-
-    // Função para mudar de página
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-        console.log("Página atual:", page); // Pode ser usado para outras ações, como recarregar dados
-    };
-
-    return (
-        <tfoot className="text-textPrimary bg-neutral">
-            {/* Parte de paginação */}
-            <tr className="h-12">
-                <td colSpan={99}>
-                    <div className="flex items-center px-4 justify-between h-12">
-                        <p>Linhas selecionadas: {rowsSelected}</p>
-                        <TablePagination
-                            totalPages={totalPages}  // Total de páginas, pode ser dinâmico conforme seus dados
-                            currentPage={currentPage}
-                            onPageChange={handlePageChange}  // Passa a função de mudança de página
-                        />
-                    </div>
-                </td>
-            </tr>
-        </tfoot>
-    );
+export default function TableFooter({
+  rowsSelected,
+  totalPages,
+  currentPage,
+  onPageChange,
+}: TableFooterProps) {
+  return (
+    <tfoot className="text-textPrimary bg-neutral">
+      {/* Parte de paginação */}
+      <tr className="h-12">
+        <td colSpan={99}>
+          <div className="flex items-center px-4 justify-between h-12 text-textPrimary">
+            <p className="w-[50%]">Linhas selecionadas: {rowsSelected}</p>
+            <TablePagination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageChange={onPageChange}
+            />
+          </div>
+        </td>
+      </tr>
+    </tfoot>
+  );
 }
