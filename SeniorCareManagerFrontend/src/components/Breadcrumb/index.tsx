@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { CaretRight } from "@phosphor-icons/react";
+import { routes } from "../../routes/routes";
 
 export default function Breadcrumb() {
   const location = useLocation();
@@ -16,14 +17,14 @@ export default function Breadcrumb() {
   };
 
   return (
-    <nav
-      className="flex items-center space-x-2"
-      aria-label="Breadcrumb"
-    >
+    <nav className="flex items-center space-x-2" aria-label="Breadcrumb">
       <ul className="flex items-center space-x-1">
         {/* Primeiro item: Início */}
         <li className="flex items-center">
-          <Link to="/" className="text-secondary hover:text-primary font-medium">
+          <Link
+            to={routes.GENERALADM}
+            className="text-secondary hover:text-primary font-medium"
+          >
             Início
           </Link>
         </li>

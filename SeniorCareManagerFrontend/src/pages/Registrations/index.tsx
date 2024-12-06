@@ -10,28 +10,32 @@ const cards = [
     subText: 'Religiões Cadastradas',
     icon: <FolderPlus weight='bold' className='shrink-0 size-full' />,
     page: routes.RELIGIONREGISTRATION,
-  }
+  },
 ];
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen bg-background">
-
+    <div className="min-h bg-neutralLighter">
       <BreadcrumbPageTitle title="Cadastros" />
-      {/* Search Bar Section */}
-      <SearchBar placeholder="Digite aqui..." action={console.log} />
+    
+      <div className="py-8 px-4 flex flex-col flex-wrap items-start gap-8">
+        {/* Search Bar Section */}
+        <div className='w-96'>
+          <SearchBar placeholder="Digite aqui..." action={console.log} />
+        </div>
 
-      {/* Card Grid */}
-      <div className="mt-8 flex flex-wrap items-center gap-8 px-4">
-        {cards.map(({ text, icon, page, subText }) => (
-          <Card
-            key={text}
-            subText={subText}
-            text={text}
-            icon={icon}
-            page={page}
-          />
-        ))}
+        <div className='flex flex-wrap gap-8 justify-center'>
+          {/* Card Grid */}
+          {cards.map(({ text, icon, page, subText }) => (
+            <Card
+              key={text}
+              subText={subText}
+              text={text}
+              icon={icon}
+              page={page}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
