@@ -10,6 +10,7 @@ export default {
 
         /* Cores Base do Sistema */
         neutralLighter: 'var(--color-neutral-lighter)',
+        neutralLight: 'var(--color-neutral-light)',
         neutral: 'var(--color-neutral)',
         neutralDarker: 'var(--color-neutral-darker)',
         neutralDark: 'var(--color-neutral-dark)',
