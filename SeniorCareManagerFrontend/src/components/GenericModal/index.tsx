@@ -1,97 +1,199 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Input from '../InputText';
+import Button from '../Button';
+import { Plus, X, Pencil } from '@phosphor-icons/react';
 
-interface InputProps {
-  label: string;
-  value?: string;
-  action: (value: string) => void;
-}
-
-function Input({ label, value, action }: InputProps) {
-  return (
-    <div className="mb-4">
-      <label className="block text-gray-600 text-sm mb-1 break-all">{label}:</label>
-      <input
-        type="text"
-        className="w-full py-2 pl-4 text-sm text-gray-600 rounded border border-gray-100 focus:outline-none focus:border-gray-300"
-        value={value}
-        onChange={(e) => {
-          action(e.target.value);
-        }}
-      />
-    </div>
-  );
-}
-
-interface ModalProps {
+interface ModalProps<T> {
   title?: string;
-  inputs?: { label: string }[];
-  action?: (data: { [key: string]: string }) => void;
-  statusModal?: boolean;
+  inputs?: { label?: string, attribute: string, defaultValue?: string, locked?: boolean}[];
+  action?: ((dados: T) => void);
+  optionalAction?: () => void;
+  statusModal: boolean;
+  closeModal: () => void;
+  type: "create" | "update" | "view" | "delete" | "info"; 
+  msgInformation?: string
+  className?: string
+  icon ?: JSX.Element
 }
 
-export default function Modal({title = "Título", inputs = [], action, statusModal = false}: ModalProps) {
-  const [formData, setFormData] = useState({});
-  const [showModal, setShowModal] = useState(statusModal);
+export default function Modal<T>({icon, title = "Título", inputs = [], action, statusModal = true, closeModal, type, msgInformation, className = "", optionalAction}: ModalProps<T>) {
+  const [formData, setFormData] = useState<Record<string, string>>(
+    inputs.reduce((prev, input) => ({...prev, [input.attribute]: input.defaultValue || ""}), {})
+  );
+  
+  useEffect(() => {
+    if (statusModal) {
+    // Executa apenas ao abrir o modal
+      setFormData(
+        inputs.reduce(
+          (prev, input) => ({
+            ...prev,
+            [input.attribute]: input.defaultValue ?? "",
+          }),{}
+        )
+      );
+   }
+  }, [statusModal]);
 
-  const handleFormSubmit = (label: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [label]: value }));
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
+  const handleFormSubmit = (attribute: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [attribute]: value }));
   };
 
   const handleSubmit = () => {
     if (action) {
-      action(formData);
+      action(formData as T);
     }
   };
 
-  if (!showModal)
-    return null;  
-  return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-      <form className="bg-white rounded-lg shadow-lg w-full max-w-lg p-4">
-        {/* Cabeçalho do Modal */}
-        <div className="flex justify-center items-center px-4 py-0 mr-0 border-0">
-          <h2 className="text-xl font-semibold ">{title}</h2>
-        </div>
+  if (!statusModal)
+    return null; 
+  // Modal de Criação
+  if (type === "create"){
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-transparent/50 z-50">
+        <form className={`rounded-[10px] shadow-lg w-full max-w-xl p-4 bg-neutralWhite ${className}`}>
+          {/* Cabeçalho do Modal */}
+          <div className="flex items-center px-2">
+            <h2 className="text-xl font-semibold text-textPrimary">{title}</h2>
+          </div>
+          {/* Separador */}
+          <hr className="border-t border-neutralDarker w-[99%] mx-auto my-4" />
 
-        {/* Separador */}
-        <hr className="border-t border-gray-300 w-5/6 mx-auto my-4" />
+          {/* Corpo do Modal */}
+          <div className="mb-4 px-2">
+            {inputs.map((input) => (
+                <Input
+                  key={input.label}
+                  label={input.label}
+                  action={(value) => handleFormSubmit(input.attribute, value)}
+                />
+            ))}
+          </div>
 
-        {/* Corpo do Modal */}
-        <div>
-          {inputs.map((input) => (
-            <Input
-              key={input.label}
-              label={input.label}
-              action={(value) => handleFormSubmit(input.label, value)}
+          {/* Separador */}
+          <hr className="border-t border-neutralDarker w-[99%] mx-auto my-4" />
+
+          {/* Rodapé do Modal */}
+          <div className="flex justify-end px-4 py-2 gap-7">
+            <Button
+              icon={<X size={20} className='text-neutralWhite'/>}
+              label="Cancelar"
+              onClick={closeModal}
+              color='danger'
+              size='medium'
+              className='rounded-[5px] w-32'
             />
-          ))}
-        </div>
+            <Button
+              icon={<Plus size={20} className='text-neutralWhite'/>}
+              label="Salvar"
+              onClick={handleSubmit}
+              color='success'
+              size='medium'
+              className='rounded-[5px] w-32'
+              type='button'
+            />
+          </div>
+        </form>
+      </div>
+    );
+  }
+  // Modal de Edit
+  else if (type === "update"){
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-transparent/50 z-50">
+        <form className="rounded-[10px] shadow-lg w-full max-w-xl p-4 bg-neutralWhite">
+          {/* Cabeçalho do Modal */}
+          <div className="flex items-center px-2">
+            <h2 className="text-xl font-semibold text-textPrimary">{title}</h2>
+          </div>
+          {/* Separador */}
+          <hr className="border-t border-neutralDarker w-[99%] mx-auto my-4" />
 
-        {/* Separador */}
-        <hr className="border-t border-gray-300 w-5/6 mx-auto my-4" />
+          {/* Corpo do Modal */}
+          <div className="mb-4 px-2">
+            {inputs.map((input) => (
+              <Input
+                key={input.attribute}
+                label={input.label && input.label}
+                action={(value) => handleFormSubmit(input.attribute, value)}
+                value={formData[input.attribute]}
+                defaultDisable={input.locked}
+              />
+            ))}
+          </div>
 
-        {/* Rodapé do Modal */}
-        <div className="flex justify-end px-4 py-2">
-          <button
-            type="button"
-            className="bg-red-600 text-white px-5 py-1 rounded hover:bg-red-700 transition"
-            onClick={closeModal}
-          >
-            x Cancelar
-          </button>
-          <button
-            type="button"
-            className="bg-green-600 text-white px-5 py-1 rounded hover:bg-green-700 transition ml-3"
-            onClick={handleSubmit}
-          >
-            + Enviar
-          </button>
+          {/* Separador */}
+          <hr className="border-t border-neutralDarker w-[99%] mx-auto my-4" />
+
+          {/* Rodapé do Modal */}
+          <div className="flex justify-end px-4 py-2 gap-7">
+            <Button
+              icon={<X size={20} className='text-neutralWhite'/>}
+              label="Cancelar"
+              onClick={closeModal}
+              color='danger'
+              size='medium'
+              className='rounded-[5px] w-32'
+            />
+            <Button
+              icon={<Pencil weight='fill' size={20} className='text-neutralWhite'/>}
+              label="Salvar"
+              onClick={handleSubmit}
+              color='edit'
+              size='medium'
+              className='rounded-[5px] w-32'
+              type='button'
+            />
+          </div>
+        </form>
+      </div>
+    );
+  }
+  else if (type === 'delete') {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-transparent/50 z-50">
+        <form className="rounded-[10px] shadow-lg w-full max-w-xl p-3 bg-neutralWhite px-5 text-start py-7">
+          <h2 className="text-2xl font-semibold text-textPrimary">{title}</h2>
+          <div className="mb-4 px-2">
+          {inputs.map((input) => (
+              <Input
+                key={input.attribute}
+                action={(value) => handleFormSubmit(input.attribute, value)}
+                value={formData[input.attribute]}
+                property={{type: "hidden"}}
+              />
+            ))}
+          </div>
+          <p className="text-md text-textSecondary break-words text-xl mb-4">{msgInformation}</p>
+          <div className="flex justify-end px-4 py-2 gap-7">
+            <Button
+              label="Cancelar"
+              onClick={closeModal}
+              color='textSecondary'
+              size='medium'
+              className='w-32 font-semibold'
+            />
+            <Button
+              label="Sim, desejo excluir!"
+              onClick={() => {handleSubmit(); closeModal(); if (optionalAction) optionalAction();}}
+              color='primary'
+              size='medium'
+              className='font-semibold'
+              type='button'
+            />
+          </div>
+        </form>
+      </div>
+    );
+  }
+  else  if (type === 'info') {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-transparent/50 z-50" onClick={closeModal}>
+        <div className="flex flex-col justify-center items-center rounded-[10px] shadow-lg w-full max-w-md bg-neutralWhite px-5 text-start py-5">
+          {icon}
+          <span className='text-textSecondary text-3xl font-semibold text-center'>{msgInformation}</span>
         </div>
-      </form>
-    </div>
-  );
+      </div>
+    );
+  }
 }
