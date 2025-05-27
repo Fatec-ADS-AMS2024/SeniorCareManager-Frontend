@@ -45,7 +45,6 @@
       --color-hoverSuccess: #027841;
 
       --color-warning: #ffc107;
-
     }
     
     [data-theme="high-contrast"] {
@@ -71,7 +70,6 @@
       --color-hoverSuccess: #242424;
       
       --color-warning: #000000;
-
     }
   }
 

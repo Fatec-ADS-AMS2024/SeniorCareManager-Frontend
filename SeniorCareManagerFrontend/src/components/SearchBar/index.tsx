@@ -16,7 +16,7 @@ export default function SearchBar({ placeholder, action }: SearchBarProps) {
   const handleSearch = () => {
     if (typeof action === 'function') {
       action(searchTerm);
-    } else { 
+    } else {
       console.log(searchTerm);
     };
   };
