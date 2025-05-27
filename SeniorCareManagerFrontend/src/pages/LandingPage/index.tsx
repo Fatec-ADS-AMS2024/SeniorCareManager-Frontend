@@ -14,7 +14,7 @@ export default function LandingPage() {
 
   return (
     <div className="flex">
-      <div className="w-[40%] h-full bg-surface flex flex-col justify-center">
+      <div className="w-[40%] h-full bg-neutralWhite flex flex-col justify-center">
         <h1 className="text-secondary font-bold text-5xl mx-16">
           Plataforma de ferramentas para gerenciar o cuidado e bem-estar de
           idosos.
@@ -25,7 +25,7 @@ export default function LandingPage() {
         </p>
         <button
           onClick={handleLoginClick}
-          className="bg-primary h-14 w-52 mt-5 rounded text-surface font-semibold hover:bg-secondary transition-colors mx-16 text-lg"
+          className="bg-primary h-14 w-52 mt-5 rounded text-neutralWhite font-semibold hover:bg-secondary transition-colors mx-16 text-lg"
         >
           Fazer login
         </button>
