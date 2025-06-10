@@ -10,13 +10,13 @@ import SearchBar from "../../components/SearchBar";
 import Button from "../../components/Button";
 import Modal from "../../components/GenericModal";
 
-const inputs = [
-  {
-    label: "Id",
-    attribute: "id",
-    defaultValue: "",
-    locked: true,
-  },
+type InputType = {
+  label: string;
+  attribute: keyof Religion;
+  defaultValue: string;
+};
+
+const inputs: InputType[] = [
   {
     label: "Nome da religião",
     attribute: "name",
@@ -33,6 +33,8 @@ export default function ReligionRegistration() {
   const [modalDelete, setModalDelete] = useState(false);
   const [modalInfo, setModalInfo] = useState(false);
 
+  const [currentId, setCurrentId] = useState<number | null>(null);
+
   const fetchData = async () => {
     const religionService = new ReligionService();
     const res = await religionService.getAll();
@@ -44,7 +46,7 @@ export default function ReligionRegistration() {
     }
   };
 
-  // Pega os dados ja cadastrados para mostrar na tabela
+  // Pega os dados já cadastrados para mostrar na tabela
   useEffect(() => {
     fetchData();
   }, []);
@@ -63,8 +65,7 @@ export default function ReligionRegistration() {
 
   // Pega os valores de uma linha baseado em seu id
   const getRowValues = (id: number) => {
-    const existingRow = data.find((row) => row.id === id);
-    return existingRow;
+    return data.find((row) => row.id === id);
   };
 
   const openCloseModalRegister = () => {
@@ -75,41 +76,44 @@ export default function ReligionRegistration() {
   const openCloseModalEdit = (id?: number) => {
     if (!id) {
       setModalEdit((isOpen) => !isOpen);
+      setCurrentId(null);
       return;
     }
 
     const rowValues = getRowValues(id);
     if (rowValues) {
       inputs.forEach((input) => {
-        input.defaultValue = rowValues[input.attribute]
-      }); 
+        input.defaultValue = String(rowValues[input.attribute]);
+      });
+      setCurrentId(id);
     } else {
       alert("Registro não encontrado");
       return;
     }
 
-    setModalEdit((isOpen) => !isOpen);
+    setModalEdit(true);
   };
 
   // Abre a modal para deleção pegando os dados da linha
   const openCloseModalDelete = (id?: number) => {
     if (!id) {
       setModalDelete((isOpen) => !isOpen);
+      setCurrentId(null);
       return;
     }
 
-    // Necessário para funcionar
     const rowValues = getRowValues(id);
     if (rowValues) {
       inputs.forEach((input) => {
-        input.defaultValue = rowValues[input.attribute]
-      }); 
+        input.defaultValue = String(rowValues[input.attribute]);
+      });
+      setCurrentId(id);
     } else {
       alert("Registro não encontrado");
       return;
     }
 
-    setModalDelete((isOpen) => !isOpen);
+    setModalDelete(true);
   };
 
   const openCloseModalInfo = () => {
@@ -118,7 +122,7 @@ export default function ReligionRegistration() {
 
   const registerReligion = async (model: Religion) => {
     const religionService = new ReligionService();
-    
+
     if (!model.name || model.name.trim().length < 3 || model.name.trim().length > 100) {
       alert("Nome deve ter entre 3 e 100 caracteres.");
       return;
@@ -134,7 +138,7 @@ export default function ReligionRegistration() {
       alert("Já existe uma Religião com esse nome.");
       return;
     }
-    
+
     const res = await religionService.create({
       ...model,
       id: Number(model.id),
@@ -152,7 +156,7 @@ export default function ReligionRegistration() {
 
   const editReligion = async (id: number, model: Religion) => {
     const religionService = new ReligionService();
-    
+
     if (!model.name || model.name.trim().length < 3 || model.name.trim().length > 100) {
       alert("Nome deve ter entre 3 e 100 caracteres.");
       return;
@@ -168,14 +172,14 @@ export default function ReligionRegistration() {
       alert("Já existe uma Religião com esse nome.");
       return;
     }
-    
+
     const res = await religionService.update(id, model);
     if (res.code === 200) {
       alert(`Religião ${res.data?.name} atualizada com sucesso!`);
       setModalEdit(false);
       await fetchData();
     } else if (res.code === 500 && res.message) {
-      alert(res.message); 
+      alert(res.message);
     } else {
       alert(res.message || "Erro inesperado ao atualizar a Religião.");
     }
@@ -185,36 +189,36 @@ export default function ReligionRegistration() {
     const religionService = new ReligionService();
     const residentService = new ResidentService();
 
-  try {
-    // Buscar todos os residents
-    const residentRes = await residentService.getAll();
-    if (residentRes.code === 200 && residentRes.data) {
-      const hasLinkedResidentTypes = residentRes.data.some(pt => pt.residentReligionId === id);
-      if (hasLinkedResidentTypes) {
-        alert("Não é possível excluir essa Religião pois está vinculada a algum Residente.");
+    try {
+      // Buscar todos os residents
+      const residentRes = await residentService.getAll();
+      if (residentRes.code === 200 && residentRes.data) {
+        const hasLinkedResidentTypes = residentRes.data.some(pt => pt.residentReligionId === id);
+        if (hasLinkedResidentTypes) {
+          alert("Não é possível excluir essa Religião pois está vinculada a algum Residente.");
+          return;
+        }
+      } else {
+        alert("Erro ao verificar vínculos de Residentes.");
         return;
       }
-    } else {
-      alert("Erro ao verificar vínculos de Residentes.");
-      return;
+      const res = await religionService.delete(id);
+      if (res.code === 200) {
+        setModalDelete(false);
+        setModalInfo(true)
+        await fetchData();
+      } else if (res.code === 400 && res.message?.includes("vinculado")) {
+        alert("Não é possível excluir esta Religião pois está vinculada a um Residente.");
+      } else if (res.code === 500 && res.message) {
+        alert(res.message);
+      } else {
+        alert(res.message || "Erro inesperado ao excluir a Religião.");
+      }
+    } catch (error) {
+      console.error("Erro ao tentar excluir a Religião:", error);
+      alert("Erro inesperado ao excluir a Religião.");
     }
-    const res = await religionService.delete(id);
-    if (res.code === 200) {
-      setModalDelete(false);
-      setModalInfo(true)
-      await fetchData();
-    } else if (res.code === 400 && res.message?.includes("vinculado")) {
-      alert("Não é possível excluir esta Religião pois está vinculada a um Residente.");
-    } else if (res.code === 500 && res.message) {
-      alert(res.message);
-    } else {
-      alert(res.message || "Erro inesperado ao excluir a Religião.");
-    }
-  } catch (error) {
-    console.error("Erro ao tentar excluir a Religião:", error);
-    alert("Erro inesperado ao excluir a Religião.");
-  }
-};
+  };
 
   // Essa função cria botões que tem acesso ao id da linha onde eles aparecem
   const Actions = ({ id }: { id: number }) => (
@@ -260,7 +264,13 @@ export default function ReligionRegistration() {
             type="update"
             title="Editar Religião"
             inputs={inputs}
-            action={(religion) => editReligion(religion.id, religion)}
+            action={(model) => {
+              if (currentId === null) {
+                alert("Id não fornecido");
+                return;
+              }
+              editReligion(currentId, { ...model, id: currentId });
+            }}
             statusModal={modalEdit}
             closeModal={() => openCloseModalEdit()}
           />
@@ -268,14 +278,20 @@ export default function ReligionRegistration() {
             type="delete"
             title="Deseja realmente excluir essa religião?"
             msgInformation="Ao excluir esta religião, ela será removida permanentemente do sistema."
-            action={(religion) => deleteReligion(religion.id)}
+            action={() => {
+              if (currentId === null) {
+                alert("Id não fornecido");
+                return;
+              }
+              deleteReligion(currentId);
+            }}
             statusModal={modalDelete}
             closeModal={() => openCloseModalDelete()}
             inputs={inputs}
           />
           <Modal<Religion>
             type="info"
-            msgInformation="Religião excluida com sucesso!"
+            msgInformation="Religião excluída com sucesso!"
             icon={<CheckCircle size={90} className="text-success" weight="fill" />}
             statusModal={modalInfo}
             closeModal={openCloseModalInfo}
