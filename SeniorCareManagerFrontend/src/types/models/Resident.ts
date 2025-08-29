@@ -1,4 +1,4 @@
-export default interface Religion {
+export default interface Resident {
   id: number;
   residentReligionId: number;
 }
