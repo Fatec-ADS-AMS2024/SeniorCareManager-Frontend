@@ -5,7 +5,7 @@ import { Plus, X, Pencil } from '@phosphor-icons/react';
 
 interface ModalProps<T> {
   title?: string;
-  inputs?: { label?: string, attribute: string, defaultValue?: string, locked?: boolean}[];
+  inputs?: { label?: string, attribute: string, defaultValue?: string, locked?: boolean, options?: { label: string; value: number }[], render?: () => JSX.Element }[];
   action?: ((dados: T) => void);
   optionalAction?: () => void;
   statusModal: boolean;
@@ -23,7 +23,6 @@ export default function Modal<T>({icon, title = "Título", inputs = [], action, 
   
   useEffect(() => {
     if (statusModal) {
-    // Executa apenas ao abrir o modal
       setFormData(
         inputs.reduce(
           (prev, input) => ({
@@ -33,7 +32,7 @@ export default function Modal<T>({icon, title = "Título", inputs = [], action, 
         )
       );
    }
-  }, [statusModal]);
+  }, [statusModal, inputs]);
 
   const handleFormSubmit = (attribute: string, value: string) => {
     setFormData((prev) => ({ ...prev, [attribute]: value }));
@@ -45,35 +44,68 @@ export default function Modal<T>({icon, title = "Título", inputs = [], action, 
     }
   };
 
-  if (!statusModal)
-    return null; 
-  // Modal de Criação
+  const renderField = (input: any) => {
+    if (input.render) {
+      return (
+        <div key={input.attribute} className="mb-3">
+          {input.label && (
+            <label className="block text-sm font-medium text-textPrimary mb-1">
+              {input.label}
+            </label>
+          )}
+          {input.render()}
+        </div>
+      );
+    }
+
+    if (input.options?.length) {
+      return (
+        <div key={input.attribute} className="mb-3">
+          {input.label && (
+            <label className="block text-sm font-medium text-textPrimary mb-1">
+              {input.label}:
+            </label>
+          )}
+          <select
+            className="w-full border rounded-[5px] p-2 outline-none text-textPrimary mb-1"
+            value={formData[input.attribute] ?? ""}
+            onChange={(e) => handleFormSubmit(input.attribute, e.target.value)}
+            disabled={input.locked}
+          >
+            <option value="" disabled>Selecione…</option>
+            {input.options.map((opt: any) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </div>
+      );
+    }
+
+    return (
+      <Input
+        key={input.attribute}
+        label={input.label}
+        action={(value) => handleFormSubmit(input.attribute, value)}
+        value={formData[input.attribute]}
+        defaultDisable={input.locked}
+      />
+    );
+  };
+
+  if (!statusModal) return null; 
+
   if (type === "create"){
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-transparent/50 z-50">
         <form className={`rounded-[10px] shadow-lg w-full max-w-xl p-4 bg-neutralWhite ${className}`}>
-          {/* Cabeçalho do Modal */}
           <div className="flex items-center px-2">
             <h2 className="text-xl font-semibold text-textPrimary">{title}</h2>
           </div>
-          {/* Separador */}
           <hr className="border-t border-neutralDarker w-[99%] mx-auto my-4" />
-
-          {/* Corpo do Modal */}
           <div className="mb-4 px-2">
-            {inputs.map((input) => (
-                <Input
-                  key={input.label}
-                  label={input.label}
-                  action={(value) => handleFormSubmit(input.attribute, value)}
-                />
-            ))}
+            {inputs.map((input) => renderField(input))}
           </div>
-
-          {/* Separador */}
           <hr className="border-t border-neutralDarker w-[99%] mx-auto my-4" />
-
-          {/* Rodapé do Modal */}
           <div className="flex justify-end px-4 py-2 gap-7">
             <Button
               icon={<X size={20} className='text-neutralWhite'/>}
@@ -96,36 +128,18 @@ export default function Modal<T>({icon, title = "Título", inputs = [], action, 
         </form>
       </div>
     );
-  }
-  // Modal de Edit
-  else if (type === "update"){
+  } else if (type === "update"){
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-transparent/50 z-50">
         <form className="rounded-[10px] shadow-lg w-full max-w-xl p-4 bg-neutralWhite">
-          {/* Cabeçalho do Modal */}
           <div className="flex items-center px-2">
             <h2 className="text-xl font-semibold text-textPrimary">{title}</h2>
           </div>
-          {/* Separador */}
           <hr className="border-t border-neutralDarker w-[99%] mx-auto my-4" />
-
-          {/* Corpo do Modal */}
           <div className="mb-4 px-2">
-            {inputs.map((input) => (
-              <Input
-                key={input.attribute}
-                label={input.label && input.label}
-                action={(value) => handleFormSubmit(input.attribute, value)}
-                value={formData[input.attribute]}
-                defaultDisable={input.locked}
-              />
-            ))}
+            {inputs.map((input) => renderField(input))}
           </div>
-
-          {/* Separador */}
           <hr className="border-t border-neutralDarker w-[99%] mx-auto my-4" />
-
-          {/* Rodapé do Modal */}
           <div className="flex justify-end px-4 py-2 gap-7">
             <Button
               icon={<X size={20} className='text-neutralWhite'/>}
@@ -148,8 +162,7 @@ export default function Modal<T>({icon, title = "Título", inputs = [], action, 
         </form>
       </div>
     );
-  }
-  else if (type === 'delete') {
+  } else if (type === 'delete') {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-transparent/50 z-50">
         <form className="rounded-[10px] shadow-lg w-full max-w-xl p-3 bg-neutralWhite px-5 text-start py-7">
@@ -185,13 +198,13 @@ export default function Modal<T>({icon, title = "Título", inputs = [], action, 
         </form>
       </div>
     );
-  }
-  else  if (type === 'info') {
+  } else if (type === 'info') {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-transparent/50 z-50" onClick={closeModal}>
         <div className="flex flex-col justify-center items-center rounded-[10px] shadow-lg w-full max-w-md bg-neutralWhite px-5 text-start py-5">
           {icon}
           <span className='text-textSecondary text-3xl font-semibold text-center'>{msgInformation}</span>
+          {inputs.map((input) => renderField(input))}
         </div>
       </div>
     );
