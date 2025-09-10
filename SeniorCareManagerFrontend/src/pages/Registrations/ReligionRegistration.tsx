@@ -213,6 +213,11 @@ const editReligion = async (id: number, model: Religion) => {
       render: () => (
         <table className="w-full text-left border-collapse border border-gray-200">
           <thead>
+                      <tr className="bg-gray-100">
+            <th className="border p-2 text-center" colSpan={2}>
+              Residentes vinculados
+            </th>
+          </tr>
             <tr className="bg-gray-100">
               <th className="border p-2">Nome</th>
               <th className="border p-2">CPF</th>
