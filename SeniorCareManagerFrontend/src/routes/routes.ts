@@ -6,4 +6,5 @@ export const routes = {
   REGISTRATIONS: '/registrations',
   RELIGIONREGISTRATION: '/registrations/religionregistration',
   HEALTHINSURANCEPLANREGISTRATION: '/registrations/healthinsuranceplanregistration',
+  POSITIONREGISTRATION: '/registrations/positionregistration',
 }
