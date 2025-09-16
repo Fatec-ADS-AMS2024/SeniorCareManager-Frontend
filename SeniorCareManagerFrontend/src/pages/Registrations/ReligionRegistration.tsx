@@ -108,7 +108,6 @@ export default function ReligionRegistration() {
     setModalInfo(true);
   };
 
-  // Validação unificada
   const validateReligion = (model: Religion, idToIgnore?: number): string | null => {
     const name = model.name?.trim() || "";
 
