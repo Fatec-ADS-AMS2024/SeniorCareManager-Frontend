@@ -1,4 +1,6 @@
-import { FolderPlus } from '@phosphor-icons/react';
+import { Cross,
+         FirstAid
+ } from '@phosphor-icons/react';
 import { routes } from "../../routes/routes";
 import Card from "../../components/Card";
 import SearchBar from "../../components/SearchBar";
@@ -8,8 +10,14 @@ const cards = [
   {
     text: 'Religião',
     subText: 'Religiões Cadastradas',
-    icon: <FolderPlus weight='bold' className='shrink-0 size-full' />,
+    icon: <Cross weight='bold' className='shrink-0 size-full' />,
     page: routes.RELIGIONREGISTRATION,
+  },
+  {
+    text: 'Plano de Saúde',
+    subText: 'Planos de Saúde Cadastrados',
+    icon: <FirstAid weight='bold' className='shrink-0 size-full' />,
+    page: routes.HEALTHINSURANCEPLANREGISTRATION,
   },
 ];
 
