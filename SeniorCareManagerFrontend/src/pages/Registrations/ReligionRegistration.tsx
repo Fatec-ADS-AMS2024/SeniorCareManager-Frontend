@@ -1,24 +1,20 @@
 import { useEffect, useState } from "react";
 import ReligionService from "../../services/religionService";
-import ResidentService from "../../services/residentService";
 import Religion from "../../types/models/Religion";
-import Resident from "../../types/models/Resident";
 import Table from "../../components/Table";
-import { CheckCircle, Pencil, Plus, Trash, ClipboardText } from "@phosphor-icons/react";
+import { CheckCircle, Pencil, Plus, Trash, XCircle } from "@phosphor-icons/react";
 import BreadcrumbPageTitle from "../../components/BreadcrumbPageTitle";
 import SearchBar from "../../components/SearchBar";
 import Button from "../../components/Button";
 import Modal from "../../components/GenericModal";
 
-type InputType = {
+const inputs: {
   label: string;
   attribute: keyof Religion;
   defaultValue: string;
-};
-
-const inputs: InputType[] = [
+}[] = [
   {
-    label: "Nome da religião",
+    label: "Nome",
     attribute: "name",
     defaultValue: "",
   },
@@ -33,18 +29,17 @@ export default function ReligionRegistration() {
   const [modalDelete, setModalDelete] = useState(false);
   const [modalInfo, setModalInfo] = useState(false);
   const [infoMessage, setInfoMessage] = useState("");
-  const [residentsModal, setResidentsModal] = useState(false);
-  const [residentsList, setResidentsList] = useState<Resident[]>([]);
+  const [infoIcon, setInfoIcon] = useState<JSX.Element | undefined>(undefined);
   const [currentId, setCurrentId] = useState<number | null>(null);
 
   const fetchData = async () => {
     const religionService = new ReligionService();
     const res = await religionService.getAll();
-    if (res.code >= 200 && res.code < 300 && Array.isArray(res.data.data)) {
-      setData([...res.data.data]);
-      setOriginalData([...res.data.data]);
+    if (res.code === 200 && res.data) {
+      setData([...res.data]);
+      setOriginalData([...res.data]);
     } else {
-      console.error("Erro ao buscar religiões:", res.message || res);
+      console.error("Erro ao buscar dados:", res.message);
     }
   };
 
@@ -85,7 +80,7 @@ export default function ReligionRegistration() {
       setCurrentId(id);
       setModalEdit(true);
     } else {
-      alert("Registro não encontrado");
+      showInfoModal("Registro não encontrado", "error");
     }
   };
 
@@ -101,6 +96,37 @@ export default function ReligionRegistration() {
 
   const openCloseModalInfo = () => setModalInfo(false);
 
+  const showInfoModal = (message: string, type: "success" | "error") => {
+    setInfoMessage(message);
+    setInfoIcon(
+      type === "success" ? (
+        <CheckCircle size={90} className="text-success" weight="fill" />
+      ) : (
+        <XCircle size={90} className="text-danger" weight="fill" />
+      )
+    );
+    setModalInfo(true);
+  };
+
+  // Validação unificada
+  const validateReligion = (model: Religion, idToIgnore?: number): string | null => {
+    const name = model.name?.trim() || "";
+
+    if (name.length < 3 || name.length > 100) {
+      return "Nome deve ter entre 3 e 100 caracteres.";
+    }
+
+    if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/.test(name)) {
+      return "Nome deve conter apenas letras e espaços.";
+    }
+
+    if (originalData.some(r => r.id !== idToIgnore && r.name.toLowerCase() === name.toLowerCase())) {
+      return "Já existe uma religião com esse nome.";
+    }
+
+    return null;
+  };
+
   const handleSave = (model: Religion) => {
     if (currentId !== null) {
       editReligion(currentId, model);
@@ -111,17 +137,10 @@ export default function ReligionRegistration() {
 
   const registerReligion = async (model: Religion) => {
     const religionService = new ReligionService();
+    const errorMessage = validateReligion(model);
 
-    if (!model.name || model.name.trim().length < 3 || model.name.trim().length > 100) {
-      alert("Nome deve ter entre 3 e 100 caracteres.");
-      return;
-    }
-    if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/.test(model.name)) {
-      alert("Nome deve conter apenas letras e espaços.");
-      return;
-    }
-    if (originalData.some((r) => r.name.toLowerCase() === model.name.trim().toLowerCase())) {
-      alert("Já existe uma religião com esse nome.");
+    if (errorMessage) {
+      showInfoModal(errorMessage, "error");
       return;
     }
 
@@ -129,118 +148,51 @@ export default function ReligionRegistration() {
     if (res.code >= 200 && res.code < 300) {
       setModalRegister(false);
       await fetchData();
-      setInfoMessage(`Religião ${res.data?.data?.name} criada com sucesso!`);
-      setModalInfo(true);
+      showInfoModal(`Religião "${res.data?.name}" criada com sucesso!`, "success");
     } else {
-      alert(res.message || "Erro inesperado ao criar a religião.");
+      showInfoModal(res.message || "Erro inesperado ao criar a religião.", "error");
     }
   };
-const editReligion = async (id: number, model: Religion) => {
-  const religionService = new ReligionService();
 
-  if (!model.name || model.name.trim().length < 3 || model.name.trim().length > 100) {
-    alert("Nome deve ter entre 3 e 100 caracteres.");
-    return;
-  }
-  if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/.test(model.name)) {
-    alert("Nome deve conter apenas letras e espaços.");
-    return;
-  }
-  if (originalData.some((r) => r.id !== id && r.name.toLowerCase() === model.name.trim().toLowerCase())) {
-    alert("Já existe uma religião com esse nome.");
-    return;
-  }
+  const editReligion = async (id: number, model: Religion) => {
+    const religionService = new ReligionService();
+    const errorMessage = validateReligion(model, id);
 
-  const payload = { ...model, id: id };
-  const res = await religionService.update(id, payload);
+    if (errorMessage) {
+      showInfoModal(errorMessage, "error");
+      return;
+    }
 
-  if (res.code >= 200 && res.code < 300) {
-    setModalEdit(false);
-    await fetchData();
-    setInfoMessage(`Religião ${res.data?.data?.name} atualizada com sucesso!`);
-    setModalInfo(true);
-  } else {
-    alert(res.message || "Erro inesperado ao atualizar a religião.");
-  }
-};
+    const res = await religionService.update(id, { ...model, id });
+    if (res.code >= 200 && res.code < 300) {
+      setModalEdit(false);
+      await fetchData();
+      showInfoModal(`Religião "${res.data?.name}" atualizada com sucesso!`, "success");
+    } else {
+      showInfoModal(res.message || "Erro inesperado ao atualizar a religião.", "error");
+    }
+  };
 
   const deleteReligion = async (id: number) => {
     const religionService = new ReligionService();
-    const residentService = new ResidentService();
-
     try {
-      const residentRes = await residentService.getAll();
-      if (residentRes.code === 200 && residentRes.data) {
-        if (residentRes.data.some(pt => pt.residentReligionId === id)) {
-          alert("Não é possível excluir esse Plano de Saúde pois está vinculado a algum Residente.");
-          return;
-        }
-      } else {
-        alert("Erro ao verificar vínculos de Residentes.");
-        return;
-      }
       const res = await religionService.delete(id);
       if (res.code >= 200 && res.code < 300) {
         setModalDelete(false);
         setCurrentId(null);
+        const itemName = data.find(item => item.id === id)?.name || "";
         await fetchData();
-        setInfoMessage("Religião excluída com sucesso!");
-        setModalInfo(true);
+        showInfoModal(`Religião "${itemName}" excluída com sucesso!`, "success");
       } else {
-        alert(res.message || "Erro inesperado ao excluir a Religião.");
+        showInfoModal(res.message || "Erro inesperado ao excluir a Religião.", "error");
       }
     } catch {
-      alert("Erro inesperado ao excluir a Religião.");
+      showInfoModal("Erro inesperado ao excluir a Religião.", "error");
     }
   };
-
-  const viewResidents = async (religionId: number) => {
-    const residentService = new ResidentService();
-    const res = await residentService.getAll();
-    if (res.code >= 200 && res.data) {
-      setResidentsList(res.data.filter((r: Resident) => r.residentReligionId === religionId));
-      setResidentsModal(true);
-    } else {
-      alert("Erro ao buscar residentes.");
-    }
-  };
-
-  const residentInputs = [
-    {
-      label: "",
-      attribute: "table",
-      defaultValue: "",
-      render: () => (
-        <table className="w-full text-left border-collapse border border-gray-200">
-          <thead>
-                      <tr className="bg-gray-100">
-            <th className="border p-2 text-center" colSpan={2}>
-              Residentes vinculados
-            </th>
-          </tr>
-            <tr className="bg-gray-100">
-              <th className="border p-2">Nome</th>
-              <th className="border p-2">CPF</th>
-            </tr>
-          </thead>
-          <tbody>
-            {residentsList.map((r) => (
-              <tr key={r.id}>
-                <td className="border p-2">{r.name}</td>
-                <td className="border p-2">{r.cpf}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ),
-    },
-  ];
 
   const Actions = ({ id }: { id: number }) => (
     <>
-      <button onClick={() => viewResidents(id)} className="text-info hover:text-hoverInfo">
-        <ClipboardText size={20} weight="fill" />
-      </button>
       <button onClick={() => openCloseModalEdit(id)} className="text-edit hover:text-hoverEdit">
         <Pencil className="size-6" weight="fill" />
       </button>
@@ -268,7 +220,7 @@ const editReligion = async (id: number, model: Religion) => {
           inputs={inputs}
           action={handleSave}
           statusModal={modalEdit}
-          closeModal={() => setModalEdit(false)}
+          closeModal={() => openCloseModalEdit()}
         />
         <Modal<Religion>
           type="delete"
@@ -276,22 +228,15 @@ const editReligion = async (id: number, model: Religion) => {
           msgInformation="Ao excluir esta Religião, ela será removida permanentemente do sistema."
           action={() => { if (currentId !== null) deleteReligion(currentId); }}
           statusModal={modalDelete}
-          closeModal={() => setModalDelete(false)}
+          closeModal={() => openCloseModalDelete()}
           inputs={inputs}
         />
         <Modal<Religion>
           type="info"
           msgInformation={infoMessage}
-          icon={<CheckCircle size={90} className="text-success" weight="fill" />}
+          icon={infoIcon}
           statusModal={modalInfo}
           closeModal={openCloseModalInfo}
-        />
-        <Modal<Resident>
-          type="info"
-          title="Residentes vinculados"
-          statusModal={residentsModal}
-          closeModal={() => setResidentsModal(false)}
-          inputs={residentInputs}
         />
         <div className="flex items-center justify-between mb-4">
           <SearchBar action={handleSearch} placeholder="Buscar religião..." />
