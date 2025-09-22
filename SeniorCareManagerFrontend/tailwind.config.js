@@ -9,6 +9,7 @@ export default {
       colors: {
 
         /* Cores Base do Sistema */
+        background: 'var(--color-background)',
         neutralLighter: 'var(--color-neutral-lighter)',
         neutralLight: 'var(--color-neutral-light)',
         neutral: 'var(--color-neutral)',

@@ -1,7 +1,8 @@
-import { Cross,
-         FirstAid,
-         Briefcase
- } from '@phosphor-icons/react';
+import { 
+    Cross,
+    FirstAid,
+    Briefcase,
+} from '@phosphor-icons/react';
 import { routes } from "../../routes/routes";
 import Card from "../../components/Card";
 import SearchBar from "../../components/SearchBar";
