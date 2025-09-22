@@ -1,4 +1,4 @@
-import { FolderPlus } from '@phosphor-icons/react';
+import { Cross } from '@phosphor-icons/react';
 import { routes } from "../../routes/routes";
 import Card from "../../components/Card";
 import SearchBar from "../../components/SearchBar";
@@ -8,7 +8,7 @@ const cards = [
   {
     text: 'Religião',
     subText: 'Religiões Cadastradas',
-    icon: <FolderPlus weight='bold' className='shrink-0 size-full' />,
+    icon: <Cross weight='bold' className='shrink-0 size-full' />,
     page: routes.RELIGIONREGISTRATION,
   },
 ];
