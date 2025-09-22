@@ -14,6 +14,7 @@ export default function Breadcrumb() {
     registrations: "Cadastros",
     religionregistration: "Cadastro de Religião",
     healthinsuranceplanregistration: "Cadastro de Plano de Saúde",
+    positionregistration: "Cadastro de Cargos",
     accessibility: "Acessibilidade",
   };
 

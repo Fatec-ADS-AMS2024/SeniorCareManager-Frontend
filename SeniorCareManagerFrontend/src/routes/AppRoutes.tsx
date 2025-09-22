@@ -15,6 +15,7 @@ import GeneralAdministrator from "../pages/GeneralAdministrator";
 import Registrations from "../pages/Registrations";
 import ReligionRegistration from "../pages/Registrations/ReligionRegistration";
 import HealthInsurancePlanRegistration from "../pages/Registrations/HealthInsurancePlanRegistration";
+import PositionRegistration from "../pages/Registrations/PositionRegistration";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -27,6 +28,7 @@ const router = createBrowserRouter(
       <Route path={routes.REGISTRATIONS} element={<Registrations />} />
       <Route path={routes.RELIGIONREGISTRATION} element={<ReligionRegistration />} />
       <Route path={routes.HEALTHINSURANCEPLANREGISTRATION} element={<HealthInsurancePlanRegistration />} />
+      <Route path={routes.POSITIONREGISTRATION} element={<PositionRegistration />} />
     </Route>
   )
 );

@@ -1,4 +1,8 @@
-import { Cross, FirstAid } from '@phosphor-icons/react';
+import { 
+    Cross,
+    FirstAid,
+    Briefcase,
+} from '@phosphor-icons/react';
 import { routes } from "../../routes/routes";
 import Card from "../../components/Card";
 import SearchBar from "../../components/SearchBar";
@@ -16,6 +20,12 @@ const cards = [
     subText: 'Planos de Saúde Cadastrados',
     icon: <FirstAid weight='bold' className='shrink-0 size-full' />,
     page: routes.HEALTHINSURANCEPLANREGISTRATION,
+  },
+  {
+    text: 'Cargo',
+    subText: 'Cargos Cadastrados',
+    icon: <Briefcase weight='bold' className='shrink-0 size-full' />,
+    page: routes.POSITIONREGISTRATION,
   },
 ];
 
