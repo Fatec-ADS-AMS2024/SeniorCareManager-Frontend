@@ -13,6 +13,7 @@ export default function Breadcrumb() {
     generalAdministrator: "Visão Geral",
     registrations: "Cadastros",
     religionregistration: "Cadastro de Religião",
+    healthinsuranceplanregistration: "Cadastro de Plano de Saúde",
     accessibility: "Acessibilidade",
   };
 
