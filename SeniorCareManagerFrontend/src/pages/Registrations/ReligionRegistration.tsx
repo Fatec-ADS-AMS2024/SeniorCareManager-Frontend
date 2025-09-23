@@ -41,7 +41,7 @@ export default function ReligionRegistration() {
       console.error("Erro ao buscar dados:", res.message);
     }
   };
-
+  //a
   // Pega os dados ja cadastrados para mostrar na tabela
   useEffect(() => {
     fetchData();
