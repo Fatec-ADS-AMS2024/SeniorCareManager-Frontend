@@ -7,10 +7,18 @@ import { Enum, EnumLabels } from '@/types/app';
  * @returns Funções para pegar o rótulo de um valor e gerar uma lista de opções
  */
 export function createEnumHelpers(enumObject: Enum, labels: EnumLabels) {
+  /**
+   * Função utilitária para pegar o rótulo de um determinado valor do enum
+   * @returns Rótulo de um valor do enum
+   */
   function getEnumLabel(value: Enum[keyof Enum]): string {
     return labels[value] ?? 'Desconhecido';
   }
 
+  /**
+   * Função utilitária para criar uma lista com rótulos e valores de um enum
+   * @returns Uma lista pronta para uso em um elemento select do HTML
+   */
   function getEnumOptions() {
     return Object.values(enumObject)
       .filter((v) => typeof v === 'number')
