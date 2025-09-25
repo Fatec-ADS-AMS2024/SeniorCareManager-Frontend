@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import HealthInsurancePlanService from '@/services/healthInsurancePlanService';
-import HealthInsurancePlan, {
+import HealthInsurancePlan from '@/types/models/HealthInsurancePlan';
+import {
   getHealthInsurancePlanTypeLabel,
   getHealthInsurancePlanTypeOptions,
-} from '@/types/models/HealthInsurancePlan';
+} from '@/types/enums/HealthInsurancePlanType';
 import Table from '@/components/Table';
 import {
   CheckCircle,
