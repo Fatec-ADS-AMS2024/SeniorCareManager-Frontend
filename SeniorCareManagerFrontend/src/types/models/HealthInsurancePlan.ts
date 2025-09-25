@@ -10,16 +10,20 @@ export default interface HealthInsurancePlan {
   abbreviation: string;
 }
 
-export function getHealthInsurancePlanTypeLabel(type: HealthInsurancePlanType): string {
-  return {
-    [HealthInsurancePlanType.Public]: "Público",
-    [HealthInsurancePlanType.Private]: "Privado",
-  }[type] ?? "Desconhecido";
+export function getHealthInsurancePlanTypeLabel(
+  type: HealthInsurancePlanType
+): string {
+  return (
+    {
+      [HealthInsurancePlanType.Public]: 'Público',
+      [HealthInsurancePlanType.Private]: 'Privado',
+    }[type] ?? 'Desconhecido'
+  );
 }
 
 export function getHealthInsurancePlanTypeOptions() {
   return Object.values(HealthInsurancePlanType)
-    .filter((v) => typeof v === "number")
+    .filter((v) => typeof v === 'number')
     .map((value) => ({
       label: getHealthInsurancePlanTypeLabel(value as HealthInsurancePlanType),
       value: value as HealthInsurancePlanType,

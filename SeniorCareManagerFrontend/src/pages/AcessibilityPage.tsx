@@ -1,7 +1,3 @@
 export default function AcessibilityPage() {
-  return (
-    <div>
-      AcessibilityPage
-    </div>
-  )
+  return <div>AcessibilityPage</div>;
 }

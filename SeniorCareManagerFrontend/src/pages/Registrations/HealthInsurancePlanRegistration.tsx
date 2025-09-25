@@ -1,12 +1,21 @@
-import { useEffect, useState } from "react";
-import HealthInsurancePlanService from "@/services/healthInsurancePlanService";
-import HealthInsurancePlan, { getHealthInsurancePlanTypeLabel, getHealthInsurancePlanTypeOptions } from "@/types/models/HealthInsurancePlan";
-import Table from "@/components/Table";
-import { CheckCircle, Pencil, Plus, Trash, XCircle } from "@phosphor-icons/react";
-import BreadcrumbPageTitle from "@/components/BreadcrumbPageTitle";
-import SearchBar from "@/components/SearchBar";
-import Button from "@/components/Button";
-import Modal from "@/components/GenericModal";
+import { useEffect, useState } from 'react';
+import HealthInsurancePlanService from '@/services/healthInsurancePlanService';
+import HealthInsurancePlan, {
+  getHealthInsurancePlanTypeLabel,
+  getHealthInsurancePlanTypeOptions,
+} from '@/types/models/HealthInsurancePlan';
+import Table from '@/components/Table';
+import {
+  CheckCircle,
+  Pencil,
+  Plus,
+  Trash,
+  XCircle,
+} from '@phosphor-icons/react';
+import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
+import SearchBar from '@/components/SearchBar';
+import Button from '@/components/Button';
+import Modal from '@/components/GenericModal';
 
 const inputs: {
   label: string;
@@ -15,32 +24,32 @@ const inputs: {
   options?: { label: string; value: number }[];
 }[] = [
   {
-    label: "Tipo",
-    attribute: "type",
-    defaultValue: "",
+    label: 'Tipo',
+    attribute: 'type',
+    defaultValue: '',
     options: getHealthInsurancePlanTypeOptions(),
   },
   {
-    label: "Nome do plano de saúde",
-    attribute: "name",
-    defaultValue: "",
+    label: 'Nome do plano de saúde',
+    attribute: 'name',
+    defaultValue: '',
   },
   {
-    label: "Abreviação",
-    attribute: "abbreviation",
-    defaultValue: "",
+    label: 'Abreviação',
+    attribute: 'abbreviation',
+    defaultValue: '',
   },
 ];
 
 export default function HealthInsurancePlanRegistration() {
-  const columns = ["Nome", "Tipo", "Abreviação"];
+  const columns = ['Nome', 'Tipo', 'Abreviação'];
   const [data, setData] = useState<HealthInsurancePlan[]>([]);
   const [originalData, setOriginalData] = useState<HealthInsurancePlan[]>([]);
   const [modalRegister, setModalRegister] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const [modalInfo, setModalInfo] = useState(false);
-  const [infoMessage, setInfoMessage] = useState("");
+  const [infoMessage, setInfoMessage] = useState('');
   const [infoIcon, setInfoIcon] = useState<JSX.Element | undefined>(undefined);
   const [currentId, setCurrentId] = useState<number | null>(null);
 
@@ -51,7 +60,7 @@ export default function HealthInsurancePlanRegistration() {
       setData([...res.data]);
       setOriginalData([...res.data]);
     } else {
-      console.error("Erro ao buscar dados:", res.message);
+      console.error('Erro ao buscar dados:', res.message);
     }
   };
 
@@ -67,7 +76,9 @@ export default function HealthInsurancePlanRegistration() {
     const filteredData = originalData.filter(
       (plan) =>
         plan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        getHealthInsurancePlanTypeLabel(plan.type).toLowerCase().includes(searchTerm.toLowerCase())
+        getHealthInsurancePlanTypeLabel(plan.type)
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
     );
     setData(filteredData);
   };
@@ -76,7 +87,7 @@ export default function HealthInsurancePlanRegistration() {
 
   const openCloseModalRegister = () => {
     setCurrentId(null);
-    inputs.forEach(input => input.defaultValue = "");
+    inputs.forEach((input) => (input.defaultValue = ''));
     setModalRegister(true);
   };
 
@@ -88,13 +99,15 @@ export default function HealthInsurancePlanRegistration() {
     }
     const rowValues = getRowValues(id);
     if (rowValues) {
-      inputs.forEach(input => {
-        input.defaultValue = String(rowValues[input.attribute as keyof HealthInsurancePlan]);
+      inputs.forEach((input) => {
+        input.defaultValue = String(
+          rowValues[input.attribute as keyof HealthInsurancePlan]
+        );
       });
       setCurrentId(id);
       setModalEdit(true);
     } else {
-      showInfoModal("Registro não encontrado", "error");
+      showInfoModal('Registro não encontrado', 'error');
     }
   };
 
@@ -110,28 +123,48 @@ export default function HealthInsurancePlanRegistration() {
 
   const openCloseModalInfo = () => setModalInfo(false);
 
-  const showInfoModal = (message: string, type: "success" | "error") => {
+  const showInfoModal = (message: string, type: 'success' | 'error') => {
     setInfoMessage(message);
     setInfoIcon(
-      type === "success" ? (
-        <CheckCircle size={90} className="text-success" weight="fill" />
+      type === 'success' ? (
+        <CheckCircle size={90} className='text-success' weight='fill' />
       ) : (
-        <XCircle size={90} className="text-danger" weight="fill" />
+        <XCircle size={90} className='text-danger' weight='fill' />
       )
     );
     setModalInfo(true);
   };
 
-  const validateHealthInsurancePlan = (model: HealthInsurancePlan, idToIgnore?: number): string | null => {
-    const name = model.name?.trim() || "";
-    const abbreviation = model.abbreviation?.trim() || "";
+  const validateHealthInsurancePlan = (
+    model: HealthInsurancePlan,
+    idToIgnore?: number
+  ): string | null => {
+    const name = model.name?.trim() || '';
+    const abbreviation = model.abbreviation?.trim() || '';
 
-    if (!name || name.length < 2 || name.length > 100) return "Nome deve ter entre 2 e 100 caracteres.";
-    if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/.test(name)) return "Nome deve conter apenas letras e espaços.";
-    if (originalData.some(p => p.id !== idToIgnore && p.name.toLowerCase() === name.toLowerCase())) return "Já existe um Plano de Saúde com esse nome.";
-    if (model.type === null || model.type === undefined) return "Tipo é obrigatório.";
-    if (!abbreviation || abbreviation.length === 0 || abbreviation.length > 5) return "Abreviação é obrigatória e deve ter no máximo 5 caracteres.";
-    if (originalData.some(p => p.id !== idToIgnore && p.abbreviation.toLowerCase() === abbreviation.toLowerCase())) return "Já existe um Plano de Saúde com essa abreviação.";
+    if (!name || name.length < 2 || name.length > 100)
+      return 'Nome deve ter entre 2 e 100 caracteres.';
+    if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/.test(name))
+      return 'Nome deve conter apenas letras e espaços.';
+    if (
+      originalData.some(
+        (p) =>
+          p.id !== idToIgnore && p.name.toLowerCase() === name.toLowerCase()
+      )
+    )
+      return 'Já existe um Plano de Saúde com esse nome.';
+    if (model.type === null || model.type === undefined)
+      return 'Tipo é obrigatório.';
+    if (!abbreviation || abbreviation.length === 0 || abbreviation.length > 5)
+      return 'Abreviação é obrigatória e deve ter no máximo 5 caracteres.';
+    if (
+      originalData.some(
+        (p) =>
+          p.id !== idToIgnore &&
+          p.abbreviation.toLowerCase() === abbreviation.toLowerCase()
+      )
+    )
+      return 'Já existe um Plano de Saúde com essa abreviação.';
 
     return null;
   };
@@ -149,7 +182,7 @@ export default function HealthInsurancePlanRegistration() {
     const errorMessage = validateHealthInsurancePlan(model);
 
     if (errorMessage) {
-      showInfoModal(errorMessage, "error");
+      showInfoModal(errorMessage, 'error');
       return;
     }
 
@@ -159,18 +192,27 @@ export default function HealthInsurancePlanRegistration() {
     if (res.code >= 200 && res.code < 300) {
       setModalRegister(false);
       await fetchData();
-      showInfoModal(`Plano de Saúde "${res.data?.name}" criado com sucesso!`, "success");
+      showInfoModal(
+        `Plano de Saúde "${res.data?.name}" criado com sucesso!`,
+        'success'
+      );
     } else {
-      showInfoModal(res.message || "Erro inesperado ao criar o Plano de Saúde.", "error");
+      showInfoModal(
+        res.message || 'Erro inesperado ao criar o Plano de Saúde.',
+        'error'
+      );
     }
   };
 
-  const editHealthInsurancePlan = async (id: number, model: HealthInsurancePlan) => {
+  const editHealthInsurancePlan = async (
+    id: number,
+    model: HealthInsurancePlan
+  ) => {
     const healthInsurancePlanService = new HealthInsurancePlanService();
     const errorMessage = validateHealthInsurancePlan(model, id);
 
     if (errorMessage) {
-      showInfoModal(errorMessage, "error");
+      showInfoModal(errorMessage, 'error');
       return;
     }
 
@@ -180,9 +222,15 @@ export default function HealthInsurancePlanRegistration() {
     if (res.code >= 200 && res.code < 300) {
       setModalEdit(false);
       await fetchData();
-      showInfoModal(`Plano de Saúde "${res.data?.name}" atualizado com sucesso!`, "success");
+      showInfoModal(
+        `Plano de Saúde "${res.data?.name}" atualizado com sucesso!`,
+        'success'
+      );
     } else {
-      showInfoModal(res.message || "Erro inesperado ao atualizar o Plano de Saúde.", "error");
+      showInfoModal(
+        res.message || 'Erro inesperado ao atualizar o Plano de Saúde.',
+        'error'
+      );
     }
   };
 
@@ -193,74 +241,98 @@ export default function HealthInsurancePlanRegistration() {
       if (res.code >= 200 && res.code < 300) {
         setModalDelete(false);
         setCurrentId(null);
-        const itemName = data.find(item => item.id === id)?.name || "";
+        const itemName = data.find((item) => item.id === id)?.name || '';
         await fetchData();
-        showInfoModal(`Plano de Saúde "${itemName}" excluído com sucesso!`, "success");
+        showInfoModal(
+          `Plano de Saúde "${itemName}" excluído com sucesso!`,
+          'success'
+        );
       } else {
-        showInfoModal(res.message || "Erro inesperado ao excluir o Plano de Saúde.", "error");
+        showInfoModal(
+          res.message || 'Erro inesperado ao excluir o Plano de Saúde.',
+          'error'
+        );
       }
     } catch {
-      showInfoModal("Erro inesperado ao excluir o Plano de Saúde.", "error");
+      showInfoModal('Erro inesperado ao excluir o Plano de Saúde.', 'error');
     }
   };
 
   const Actions = ({ id }: { id: number }) => (
     <>
-      <button onClick={() => openCloseModalEdit(id)} className="text-edit hover:text-hoverEdit">
-        <Pencil className="size-6" weight="fill" />
+      <button
+        onClick={() => openCloseModalEdit(id)}
+        className='text-edit hover:text-hoverEdit'
+      >
+        <Pencil className='size-6' weight='fill' />
       </button>
-      <button onClick={() => openCloseModalDelete(id)} className="text-danger hover:text-hoverDanger">
-        <Trash className="size-6" weight="fill" />
+      <button
+        onClick={() => openCloseModalDelete(id)}
+        className='text-danger hover:text-hoverDanger'
+      >
+        <Trash className='size-6' weight='fill' />
       </button>
     </>
   );
 
   return (
     <div>
-      <BreadcrumbPageTitle title="Cadastro de Plano de Saúde" />
-      <div className="bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10">
+      <BreadcrumbPageTitle title='Cadastro de Plano de Saúde' />
+      <div className='bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10'>
         <Modal<HealthInsurancePlan>
-          title="Cadastrar Plano de Saúde"
+          title='Cadastrar Plano de Saúde'
           inputs={inputs}
           action={handleSave}
           statusModal={modalRegister}
           closeModal={() => setModalRegister(false)}
-          type="create"
+          type='create'
         />
         <Modal<HealthInsurancePlan>
-          type="update"
-          title="Editar Plano de Saúde"
+          type='update'
+          title='Editar Plano de Saúde'
           inputs={inputs}
           action={handleSave}
           statusModal={modalEdit}
           closeModal={() => openCloseModalEdit()}
         />
         <Modal<HealthInsurancePlan>
-          type="delete"
-          title="Deseja realmente excluir esse Plano de Saúde?"
-          msgInformation="Ao excluir este Plano de Saúde, ele será removido permanentemente do sistema."
-          action={() => { if (currentId !== null) deleteHealthInsurancePlan(currentId); }}
+          type='delete'
+          title='Deseja realmente excluir esse Plano de Saúde?'
+          msgInformation='Ao excluir este Plano de Saúde, ele será removido permanentemente do sistema.'
+          action={() => {
+            if (currentId !== null) deleteHealthInsurancePlan(currentId);
+          }}
           statusModal={modalDelete}
           closeModal={() => openCloseModalDelete()}
           inputs={inputs}
         />
         <Modal<HealthInsurancePlan>
-          type="info"
+          type='info'
           msgInformation={infoMessage}
           icon={infoIcon}
           statusModal={modalInfo}
           closeModal={openCloseModalInfo}
         />
-        <div className="flex items-center justify-between mb-4">
-          <SearchBar action={handleSearch} placeholder="Buscar plano de saúde..." />
-          <Button label="Adicionar" icon={<Plus />} iconPosition="left" color="success" size="medium" onClick={openCloseModalRegister} />
+        <div className='flex items-center justify-between mb-4'>
+          <SearchBar
+            action={handleSearch}
+            placeholder='Buscar plano de saúde...'
+          />
+          <Button
+            label='Adicionar'
+            icon={<Plus />}
+            iconPosition='left'
+            color='success'
+            size='medium'
+            onClick={openCloseModalRegister}
+          />
         </div>
         <Table
           columns={columns}
           data={data.map((plan) => {
             let finalAbbreviation = plan.abbreviation;
             if (plan.name === plan.abbreviation) {
-              finalAbbreviation += "\u200B";
+              finalAbbreviation += '\u200B';
             }
             return {
               id: plan.id,

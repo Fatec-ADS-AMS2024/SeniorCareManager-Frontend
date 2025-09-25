@@ -5,6 +5,7 @@ export const routes = {
   GENERALADM: '/generalAdministrator',
   REGISTRATIONS: '/registrations',
   RELIGIONREGISTRATION: '/registrations/religionregistration',
-  HEALTHINSURANCEPLANREGISTRATION: '/registrations/healthinsuranceplanregistration',
+  HEALTHINSURANCEPLANREGISTRATION:
+    '/registrations/healthinsuranceplanregistration',
   POSITIONREGISTRATION: '/registrations/positionregistration',
-}
+};

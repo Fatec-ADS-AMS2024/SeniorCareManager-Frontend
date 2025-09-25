@@ -4,31 +4,40 @@ import {
   Route,
   RouterProvider,
   useRouteError,
-} from "react-router-dom";
-import { routes } from "./routes";
-import Layout from "@/components/Layout";
-import AcessibilityPage from "@/pages/AcessibilityPage";
+} from 'react-router-dom';
+import { routes } from './routes';
+import Layout from '@/components/Layout';
+import AcessibilityPage from '@/pages/AcessibilityPage';
 
-import LandingPage from "@/pages/LandingPage";
-import LoginPage from "@/pages/LoginPage";
-import GeneralAdministrator from "@/pages/GeneralAdministrator";
-import Registrations from "@/pages/Registrations";
-import ReligionRegistration from "@/pages/Registrations/ReligionRegistration";
-import HealthInsurancePlanRegistration from "@/pages/Registrations/HealthInsurancePlanRegistration";
-import PositionRegistration from "@/pages/Registrations/PositionRegistration";
+import LandingPage from '@/pages/LandingPage';
+import LoginPage from '@/pages/LoginPage';
+import GeneralAdministrator from '@/pages/GeneralAdministrator';
+import Registrations from '@/pages/Registrations';
+import ReligionRegistration from '@/pages/Registrations/ReligionRegistration';
+import HealthInsurancePlanRegistration from '@/pages/Registrations/HealthInsurancePlanRegistration';
+import PositionRegistration from '@/pages/Registrations/PositionRegistration';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="" element={<Layout />} errorElement={<GlobalErrorBoundary />}>
+    <Route path='' element={<Layout />} errorElement={<GlobalErrorBoundary />}>
       <Route path={routes.ACCESSIBILITY} element={<AcessibilityPage />} />
 
       <Route path={routes.LANDING} element={<LandingPage />} />
       <Route path={routes.LOGIN} element={<LoginPage />} />
       <Route path={routes.GENERALADM} element={<GeneralAdministrator />} />
       <Route path={routes.REGISTRATIONS} element={<Registrations />} />
-      <Route path={routes.RELIGIONREGISTRATION} element={<ReligionRegistration />} />
-      <Route path={routes.HEALTHINSURANCEPLANREGISTRATION} element={<HealthInsurancePlanRegistration />} />
-      <Route path={routes.POSITIONREGISTRATION} element={<PositionRegistration />} />
+      <Route
+        path={routes.RELIGIONREGISTRATION}
+        element={<ReligionRegistration />}
+      />
+      <Route
+        path={routes.HEALTHINSURANCEPLANREGISTRATION}
+        element={<HealthInsurancePlanRegistration />}
+      />
+      <Route
+        path={routes.POSITIONREGISTRATION}
+        element={<PositionRegistration />}
+      />
     </Route>
   )
 );
@@ -41,10 +50,8 @@ function GlobalErrorBoundary() {
   console.error(error);
 
   return (
-    <main className="min-h-screen w-screen p-4">
-      <h1 className="text-2xl text-danger">
-        Erro ao tentar acessar a página!
-      </h1>
+    <main className='min-h-screen w-screen p-4'>
+      <h1 className='text-2xl text-danger'>Erro ao tentar acessar a página!</h1>
     </main>
   );
 }
