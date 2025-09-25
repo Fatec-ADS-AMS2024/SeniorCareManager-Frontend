@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import HealthInsurancePlanService from "../../services/healthInsurancePlanService";
-import HealthInsurancePlan, { getHealthInsurancePlanTypeLabel, getHealthInsurancePlanTypeOptions } from "../../types/models/HealthInsurancePlan";
-import Table from "../../components/Table";
+import HealthInsurancePlanService from "@/services/healthInsurancePlanService";
+import HealthInsurancePlan, { getHealthInsurancePlanTypeLabel, getHealthInsurancePlanTypeOptions } from "@/types/models/HealthInsurancePlan";
+import Table from "@/components/Table";
 import { CheckCircle, Pencil, Plus, Trash, XCircle } from "@phosphor-icons/react";
-import BreadcrumbPageTitle from "../../components/BreadcrumbPageTitle";
-import SearchBar from "../../components/SearchBar";
-import Button from "../../components/Button";
-import Modal from "../../components/GenericModal";
+import BreadcrumbPageTitle from "@/components/BreadcrumbPageTitle";
+import SearchBar from "@/components/SearchBar";
+import Button from "@/components/Button";
+import Modal from "@/components/GenericModal";
 
 const inputs: {
   label: string;

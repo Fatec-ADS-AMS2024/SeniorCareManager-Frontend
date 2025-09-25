@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import fotoEntradaSistema from "../../assets/images/fotoEntradaSistema.png";
-import { ThemeContext } from "../../context/ThemeContext";
+import fotoEntradaSistema from "@/assets/images/fotoEntradaSistema.png";
+import { ThemeContext } from "@/context/ThemeContext";
 import { useNavigate } from "react-router-dom";
-import { routes } from "../../routes/routes";
+import { routes } from "@/routes/routes";
 
 export default function LandingPage() {
   const { theme } = useContext(ThemeContext);

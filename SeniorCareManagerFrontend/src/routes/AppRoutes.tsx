@@ -6,16 +6,16 @@ import {
   useRouteError,
 } from "react-router-dom";
 import { routes } from "./routes";
-import Layout from "../components/Layout";
-import AcessibilityPage from "../pages/AcessibilityPage";
+import Layout from "@/components/Layout";
+import AcessibilityPage from "@/pages/AcessibilityPage";
 
-import LandingPage from "../pages/LandingPage";
-import LoginPage from "../pages/LoginPage";
-import GeneralAdministrator from "../pages/GeneralAdministrator";
-import Registrations from "../pages/Registrations";
-import ReligionRegistration from "../pages/Registrations/ReligionRegistration";
-import HealthInsurancePlanRegistration from "../pages/Registrations/HealthInsurancePlanRegistration";
-import PositionRegistration from "../pages/Registrations/PositionRegistration";
+import LandingPage from "@/pages/LandingPage";
+import LoginPage from "@/pages/LoginPage";
+import GeneralAdministrator from "@/pages/GeneralAdministrator";
+import Registrations from "@/pages/Registrations";
+import ReligionRegistration from "@/pages/Registrations/ReligionRegistration";
+import HealthInsurancePlanRegistration from "@/pages/Registrations/HealthInsurancePlanRegistration";
+import PositionRegistration from "@/pages/Registrations/PositionRegistration";
 
 const router = createBrowserRouter(
   createRoutesFromElements(

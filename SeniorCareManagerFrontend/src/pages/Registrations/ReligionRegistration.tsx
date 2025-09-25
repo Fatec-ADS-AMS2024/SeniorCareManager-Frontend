@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import ReligionService from "../../services/religionService";
-import Religion from "../../types/models/Religion";
-import Table from "../../components/Table";
+import ReligionService from "@/services/religionService";
+import Religion from "@/types/models/Religion";
+import Table from "@/components/Table";
 import { CheckCircle, Pencil, Plus, Trash, XCircle } from "@phosphor-icons/react";
-import BreadcrumbPageTitle from "../../components/BreadcrumbPageTitle";
-import SearchBar from "../../components/SearchBar";
-import Button from "../../components/Button";
-import Modal from "../../components/GenericModal";
+import BreadcrumbPageTitle from "@/components/BreadcrumbPageTitle";
+import SearchBar from "@/components/SearchBar";
+import Button from "@/components/Button";
+import Modal from "@/components/GenericModal";
 
 const inputs: {
   label: string;

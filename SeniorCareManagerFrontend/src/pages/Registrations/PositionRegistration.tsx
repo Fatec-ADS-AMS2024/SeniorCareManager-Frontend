@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import PositionService from "../../services/positionService";
-import Position from "../../types/models/Position";
-import Table from "../../components/Table";
+import PositionService from "@/services/positionService";
+import Position from "@/types/models/Position";
+import Table from "@/components/Table";
 import { CheckCircle, Pencil, Plus, Trash, XCircle } from "@phosphor-icons/react";
-import BreadcrumbPageTitle from "../../components/BreadcrumbPageTitle";
-import SearchBar from "../../components/SearchBar";
-import Button from "../../components/Button";
-import Modal from "../../components/GenericModal";
+import BreadcrumbPageTitle from "@/components/BreadcrumbPageTitle";
+import SearchBar from "@/components/SearchBar";
+import Button from "@/components/Button";
+import Modal from "@/components/GenericModal";
 
 const inputs: {
   label: string;

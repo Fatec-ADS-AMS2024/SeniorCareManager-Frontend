@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { CaretRight } from "@phosphor-icons/react";
-import { routes } from "../../routes/routes";
+import { routes } from "@/routes/routes";
 
 export default function Breadcrumb() {
   const location = useLocation();
