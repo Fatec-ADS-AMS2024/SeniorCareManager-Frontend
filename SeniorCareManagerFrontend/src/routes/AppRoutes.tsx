@@ -6,7 +6,7 @@ import {
   useRouteError,
 } from 'react-router-dom';
 import { routes } from './routes';
-import Layout from '@/components/Layout';
+import { AppLayout } from '@/features/layouts';
 import AcessibilityPage from '@/pages/AcessibilityPage';
 
 import LandingPage from '@/pages/LandingPage';
@@ -19,7 +19,11 @@ import { PositionRegistration } from '@/features/position';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path='' element={<Layout />} errorElement={<GlobalErrorBoundary />}>
+    <Route
+      path=''
+      element={<AppLayout />}
+      errorElement={<GlobalErrorBoundary />}
+    >
       <Route path={routes.ACCESSIBILITY} element={<AcessibilityPage />} />
 
       <Route path={routes.LANDING} element={<LandingPage />} />
