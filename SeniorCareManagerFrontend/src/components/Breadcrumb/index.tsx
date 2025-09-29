@@ -24,7 +24,7 @@ export default function Breadcrumb() {
         {/* Primeiro item: Início */}
         <li className='flex items-center'>
           <Link
-            to={routes.GENERALADM}
+            to={routes.GENERALADM.path}
             className='text-secondary hover:text-primary font-medium'
           >
             Início

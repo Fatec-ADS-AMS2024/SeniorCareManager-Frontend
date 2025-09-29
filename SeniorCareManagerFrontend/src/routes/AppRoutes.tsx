@@ -24,22 +24,22 @@ const router = createBrowserRouter(
       element={<AppLayout />}
       errorElement={<GlobalErrorBoundary />}
     >
-      <Route path={routes.ACCESSIBILITY} element={<AcessibilityPage />} />
+      <Route path={routes.ACCESSIBILITY.path} element={<AcessibilityPage />} />
 
-      <Route path={routes.LANDING} element={<LandingPage />} />
-      <Route path={routes.LOGIN} element={<LoginPage />} />
-      <Route path={routes.GENERALADM} element={<GeneralAdministrator />} />
-      <Route path={routes.REGISTRATIONS} element={<Registrations />} />
+      <Route path={routes.LANDING.path} element={<LandingPage />} />
+      <Route path={routes.LOGIN.path} element={<LoginPage />} />
+      <Route path={routes.GENERALADM.path} element={<GeneralAdministrator />} />
+      <Route path={routes.REGISTRATIONS.path} element={<Registrations />} />
       <Route
-        path={routes.RELIGIONREGISTRATION}
+        path={routes.RELIGIONREGISTRATION.path}
         element={<ReligionRegistration />}
       />
       <Route
-        path={routes.HEALTHINSURANCEPLANREGISTRATION}
+        path={routes.HEALTHINSURANCEPLANREGISTRATION.path}
         element={<HealthInsurancePlanRegistration />}
       />
       <Route
-        path={routes.POSITIONREGISTRATION}
+        path={routes.POSITIONREGISTRATION.path}
         element={<PositionRegistration />}
       />
     </Route>

@@ -9,19 +9,19 @@ const cards = [
     text: 'Religião',
     subText: 'Religiões Cadastradas',
     icon: <Cross weight='bold' className='shrink-0 size-full' />,
-    page: routes.RELIGIONREGISTRATION,
+    page: routes.RELIGIONREGISTRATION.path,
   },
   {
     text: 'Plano de Saúde',
     subText: 'Planos de Saúde Cadastrados',
     icon: <FirstAid weight='bold' className='shrink-0 size-full' />,
-    page: routes.HEALTHINSURANCEPLANREGISTRATION,
+    page: routes.HEALTHINSURANCEPLANREGISTRATION.path,
   },
   {
     text: 'Cargo',
     subText: 'Cargos Cadastrados',
     icon: <Briefcase weight='bold' className='shrink-0 size-full' />,
-    page: routes.POSITIONREGISTRATION,
+    page: routes.POSITIONREGISTRATION.path,
   },
 ];
 

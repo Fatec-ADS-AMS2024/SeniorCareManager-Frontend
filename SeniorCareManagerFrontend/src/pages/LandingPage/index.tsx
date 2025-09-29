@@ -9,7 +9,7 @@ export default function LandingPage() {
   const navigate = useNavigate();
 
   const handleLoginClick = () => {
-    navigate(routes.LOGIN);
+    navigate(routes.LOGIN.path);
   };
 
   return (
