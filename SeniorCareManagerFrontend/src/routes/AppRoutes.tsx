@@ -10,7 +10,7 @@ import { AppLayout } from '@/features/layouts';
 import AcessibilityPage from '@/pages/AcessibilityPage';
 
 import LandingPage from '@/pages/LandingPage';
-import LoginPage from '@/pages/LoginPage';
+import { LoginPage } from '@/features/auth';
 import GeneralAdministrator from '@/pages/GeneralAdministrator';
 import Registrations from '@/pages/Registrations';
 import { ReligionRegistration } from '@/features/religion';
