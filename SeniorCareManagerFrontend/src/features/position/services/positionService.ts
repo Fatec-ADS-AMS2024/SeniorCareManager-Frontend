@@ -1,5 +1,5 @@
 import Position from '@/types/models/Position';
-import GenericService from './genericService';
+import GenericService from '@/services/genericService';
 
 export default class PositionService extends GenericService<Position> {
   constructor() {

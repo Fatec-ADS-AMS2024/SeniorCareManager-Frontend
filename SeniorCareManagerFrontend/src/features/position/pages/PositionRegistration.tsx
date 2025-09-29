@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import PositionService from '@/services/positionService';
+import PositionService from '../services/positionService';
 import Position from '@/types/models/Position';
 import Table from '@/components/Table';
 import {
