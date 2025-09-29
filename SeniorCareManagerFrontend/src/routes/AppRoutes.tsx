@@ -13,7 +13,7 @@ import LandingPage from '@/pages/LandingPage';
 import LoginPage from '@/pages/LoginPage';
 import GeneralAdministrator from '@/pages/GeneralAdministrator';
 import Registrations from '@/pages/Registrations';
-import ReligionRegistration from '@/pages/Registrations/ReligionRegistration';
+import { ReligionRegistration } from '@/features/religion';
 import { HealthInsurancePlanRegistration } from '@/features/healthInsurancePlan';
 import { PositionRegistration } from '@/features/position';
 

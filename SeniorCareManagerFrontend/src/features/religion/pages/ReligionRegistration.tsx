@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import ReligionService from '@/services/religionService';
+import ReligionService from '../services/religionService';
 import Religion from '@/types/models/Religion';
 import Table from '@/components/Table';
 import {
