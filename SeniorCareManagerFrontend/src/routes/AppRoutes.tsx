@@ -14,7 +14,7 @@ import LoginPage from '@/pages/LoginPage';
 import GeneralAdministrator from '@/pages/GeneralAdministrator';
 import Registrations from '@/pages/Registrations';
 import ReligionRegistration from '@/pages/Registrations/ReligionRegistration';
-import HealthInsurancePlanRegistration from '@/pages/Registrations/HealthInsurancePlanRegistration';
+import { HealthInsurancePlanRegistration } from '@/features/healthInsurancePlan';
 import PositionRegistration from '@/pages/Registrations/PositionRegistration';
 
 const router = createBrowserRouter(

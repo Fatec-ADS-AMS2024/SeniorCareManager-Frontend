@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import HealthInsurancePlanService from '@/services/healthInsurancePlanService';
+import { HealthInsurancePlanService } from '@/features/healthInsurancePlan';
 import HealthInsurancePlan from '@/types/models/HealthInsurancePlan';
 import {
   getHealthInsurancePlanTypeLabel,
