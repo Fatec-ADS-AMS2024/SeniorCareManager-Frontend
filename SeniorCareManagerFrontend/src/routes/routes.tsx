@@ -1,7 +1,7 @@
 import { authRoutes } from '@/features/auth';
 import { healthInsurancePlanRoutes } from '@/features/healthInsurancePlan';
 import { positionRoutes } from '@/features/position';
-import { ReligionRegistration } from '@/features/religion';
+import { religionRoutes } from '@/features/religion';
 import AccessibilityPage from '@/pages/AccessibilityPage';
 import AdminOverview from '@/pages/Admin/AdminOverview';
 import LandingPage from '@/pages/LandingPage';
@@ -29,11 +29,6 @@ const appRoutes = createRoutes({
     displayName: 'Cadastros',
     element: <Registrations />,
   },
-  RELIGION_REGISTRATION: {
-    path: '/registrations/religionregistration',
-    displayName: 'Cadastro de Religião',
-    element: <ReligionRegistration />,
-  },
 });
 
 // É a união de todas as definições de rotas da aplicação
@@ -42,4 +37,5 @@ export const routes = {
   ...authRoutes,
   ...healthInsurancePlanRoutes,
   ...positionRoutes,
+  ...religionRoutes,
 } as const;

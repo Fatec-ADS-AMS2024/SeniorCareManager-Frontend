@@ -1,5 +1,4 @@
-// Pages
-export { default as ReligionRegistration } from './pages/ReligionRegistration';
+export { religionRoutes } from './religionRoutes';
 
 // Services
 export { default as ReligionService } from './services/religionService';
