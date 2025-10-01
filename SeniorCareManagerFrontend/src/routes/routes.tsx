@@ -1,4 +1,4 @@
-import { LoginPage } from '@/features/auth';
+import { authRoutes } from '@/features/auth';
 import { HealthInsurancePlanRegistration } from '@/features/healthInsurancePlan';
 import { PositionRegistration } from '@/features/position';
 import { ReligionRegistration } from '@/features/religion';
@@ -18,11 +18,6 @@ const appRoutes = createRoutes({
     displayName: 'Página Inicial',
     element: <LandingPage />,
     index: true,
-  },
-  LOGIN: {
-    path: '/login',
-    displayName: 'Login',
-    element: <LoginPage />,
   },
   ADMIN_OVERVIEW: {
     path: '/admin',
@@ -54,4 +49,5 @@ const appRoutes = createRoutes({
 // É a união de todas as definições de rotas da aplicação
 export const routes = {
   ...appRoutes,
+  ...authRoutes
 } as const;
