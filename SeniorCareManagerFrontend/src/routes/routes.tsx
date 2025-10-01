@@ -1,5 +1,5 @@
 import { authRoutes } from '@/features/auth';
-import { HealthInsurancePlanRegistration } from '@/features/healthInsurancePlan';
+import { healthInsurancePlanRoutes } from '@/features/healthInsurancePlan';
 import { PositionRegistration } from '@/features/position';
 import { ReligionRegistration } from '@/features/religion';
 import AccessibilityPage from '@/pages/AccessibilityPage';
@@ -34,11 +34,6 @@ const appRoutes = createRoutes({
     displayName: 'Cadastro de Religião',
     element: <ReligionRegistration />,
   },
-  HEALTH_INSURANCE_PLAN_REGISTRATION: {
-    path: '/registrations/healthinsuranceplanregistration',
-    displayName: 'Cadastro de Plano de Saúde',
-    element: <HealthInsurancePlanRegistration />,
-  },
   POSITION_REGISTRATION: {
     path: '/registrations/positionregistration',
     displayName: 'Cadastro de Cargos',
@@ -49,5 +44,6 @@ const appRoutes = createRoutes({
 // É a união de todas as definições de rotas da aplicação
 export const routes = {
   ...appRoutes,
-  ...authRoutes
+  ...authRoutes,
+  ...healthInsurancePlanRoutes,
 } as const;

@@ -1,5 +1,5 @@
-// Pages
-export { default as HealthInsurancePlanRegistration } from './pages/HealthInsurancePlanRegistration';
+// Rotas
+export { healthInsurancePlanRoutes } from './healthInsurancePlanRoutes';
 
 // Services
 export { default as HealthInsurancePlanService } from './services/healthInsurancePlanService';
