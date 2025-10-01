@@ -16,14 +16,13 @@ const router = createBrowserRouter(
       errorElement={<GlobalErrorBoundary />}
     >
       <Route {...routes.ACCESSIBILITY} />
-
       <Route {...routes.LANDING} />
       <Route {...routes.LOGIN} />
-      <Route {...routes.GENERALADM} />
+      <Route {...routes.ADMIN_OVERVIEW} />
       <Route {...routes.REGISTRATIONS} />
-      <Route {...routes.RELIGIONREGISTRATION} />
-      <Route {...routes.HEALTHINSURANCEPLANREGISTRATION} />
-      <Route {...routes.POSITIONREGISTRATION} />
+      <Route {...routes.RELIGION_REGISTRATION} />
+      <Route {...routes.HEALTH_INSURANCE_PLAN_REGISTRATION} />
+      <Route {...routes.POSITION_REGISTRATION} />
     </Route>
   )
 );

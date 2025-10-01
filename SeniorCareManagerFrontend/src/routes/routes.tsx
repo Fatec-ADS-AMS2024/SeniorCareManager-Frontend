@@ -1,12 +1,12 @@
-import { LoginPage } from "@/features/auth";
-import { HealthInsurancePlanRegistration } from "@/features/healthInsurancePlan";
-import { PositionRegistration } from "@/features/position";
-import { ReligionRegistration } from "@/features/religion";
-import AccessibilityPage from "@/pages/AccessibilityPage";
-import GeneralAdministrator from "@/pages/GeneralAdministrator";
-import LandingPage from "@/pages/LandingPage";
-import RegisterPage from "@/pages/Registrations";
-import { createRoutes } from "@/utils/routesUtils";
+import { LoginPage } from '@/features/auth';
+import { HealthInsurancePlanRegistration } from '@/features/healthInsurancePlan';
+import { PositionRegistration } from '@/features/position';
+import { ReligionRegistration } from '@/features/religion';
+import AccessibilityPage from '@/pages/AccessibilityPage';
+import AdminOverview from '@/pages/Admin/AdminOverview';
+import LandingPage from '@/pages/LandingPage';
+import Registrations from '@/pages/Registrations';
+import { createRoutes } from '@/utils/routesUtils';
 
 const appRoutes = createRoutes({
   ACCESSIBILITY: {
@@ -24,27 +24,27 @@ const appRoutes = createRoutes({
     displayName: 'Login',
     element: <LoginPage />,
   },
-  GENERALADM: {
-    path: '/generalAdministrator',
+  ADMIN_OVERVIEW: {
+    path: '/admin',
     displayName: 'Visão Geral',
-    element: <GeneralAdministrator />,
+    element: <AdminOverview />,
   },
   REGISTRATIONS: {
     path: '/registrations',
     displayName: 'Cadastros',
-    element: <RegisterPage />,
+    element: <Registrations />,
   },
-  RELIGIONREGISTRATION: {
+  RELIGION_REGISTRATION: {
     path: '/registrations/religionregistration',
     displayName: 'Cadastro de Religião',
     element: <ReligionRegistration />,
   },
-  HEALTHINSURANCEPLANREGISTRATION: {
+  HEALTH_INSURANCE_PLAN_REGISTRATION: {
     path: '/registrations/healthinsuranceplanregistration',
     displayName: 'Cadastro de Plano de Saúde',
     element: <HealthInsurancePlanRegistration />,
   },
-  POSITIONREGISTRATION: {
+  POSITION_REGISTRATION: {
     path: '/registrations/positionregistration',
     displayName: 'Cadastro de Cargos',
     element: <PositionRegistration />,

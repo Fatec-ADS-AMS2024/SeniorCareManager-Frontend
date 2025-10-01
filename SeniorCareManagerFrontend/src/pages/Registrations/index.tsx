@@ -5,7 +5,7 @@ import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import useAppRoutes from '@/hooks/useAppRoutes';
 
 
-export default function RegisterPage() {
+export default function Registrations() {
   const routes = useAppRoutes();
 
   const cards = [
@@ -13,22 +13,22 @@ export default function RegisterPage() {
       text: 'Religião',
       subText: 'Religiões Cadastradas',
       icon: <Cross weight='bold' className='shrink-0 size-full' />,
-      page: routes.RELIGIONREGISTRATION.path,
+      page: routes.RELIGION_REGISTRATION.path,
     },
     {
       text: 'Plano de Saúde',
       subText: 'Planos de Saúde Cadastrados',
       icon: <FirstAid weight='bold' className='shrink-0 size-full' />,
-      page: routes.HEALTHINSURANCEPLANREGISTRATION.path,
+      page: routes.HEALTH_INSURANCE_PLAN_REGISTRATION.path,
     },
     {
       text: 'Cargo',
       subText: 'Cargos Cadastrados',
       icon: <Briefcase weight='bold' className='shrink-0 size-full' />,
-      page: routes.POSITIONREGISTRATION.path,
+      page: routes.POSITION_REGISTRATION.path,
     },
   ];
-  
+
   return (
     <div className='min-h bg-neutralLighter'>
       <BreadcrumbPageTitle title='Cadastros' />
