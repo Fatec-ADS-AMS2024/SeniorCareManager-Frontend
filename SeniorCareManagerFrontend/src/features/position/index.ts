@@ -1,5 +1,4 @@
-// Pages
-export { default as PositionRegistration } from './pages/PositionRegistration';
+export { positionRoutes } from './positionRoutes';
 
 // Services
 export { default as PositionService } from './services/positionService';
