@@ -7,15 +7,6 @@ import {
 } from 'react-router-dom';
 import { routes } from './routes';
 import { AppLayout } from '@/features/layouts';
-import AcessibilityPage from '@/pages/AcessibilityPage';
-
-import LandingPage from '@/pages/LandingPage';
-import { LoginPage } from '@/features/auth';
-import GeneralAdministrator from '@/pages/GeneralAdministrator';
-import Registrations from '@/pages/Registrations';
-import { ReligionRegistration } from '@/features/religion';
-import { HealthInsurancePlanRegistration } from '@/features/healthInsurancePlan';
-import { PositionRegistration } from '@/features/position';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,24 +15,15 @@ const router = createBrowserRouter(
       element={<AppLayout />}
       errorElement={<GlobalErrorBoundary />}
     >
-      <Route path={routes.ACCESSIBILITY.path} element={<AcessibilityPage />} />
+      <Route {...routes.ACCESSIBILITY} />
 
-      <Route path={routes.LANDING.path} element={<LandingPage />} />
-      <Route path={routes.LOGIN.path} element={<LoginPage />} />
-      <Route path={routes.GENERALADM.path} element={<GeneralAdministrator />} />
-      <Route path={routes.REGISTRATIONS.path} element={<Registrations />} />
-      <Route
-        path={routes.RELIGIONREGISTRATION.path}
-        element={<ReligionRegistration />}
-      />
-      <Route
-        path={routes.HEALTHINSURANCEPLANREGISTRATION.path}
-        element={<HealthInsurancePlanRegistration />}
-      />
-      <Route
-        path={routes.POSITIONREGISTRATION.path}
-        element={<PositionRegistration />}
-      />
+      <Route {...routes.LANDING} />
+      <Route {...routes.LOGIN} />
+      <Route {...routes.GENERALADM} />
+      <Route {...routes.REGISTRATIONS} />
+      <Route {...routes.RELIGIONREGISTRATION} />
+      <Route {...routes.HEALTHINSURANCEPLANREGISTRATION} />
+      <Route {...routes.POSITIONREGISTRATION} />
     </Route>
   )
 );

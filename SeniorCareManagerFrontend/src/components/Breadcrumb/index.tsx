@@ -1,9 +1,10 @@
 import { Link, useLocation } from 'react-router-dom';
 import { CaretRight } from '@phosphor-icons/react';
-import { routes } from '@/routes/routes';
+import useAppRoutes from '@/hooks/useAppRoutes';
 
 export default function Breadcrumb() {
   const location = useLocation();
+  const routes = useAppRoutes();
   const pathnames = location.pathname.split('/').filter((x) => x);
 
   // Mapeamento para traduzir as rotas
