@@ -3,7 +3,7 @@ import LoginPage from './pages/LoginPage';
 
 export const authRoutes = createRoutes({
   LOGIN: {
-    path: 'login',
+    path: '/login',
     displayName: 'Login',
     element: <LoginPage />,
   },

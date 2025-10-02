@@ -7,22 +7,31 @@ import {
 } from 'react-router-dom';
 import { routes } from './routes';
 import { AppLayout } from '@/features/layouts';
+import HeaderFooterLayout from '@/features/layouts/HeaderFooterLayout';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route
-      path=''
-      element={<AppLayout />}
-      errorElement={<GlobalErrorBoundary />}
-    >
-      <Route {...routes.ACCESSIBILITY} />
-      <Route {...routes.LANDING} />
-      <Route {...routes.LOGIN} />
-      <Route {...routes.ADMIN_OVERVIEW} />
-      <Route {...routes.REGISTRATIONS} />
-      <Route {...routes.RELIGION_REGISTRATION} />
-      <Route {...routes.HEALTH_INSURANCE_PLAN_REGISTRATION} />
-      <Route {...routes.POSITION_REGISTRATION} />
+    <Route>
+      <Route
+        path=''
+        element={<AppLayout />}
+        errorElement={<GlobalErrorBoundary />}
+      >
+        <Route {...routes.ADMIN_OVERVIEW} />
+        <Route {...routes.REGISTRATIONS} />
+        <Route {...routes.RELIGION_REGISTRATION} />
+        <Route {...routes.HEALTH_INSURANCE_PLAN_REGISTRATION} />
+        <Route {...routes.POSITION_REGISTRATION} />
+      </Route>
+      <Route
+        path=''
+        element={<HeaderFooterLayout />}
+        errorElement={<GlobalErrorBoundary />}
+      >
+        <Route {...routes.LOGIN} />
+        <Route {...routes.ACCESSIBILITY} />
+        <Route {...routes.LANDING} />
+      </Route>
     </Route>
   )
 );
