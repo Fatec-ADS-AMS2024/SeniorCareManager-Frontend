@@ -10,50 +10,52 @@ import {
   List,
 } from '@phosphor-icons/react';
 import { useNavigate, useLocation } from 'react-router-dom';
-
-const buttons = [
-  {
-    id: 'home',
-    label: 'Visão Geral',
-    icon: <HouseLine className='size-7 shrink-0' weight='fill' />,
-    route: '/generalAdministrator',
-  },
-  {
-    id: 'professionals',
-    label: 'Profissionais',
-    icon: <UserCheck className='size-7 shrink-0' weight='fill' />,
-    route: '/professionals',
-  },
-  {
-    id: 'elderly',
-    label: 'Idosos',
-    icon: <Users className='size-7 shrink-0' weight='fill' />,
-    route: '/elderly',
-  },
-  {
-    id: 'calendar',
-    label: 'Calendário',
-    icon: <CalendarDots className='size-7 shrink-0' weight='fill' />,
-    route: '/calendar',
-  },
-  {
-    id: 'careProvided',
-    label: 'Cuidados Prestados',
-    icon: <HandHeart className='size-7 shrink-0' weight='fill' />,
-    route: '/careProvided',
-  },
-  {
-    id: 'registrations',
-    label: 'Cadastros',
-    icon: <UserCirclePlus className='size-7 shrink-0' weight='fill' />,
-    route: '/registrations',
-  },
-];
+import useAppRoutes from '@/hooks/useAppRoutes';
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const routes = useAppRoutes();
   const navigate = useNavigate();
   const location = useLocation(); // Obtém a rota atual
+
+  const buttons = [
+    {
+      id: 'home',
+      label: routes.ADMIN_OVERVIEW.displayName,
+      icon: <HouseLine className='size-7 shrink-0' weight='fill' />,
+      route: routes.ADMIN_OVERVIEW.path,
+    },
+    {
+      id: 'professionals',
+      label: 'Profissionais',
+      icon: <UserCheck className='size-7 shrink-0' weight='fill' />,
+      route: '#',
+    },
+    {
+      id: 'elderly',
+      label: 'Idosos',
+      icon: <Users className='size-7 shrink-0' weight='fill' />,
+      route: '#',
+    },
+    {
+      id: 'calendar',
+      label: 'Calendário',
+      icon: <CalendarDots className='size-7 shrink-0' weight='fill' />,
+      route: '#',
+    },
+    {
+      id: 'careProvided',
+      label: 'Cuidados Prestados',
+      icon: <HandHeart className='size-7 shrink-0' weight='fill' />,
+      route: '#',
+    },
+    {
+      id: 'registrations',
+      label: routes.REGISTRATIONS.displayName,
+      icon: <UserCirclePlus className='size-7 shrink-0' weight='fill' />,
+      route: routes.REGISTRATIONS.path,
+    },
+  ];
 
   return (
     <div
