@@ -3,7 +3,7 @@ import HealthInsurancePlanRegistration from './pages/HealthInsurancePlanRegistra
 
 export const healthInsurancePlanRoutes = createRoutes({
   HEALTH_INSURANCE_PLAN_REGISTRATION: {
-    path: '/registrations/health_insurance_plan_registration',
+    path: '/health_insurance_plan/registration',
     displayName: 'Cadastro de Plano de Saúde',
     element: <HealthInsurancePlanRegistration />,
   },

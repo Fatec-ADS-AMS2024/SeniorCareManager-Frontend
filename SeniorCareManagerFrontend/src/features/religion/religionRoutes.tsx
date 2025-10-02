@@ -3,7 +3,7 @@ import ReligionRegistration from './pages/ReligionRegistration';
 
 export const religionRoutes = createRoutes({
   RELIGION_REGISTRATION: {
-    path: '/registrations/religion_registration',
+    path: '/religion/registration',
     displayName: 'Cadastro de Religião',
     element: <ReligionRegistration />,
   },

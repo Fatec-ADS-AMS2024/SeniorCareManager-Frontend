@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
 
 export type Enum = Record<string, number>;
 export type EnumLabels = Record<Enum[keyof Enum], string>;
@@ -8,5 +8,4 @@ export interface RouteDefinition {
   path?: string;
   element?: ReactNode;
   index?: boolean;
-  children?: RouteDefinition[]
 }
