@@ -5,6 +5,7 @@ export const positionRoutes = createRoutes({
   POSITION: {
     path: '/position',
     displayName: 'Cargo',
+    element: null,
   },
   POSITION_REGISTRATION: {
     path: '/position/registration',

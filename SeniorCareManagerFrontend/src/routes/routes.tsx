@@ -18,6 +18,7 @@ const appRoutes = createRoutes({
     displayName: 'Página Inicial',
     element: <LandingPage />,
     index: true,
+    path: '',
   },
   ADMIN_OVERVIEW: {
     path: '/admin',

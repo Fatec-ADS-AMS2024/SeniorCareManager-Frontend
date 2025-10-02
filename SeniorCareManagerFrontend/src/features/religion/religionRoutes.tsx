@@ -5,6 +5,7 @@ export const religionRoutes = createRoutes({
   RELIGION: {
     path: '/religion',
     displayName: 'Religião',
+    element: null,
   },
   RELIGION_REGISTRATION: {
     path: '/religion/registration',
