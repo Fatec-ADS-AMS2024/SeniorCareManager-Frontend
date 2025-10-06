@@ -1,4 +1,4 @@
-import api from '@/features/api';
+import { api } from '@/features/api';
 import ServiceResult from '@/types/app/ServiceResult';
 import { isAxiosError } from 'axios';
 
