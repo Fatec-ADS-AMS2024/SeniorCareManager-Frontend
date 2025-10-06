@@ -1,16 +1,17 @@
-import axios from 'axios';
+import api from '@/features/api';
 import ServiceResult from '@/types/services/ServiceResult';
+import { isAxiosError } from 'axios';
 
 export default abstract class GenericService<T extends { id: number }> {
-  protected readonly baseUrl: string;
+  protected readonly modelEndpoint: string;
 
   constructor(modelName: string) {
-    this.baseUrl = `https://localhost:7053/api/v1/${modelName}/`;
+    this.modelEndpoint = `${modelName}/`;
   }
 
   async getAll(): Promise<ServiceResult<T[]>> {
     try {
-      const res = await axios.get(this.baseUrl);
+      const res = await api.get(this.modelEndpoint);
       return new ServiceResult<T[]>(
         res.status,
         'Registros encontrados',
@@ -25,7 +26,7 @@ export default abstract class GenericService<T extends { id: number }> {
   async getById(id: number): Promise<ServiceResult<T>> {
     try {
       this.validateId(id);
-      const res = await axios.get(this.baseUrl + id);
+      const res = await api.get(this.modelEndpoint + id);
 
       return new ServiceResult<T>(res.status, 'Registro encontrado', res.data);
     } catch (error) {
@@ -39,7 +40,7 @@ export default abstract class GenericService<T extends { id: number }> {
       if (!model) throw new Error('Os dados não foram informados');
       // REMOVE o ID manualmente se vier undefined
       const { id, ...rest } = model;
-      const res = await axios.post(this.baseUrl, rest);
+      const res = await api.post(this.modelEndpoint, rest);
       return new ServiceResult<T>(
         res.status,
         'Registro criado com sucesso',
@@ -55,7 +56,7 @@ export default abstract class GenericService<T extends { id: number }> {
     try {
       this.validateModel(model);
 
-      const res = await axios.put(this.baseUrl + id, model);
+      const res = await api.put(this.modelEndpoint + id, model);
       return new ServiceResult<T>(
         res.status,
         'Alteração realizada com sucesso',
@@ -70,7 +71,7 @@ export default abstract class GenericService<T extends { id: number }> {
   async delete(id: number): Promise<ServiceResult<string>> {
     try {
       this.validateId(id);
-      const res = await axios.delete(this.baseUrl + id);
+      const res = await api.delete(this.modelEndpoint + id);
 
       return new ServiceResult<string>(
         res.status,
@@ -97,7 +98,7 @@ export default abstract class GenericService<T extends { id: number }> {
   }
 
   protected handleError(error: unknown): { code: number; message: string } {
-    if (axios.isAxiosError(error)) {
+    if (isAxiosError(error)) {
       if (error.response) {
         return {
           code: error.response.status,
