@@ -1,5 +1,5 @@
 import api from '@/features/api';
-import ServiceResult from '@/types/services/ServiceResult';
+import ServiceResult from '@/types/app/ServiceResult';
 import { isAxiosError } from 'axios';
 
 export default abstract class GenericService<T extends { id: number }> {
