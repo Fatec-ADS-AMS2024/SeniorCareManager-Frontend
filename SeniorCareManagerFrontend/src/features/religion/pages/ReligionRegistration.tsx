@@ -39,13 +39,16 @@ export default function ReligionRegistration() {
   const [currentId, setCurrentId] = useState<number | null>(null);
 
   const fetchData = async () => {
-    const religionService = new ReligionService();
-    const res = await religionService.getAll();
-    if (res.code === 200 && res.data) {
-      setData([...res.data]);
-      setOriginalData([...res.data]);
-    } else {
-      console.error('Erro ao buscar dados:', res.message);
+    try {
+      const res = await ReligionService.getAll();
+      if (res.data) {
+        setData([...res.data]);
+        setOriginalData([...res.data]);
+      } else {
+        console.error('Erro ao buscar dados:', res.message);
+      }
+    } catch (error) {
+      alert(error);
     }
   };
 
@@ -149,7 +152,6 @@ export default function ReligionRegistration() {
   };
 
   const registerReligion = async (model: Religion) => {
-    const religionService = new ReligionService();
     const errorMessage = validateReligion(model);
 
     if (errorMessage) {
@@ -157,24 +159,27 @@ export default function ReligionRegistration() {
       return;
     }
 
-    const res = await religionService.create(model);
-    if (res.code >= 200 && res.code < 300) {
-      setModalRegister(false);
-      await fetchData();
-      showInfoModal(
-        `Religião "${res.data?.name}" criada com sucesso!`,
-        'success'
-      );
-    } else {
-      showInfoModal(
-        res.message || 'Erro inesperado ao criar a religião.',
-        'error'
-      );
+    try {
+      const res = await ReligionService.create(model);
+      if (res.success) {
+        setModalRegister(false);
+        await fetchData();
+        showInfoModal(
+          `Religião "${res.data?.name}" criada com sucesso!`,
+          'success'
+        );
+      } else {
+        showInfoModal(
+          res.message || 'Erro inesperado ao criar a religião.',
+          'error'
+        );
+      }
+    } catch (error) {
+      alert(error);
     }
   };
 
   const editReligion = async (id: number, model: Religion) => {
-    const religionService = new ReligionService();
     const errorMessage = validateReligion(model, id);
 
     if (errorMessage) {
@@ -182,8 +187,8 @@ export default function ReligionRegistration() {
       return;
     }
 
-    const res = await religionService.update(id, { ...model, id });
-    if (res.code >= 200 && res.code < 300) {
+    const res = await ReligionService.update(id, { ...model, id });
+    if (res.success) {
       setModalEdit(false);
       await fetchData();
       showInfoModal(
@@ -199,10 +204,9 @@ export default function ReligionRegistration() {
   };
 
   const deleteReligion = async (id: number) => {
-    const religionService = new ReligionService();
     try {
-      const res = await religionService.delete(id);
-      if (res.code >= 200 && res.code < 300) {
+      const res = await ReligionService.deleteById(id);
+      if (res.success) {
         setModalDelete(false);
         setCurrentId(null);
         const itemName = data.find((item) => item.id === id)?.name || '';

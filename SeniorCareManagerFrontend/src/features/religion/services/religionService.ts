@@ -1,8 +1,10 @@
 import Religion from '@/types/models/Religion';
-import GenericService from '@/services/genericService';
+import generateGenericMethods from '@/utils/serviceUtils';
 
-export default class ReligionService extends GenericService<Religion> {
-  constructor() {
-    super('Religion');
-  }
+const genericMethods = generateGenericMethods<Religion>('Religion');
+
+const ReligionService = {
+  ...genericMethods,
 }
+
+export default ReligionService;
