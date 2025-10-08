@@ -55,9 +55,8 @@ export default function HealthInsurancePlanRegistration() {
   const [currentId, setCurrentId] = useState<number | null>(null);
 
   const fetchData = async () => {
-    const healthInsurancePlanService = new HealthInsurancePlanService();
-    const res = await healthInsurancePlanService.getAll();
-    if (res.code === 200 && res.data) {
+    const res = await HealthInsurancePlanService.getAll();
+    if (res.data) {
       setData([...res.data]);
       setOriginalData([...res.data]);
     } else {
@@ -179,7 +178,6 @@ export default function HealthInsurancePlanRegistration() {
   };
 
   const registerHealthInsurancePlan = async (model: HealthInsurancePlan) => {
-    const healthInsurancePlanService = new HealthInsurancePlanService();
     const errorMessage = validateHealthInsurancePlan(model);
 
     if (errorMessage) {
@@ -188,9 +186,9 @@ export default function HealthInsurancePlanRegistration() {
     }
 
     const payload = { ...model, type: Number(model.type) };
-    const res = await healthInsurancePlanService.create(payload);
+    const res = await HealthInsurancePlanService.create(payload);
 
-    if (res.code >= 200 && res.code < 300) {
+    if (res.success) {
       setModalRegister(false);
       await fetchData();
       showInfoModal(
@@ -209,7 +207,6 @@ export default function HealthInsurancePlanRegistration() {
     id: number,
     model: HealthInsurancePlan
   ) => {
-    const healthInsurancePlanService = new HealthInsurancePlanService();
     const errorMessage = validateHealthInsurancePlan(model, id);
 
     if (errorMessage) {
@@ -218,9 +215,9 @@ export default function HealthInsurancePlanRegistration() {
     }
 
     const payload = { ...model, id, type: Number(model.type) };
-    const res = await healthInsurancePlanService.update(id, payload);
+    const res = await HealthInsurancePlanService.update(id, payload);
 
-    if (res.code >= 200 && res.code < 300) {
+    if (res.success) {
       setModalEdit(false);
       await fetchData();
       showInfoModal(
@@ -236,10 +233,9 @@ export default function HealthInsurancePlanRegistration() {
   };
 
   const deleteHealthInsurancePlan = async (id: number) => {
-    const healthInsurancePlanService = new HealthInsurancePlanService();
     try {
-      const res = await healthInsurancePlanService.delete(id);
-      if (res.code >= 200 && res.code < 300) {
+      const res = await HealthInsurancePlanService.deleteById(id);
+      if (res.success) {
         setModalDelete(false);
         setCurrentId(null);
         const itemName = data.find((item) => item.id === id)?.name || '';

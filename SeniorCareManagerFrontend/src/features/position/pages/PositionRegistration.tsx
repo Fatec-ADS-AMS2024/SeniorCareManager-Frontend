@@ -39,9 +39,8 @@ export default function PositionRegistration() {
   const [currentId, setCurrentId] = useState<number | null>(null);
 
   const fetchData = async () => {
-    const positionService = new PositionService();
-    const res = await positionService.getAll();
-    if (res.code === 200 && res.data) {
+    const res = await PositionService.getAll();
+    if (res.data) {
       setData([...res.data]);
       setOriginalData([...res.data]);
     } else {
@@ -144,7 +143,6 @@ export default function PositionRegistration() {
   };
 
   const registerPosition = async (model: Position) => {
-    const positionService = new PositionService();
     const errorMessage = validatePosition(model);
 
     if (errorMessage) {
@@ -152,8 +150,8 @@ export default function PositionRegistration() {
       return;
     }
 
-    const res = await positionService.create(model);
-    if (res.code >= 200 && res.code < 300) {
+    const res = await PositionService.create(model);
+    if (res.success) {
       setModalRegister(false);
       await fetchData();
       showInfoModal(`Cargo "${res.data?.name}" criado com sucesso!`, 'success');
@@ -166,7 +164,6 @@ export default function PositionRegistration() {
   };
 
   const editPosition = async (id: number, model: Position) => {
-    const positionService = new PositionService();
     const errorMessage = validatePosition(model, id);
 
     if (errorMessage) {
@@ -175,9 +172,9 @@ export default function PositionRegistration() {
     }
 
     const payload = { ...model, id };
-    const res = await positionService.update(id, payload);
+    const res = await PositionService.update(id, payload);
 
-    if (res.code >= 200 && res.code < 300) {
+    if (res.success) {
       setModalEdit(false);
       await fetchData();
       showInfoModal(
@@ -193,10 +190,9 @@ export default function PositionRegistration() {
   };
 
   const deletePosition = async (id: number) => {
-    const positionService = new PositionService();
     try {
-      const res = await positionService.delete(id);
-      if (res.code >= 200 && res.code < 300) {
+      const res = await PositionService.deleteById(id);
+      if (res.success) {
         setModalDelete(false);
         setCurrentId(null);
         const itemName = data.find((item) => item.id === id)?.name || '';

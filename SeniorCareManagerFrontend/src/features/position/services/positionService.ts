@@ -1,8 +1,10 @@
 import Position from '@/types/models/Position';
-import GenericService from '@/services/genericService';
+import generateGenericMethods from '@/utils/serviceUtils';
 
-export default class PositionService extends GenericService<Position> {
-  constructor() {
-    super('Position');
-  }
+const genericMethods = generateGenericMethods<Position>('Position');
+
+const PositionService = {
+  ...genericMethods,
 }
+
+export default PositionService;

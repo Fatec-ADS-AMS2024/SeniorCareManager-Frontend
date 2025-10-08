@@ -1,8 +1,12 @@
 import HealthInsurancePlan from '@/types/models/HealthInsurancePlan';
-import GenericService from '@/services/genericService';
+import generateGenericMethods from '@/utils/serviceUtils';
 
-export default class HealthInsurancePlanService extends GenericService<HealthInsurancePlan> {
-  constructor() {
-    super('HealthInsurancePlan');
-  }
-}
+const genericMethods = generateGenericMethods<HealthInsurancePlan>(
+  'HealthInsurancePlan'
+);
+
+const HealthInsurancePlanService = {
+  ...genericMethods,
+};
+
+export default HealthInsurancePlanService;
