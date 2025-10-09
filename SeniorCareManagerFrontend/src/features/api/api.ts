@@ -24,29 +24,24 @@ axiosInstance.interceptors.request.use(
 // Exporta um encapsulamento para uso na aplicação
 const api = {
   get: async <T>(url: string, config?: AxiosRequestConfig) => {
-    return (await axiosInstance.get(url, config)) as AxiosResponse<
-      ApiResponse<T>
-    >;
+    const response = await axiosInstance.get(url, config);
+    return response as AxiosResponse<ApiResponse<T>>;
   },
   post: async <T>(url: string, data?: T, config?: AxiosRequestConfig) => {
-    return (await axiosInstance.post(url, data, config)) as AxiosResponse<
-      ApiResponse<T>
-    >;
+    const response = await axiosInstance.post(url, data, config);
+    return response as AxiosResponse<ApiResponse<T>>;
   },
   put: async <T>(url: string, data?: T, config?: AxiosRequestConfig) => {
-    return (await axiosInstance.put(url, data, config)) as AxiosResponse<
-      ApiResponse<T>
-    >;
+    const response = await axiosInstance.put(url, data, config);
+    return response as AxiosResponse<ApiResponse<T>>;
   },
   delete: async <T>(url: string, config?: AxiosRequestConfig) => {
-    return (await axiosInstance.delete(url, config)) as AxiosResponse<
-      ApiResponse<T>
-    >;
+    const response = await axiosInstance.delete(url, config);
+    return response as AxiosResponse<ApiResponse<T>>;
   },
   patch: async <T>(url: string, data?: T, config?: AxiosRequestConfig) => {
-    return (await axiosInstance.patch(url, data, config)) as AxiosResponse<
-      ApiResponse<T>
-    >;
+    const response = await axiosInstance.patch(url, data, config);
+    return response as AxiosResponse<ApiResponse<T>>;
   },
 };
 
