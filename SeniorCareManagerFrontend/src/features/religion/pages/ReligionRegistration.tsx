@@ -39,16 +39,13 @@ export default function ReligionRegistration() {
   const [currentId, setCurrentId] = useState<number | null>(null);
 
   const fetchData = async () => {
-    try {
-      const res = await ReligionService.getAll();
-      if (res.data) {
-        setData([...res.data]);
-        setOriginalData([...res.data]);
-      } else {
-        console.error('Erro ao buscar dados:', res.message);
-      }
-    } catch (error) {
-      alert(error);
+    const res = await ReligionService.getAll();
+
+    if (res.success && res.data) {
+      setData([...res.data]);
+      setOriginalData([...res.data]);
+    } else {
+      alert(res.message);
     }
   };
 
@@ -102,8 +99,6 @@ export default function ReligionRegistration() {
     setCurrentId(id);
     setModalDelete(true);
   };
-
-  const openCloseModalInfo = () => setModalInfo(false);
 
   const showInfoModal = (message: string, type: 'success' | 'error') => {
     setInfoMessage(message);
@@ -159,23 +154,20 @@ export default function ReligionRegistration() {
       return;
     }
 
-    try {
-      const res = await ReligionService.create(model);
-      if (res.success) {
-        setModalRegister(false);
-        await fetchData();
-        showInfoModal(
-          `Religião "${res.data?.name}" criada com sucesso!`,
-          'success'
-        );
-      } else {
-        showInfoModal(
-          res.message || 'Erro inesperado ao criar a religião.',
-          'error'
-        );
-      }
-    } catch (error) {
-      alert(error);
+    const res = await ReligionService.create(model);
+
+    if (res.success) {
+      setModalRegister(false);
+      await fetchData();
+      showInfoModal(
+        `Religião "${res.data?.name}" criada com sucesso!`,
+        'success'
+      );
+    } else {
+      showInfoModal(
+        res.message || 'Erro inesperado ao criar a religião.',
+        'error'
+      );
     }
   };
 
@@ -207,14 +199,11 @@ export default function ReligionRegistration() {
     try {
       const res = await ReligionService.deleteById(id);
       if (res.success) {
+        const itemName = data.find((item) => item.id === id)?.name || '';
         setModalDelete(false);
         setCurrentId(null);
-        const itemName = data.find((item) => item.id === id)?.name || '';
+        showInfoModal(`Religião ${itemName} excluída com sucesso!`, 'success');
         await fetchData();
-        showInfoModal(
-          `Religião "${itemName}" excluída com sucesso!`,
-          'success'
-        );
       } else {
         showInfoModal(
           res.message || 'Erro inesperado ao excluir a Religião.',
@@ -279,7 +268,7 @@ export default function ReligionRegistration() {
           msgInformation={infoMessage}
           icon={infoIcon}
           statusModal={modalInfo}
-          closeModal={openCloseModalInfo}
+          closeModal={() => setModalInfo(false)}
         />
         <div className='flex items-center justify-between mb-4'>
           <SearchBar action={handleSearch} placeholder='Buscar religião...' />

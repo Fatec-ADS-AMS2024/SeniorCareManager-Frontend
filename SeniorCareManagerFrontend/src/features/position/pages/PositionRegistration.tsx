@@ -40,11 +40,12 @@ export default function PositionRegistration() {
 
   const fetchData = async () => {
     const res = await PositionService.getAll();
-    if (res.data) {
+
+    if (res.success && res.data) {
       setData([...res.data]);
       setOriginalData([...res.data]);
     } else {
-      console.error('Erro ao buscar dados:', res.message);
+      alert(res.message);
     }
   };
 
@@ -190,22 +191,19 @@ export default function PositionRegistration() {
   };
 
   const deletePosition = async (id: number) => {
-    try {
-      const res = await PositionService.deleteById(id);
-      if (res.success) {
-        setModalDelete(false);
-        setCurrentId(null);
-        const itemName = data.find((item) => item.id === id)?.name || '';
-        await fetchData();
-        showInfoModal(`Cargo "${itemName}" excluído com sucesso!`, 'success');
-      } else {
-        showInfoModal(
-          res.message || 'Erro inesperado ao excluir o cargo.',
-          'error'
-        );
-      }
-    } catch {
-      showInfoModal('Erro inesperado ao excluir o cargo.', 'error');
+    const res = await PositionService.deleteById(id);
+
+    if (res.success) {
+      setModalDelete(false);
+      setCurrentId(null);
+      const itemName = data.find((item) => item.id === id)?.name || '';
+      await fetchData();
+      showInfoModal(`Cargo "${itemName}" excluído com sucesso!`, 'success');
+    } else {
+      showInfoModal(
+        res.message || 'Erro inesperado ao excluir o cargo.',
+        'error'
+      );
     }
   };
 

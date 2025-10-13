@@ -56,11 +56,12 @@ export default function HealthInsurancePlanRegistration() {
 
   const fetchData = async () => {
     const res = await HealthInsurancePlanService.getAll();
-    if (res.data) {
+
+    if (res.success && res.data) {
       setData([...res.data]);
       setOriginalData([...res.data]);
     } else {
-      console.error('Erro ao buscar dados:', res.message);
+      alert(res.message);
     }
   };
 
@@ -233,25 +234,21 @@ export default function HealthInsurancePlanRegistration() {
   };
 
   const deleteHealthInsurancePlan = async (id: number) => {
-    try {
-      const res = await HealthInsurancePlanService.deleteById(id);
-      if (res.success) {
-        setModalDelete(false);
-        setCurrentId(null);
-        const itemName = data.find((item) => item.id === id)?.name || '';
-        await fetchData();
-        showInfoModal(
-          `Plano de Saúde "${itemName}" excluído com sucesso!`,
-          'success'
-        );
-      } else {
-        showInfoModal(
-          res.message || 'Erro inesperado ao excluir o Plano de Saúde.',
-          'error'
-        );
-      }
-    } catch {
-      showInfoModal('Erro inesperado ao excluir o Plano de Saúde.', 'error');
+    const res = await HealthInsurancePlanService.deleteById(id);
+    if (res.success) {
+      setModalDelete(false);
+      setCurrentId(null);
+      const itemName = data.find((item) => item.id === id)?.name || '';
+      await fetchData();
+      showInfoModal(
+        `Plano de Saúde "${itemName}" excluído com sucesso!`,
+        'success'
+      );
+    } else {
+      showInfoModal(
+        res.message || 'Erro inesperado ao excluir o Plano de Saúde.',
+        'error'
+      );
     }
   };
 
