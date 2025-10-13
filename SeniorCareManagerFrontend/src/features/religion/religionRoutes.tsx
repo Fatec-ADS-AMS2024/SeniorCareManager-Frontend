@@ -1,15 +1,10 @@
 import { createRoutes } from '@/utils/routesUtils';
-import ReligionRegistration from './pages/ReligionRegistration';
+import ReligionOverview from './pages/ReligionOverview';
 
 export const religionRoutes = createRoutes({
   RELIGION: {
     path: '/religion',
-    displayName: 'Religião',
-    element: null,
-  },
-  RELIGION_REGISTRATION: {
-    path: '/religion/registration',
-    displayName: 'Cadastro de Religião',
-    element: <ReligionRegistration />,
+    displayName: 'Religiões',
+    element: <ReligionOverview />,
   },
 });

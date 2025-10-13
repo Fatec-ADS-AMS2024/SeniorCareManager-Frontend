@@ -19,9 +19,9 @@ const router = createBrowserRouter(
       >
         <Route {...routes.ADMIN_OVERVIEW} />
         <Route {...routes.REGISTRATIONS} />
-        <Route {...routes.RELIGION_REGISTRATION} />
-        <Route {...routes.HEALTH_INSURANCE_PLAN_REGISTRATION} />
-        <Route {...routes.POSITION_REGISTRATION} />
+        <Route {...routes.RELIGION} />
+        <Route {...routes.HEALTH_INSURANCE_PLAN} />
+        <Route {...routes.POSITION} />
       </Route>
       <Route
         path=''

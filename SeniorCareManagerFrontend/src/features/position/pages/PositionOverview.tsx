@@ -1,10 +1,6 @@
 import { useEffect, useState } from 'react';
-import { HealthInsurancePlanService } from '@/features/healthInsurancePlan';
-import HealthInsurancePlan from '@/types/models/HealthInsurancePlan';
-import {
-  getHealthInsurancePlanTypeLabel,
-  getHealthInsurancePlanTypeOptions,
-} from '@/types/enums/HealthInsurancePlanType';
+import PositionService from '../services/positionService';
+import Position from '@/types/models/Position';
 import Table from '@/components/Table';
 import {
   CheckCircle,
@@ -20,32 +16,20 @@ import Modal from '@/components/GenericModal';
 
 const inputs: {
   label: string;
-  attribute: keyof HealthInsurancePlan;
+  attribute: keyof Position;
   defaultValue: string;
-  options?: { label: string; value: number }[];
 }[] = [
   {
-    label: 'Tipo',
-    attribute: 'type',
-    defaultValue: '',
-    options: getHealthInsurancePlanTypeOptions(),
-  },
-  {
-    label: 'Nome do plano de saúde',
+    label: 'Nome do Cargo',
     attribute: 'name',
-    defaultValue: '',
-  },
-  {
-    label: 'Abreviação',
-    attribute: 'abbreviation',
     defaultValue: '',
   },
 ];
 
-export default function HealthInsurancePlanRegistration() {
-  const columns = ['Nome', 'Tipo', 'Abreviação'];
-  const [data, setData] = useState<HealthInsurancePlan[]>([]);
-  const [originalData, setOriginalData] = useState<HealthInsurancePlan[]>([]);
+export default function PositionOverview() {
+  const columns = ['Nome'];
+  const [data, setData] = useState<Position[]>([]);
+  const [originalData, setOriginalData] = useState<Position[]>([]);
   const [modalRegister, setModalRegister] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
@@ -55,7 +39,7 @@ export default function HealthInsurancePlanRegistration() {
   const [currentId, setCurrentId] = useState<number | null>(null);
 
   const fetchData = async () => {
-    const res = await HealthInsurancePlanService.getAll();
+    const res = await PositionService.getAll();
 
     if (res.success && res.data) {
       setData([...res.data]);
@@ -74,12 +58,8 @@ export default function HealthInsurancePlanRegistration() {
       setData(originalData);
       return;
     }
-    const filteredData = originalData.filter(
-      (plan) =>
-        plan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        getHealthInsurancePlanTypeLabel(plan.type)
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
+    const filteredData = originalData.filter((r) =>
+      r.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setData(filteredData);
   };
@@ -101,9 +81,7 @@ export default function HealthInsurancePlanRegistration() {
     const rowValues = getRowValues(id);
     if (rowValues) {
       inputs.forEach((input) => {
-        input.defaultValue = String(
-          rowValues[input.attribute as keyof HealthInsurancePlan]
-        );
+        input.defaultValue = String(rowValues[input.attribute]);
       });
       setCurrentId(id);
       setModalEdit(true);
@@ -136,12 +114,11 @@ export default function HealthInsurancePlanRegistration() {
     setModalInfo(true);
   };
 
-  const validateHealthInsurancePlan = (
-    model: HealthInsurancePlan,
+  const validatePosition = (
+    model: Position,
     idToIgnore?: number
   ): string | null => {
     const name = model.name?.trim() || '';
-    const abbreviation = model.abbreviation?.trim() || '';
 
     if (!name || name.length < 2 || name.length > 100)
       return 'Nome deve ter entre 2 e 100 caracteres.';
@@ -149,104 +126,82 @@ export default function HealthInsurancePlanRegistration() {
       return 'Nome deve conter apenas letras e espaços.';
     if (
       originalData.some(
-        (p) =>
-          p.id !== idToIgnore && p.name.toLowerCase() === name.toLowerCase()
+        (r) =>
+          r.id !== idToIgnore && r.name.toLowerCase() === name.toLowerCase()
       )
     )
-      return 'Já existe um Plano de Saúde com esse nome.';
-    if (model.type === null || model.type === undefined)
-      return 'Tipo é obrigatório.';
-    if (!abbreviation || abbreviation.length === 0 || abbreviation.length > 5)
-      return 'Abreviação é obrigatória e deve ter no máximo 5 caracteres.';
-    if (
-      originalData.some(
-        (p) =>
-          p.id !== idToIgnore &&
-          p.abbreviation.toLowerCase() === abbreviation.toLowerCase()
-      )
-    )
-      return 'Já existe um Plano de Saúde com essa abreviação.';
+      return 'Já existe um cargo com esse nome.';
 
     return null;
   };
 
-  const handleSave = (model: HealthInsurancePlan) => {
+  const handleSave = (model: Position) => {
     if (currentId !== null) {
-      editHealthInsurancePlan(currentId, model);
+      editPosition(currentId, model);
     } else {
-      registerHealthInsurancePlan(model);
+      registerPosition(model);
     }
   };
 
-  const registerHealthInsurancePlan = async (model: HealthInsurancePlan) => {
-    const errorMessage = validateHealthInsurancePlan(model);
+  const registerPosition = async (model: Position) => {
+    const errorMessage = validatePosition(model);
 
     if (errorMessage) {
       showInfoModal(errorMessage, 'error');
       return;
     }
 
-    const payload = { ...model, type: Number(model.type) };
-    const res = await HealthInsurancePlanService.create(payload);
-
+    const res = await PositionService.create(model);
     if (res.success) {
       setModalRegister(false);
       await fetchData();
-      showInfoModal(
-        `Plano de Saúde "${res.data?.name}" criado com sucesso!`,
-        'success'
-      );
+      showInfoModal(`Cargo "${res.data?.name}" criado com sucesso!`, 'success');
     } else {
       showInfoModal(
-        res.message || 'Erro inesperado ao criar o Plano de Saúde.',
+        res.message || 'Erro inesperado ao criar o cargo.',
         'error'
       );
     }
   };
 
-  const editHealthInsurancePlan = async (
-    id: number,
-    model: HealthInsurancePlan
-  ) => {
-    const errorMessage = validateHealthInsurancePlan(model, id);
+  const editPosition = async (id: number, model: Position) => {
+    const errorMessage = validatePosition(model, id);
 
     if (errorMessage) {
       showInfoModal(errorMessage, 'error');
       return;
     }
 
-    const payload = { ...model, id, type: Number(model.type) };
-    const res = await HealthInsurancePlanService.update(id, payload);
+    const payload = { ...model, id };
+    const res = await PositionService.update(id, payload);
 
     if (res.success) {
       setModalEdit(false);
       await fetchData();
       showInfoModal(
-        `Plano de Saúde "${res.data?.name}" atualizado com sucesso!`,
+        `Cargo "${res.data?.name}" atualizado com sucesso!`,
         'success'
       );
     } else {
       showInfoModal(
-        res.message || 'Erro inesperado ao atualizar o Plano de Saúde.',
+        res.message || 'Erro inesperado ao atualizar o cargo.',
         'error'
       );
     }
   };
 
-  const deleteHealthInsurancePlan = async (id: number) => {
-    const res = await HealthInsurancePlanService.deleteById(id);
+  const deletePosition = async (id: number) => {
+    const res = await PositionService.deleteById(id);
+
     if (res.success) {
       setModalDelete(false);
       setCurrentId(null);
       const itemName = data.find((item) => item.id === id)?.name || '';
       await fetchData();
-      showInfoModal(
-        `Plano de Saúde "${itemName}" excluído com sucesso!`,
-        'success'
-      );
+      showInfoModal(`Cargo "${itemName}" excluído com sucesso!`, 'success');
     } else {
       showInfoModal(
-        res.message || 'Erro inesperado ao excluir o Plano de Saúde.',
+        res.message || 'Erro inesperado ao excluir o cargo.',
         'error'
       );
     }
@@ -271,36 +226,35 @@ export default function HealthInsurancePlanRegistration() {
 
   return (
     <div>
-      <BreadcrumbPageTitle title='Cadastro de Plano de Saúde' />
+      <BreadcrumbPageTitle title='Cadastro de Cargo' />
       <div className='bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10'>
-        <Modal<HealthInsurancePlan>
-          title='Cadastrar Plano de Saúde'
+        <Modal<Position>
+          title='Cadastrar Cargo'
           inputs={inputs}
           action={handleSave}
           statusModal={modalRegister}
           closeModal={() => setModalRegister(false)}
           type='create'
         />
-        <Modal<HealthInsurancePlan>
+        <Modal<Position>
           type='update'
-          title='Editar Plano de Saúde'
+          title='Editar Cargo'
           inputs={inputs}
           action={handleSave}
           statusModal={modalEdit}
           closeModal={() => openCloseModalEdit()}
         />
-        <Modal<HealthInsurancePlan>
+        <Modal<Position>
           type='delete'
-          title='Deseja realmente excluir esse Plano de Saúde?'
-          msgInformation='Ao excluir este Plano de Saúde, ele será removido permanentemente do sistema.'
+          title='Deseja realmente excluir esse Cargo?'
+          msgInformation='Ao excluir este Cargo, ele será removido permanentemente do sistema.'
           action={() => {
-            if (currentId !== null) deleteHealthInsurancePlan(currentId);
+            if (currentId !== null) deletePosition(currentId);
           }}
           statusModal={modalDelete}
           closeModal={() => openCloseModalDelete()}
-          inputs={inputs}
         />
-        <Modal<HealthInsurancePlan>
+        <Modal<Position>
           type='info'
           msgInformation={infoMessage}
           icon={infoIcon}
@@ -308,10 +262,7 @@ export default function HealthInsurancePlanRegistration() {
           closeModal={openCloseModalInfo}
         />
         <div className='flex items-center justify-between mb-4'>
-          <SearchBar
-            action={handleSearch}
-            placeholder='Buscar plano de saúde...'
-          />
+          <SearchBar action={handleSearch} placeholder='Buscar cargo...' />
           <Button
             label='Adicionar'
             icon={<Plus />}
@@ -323,18 +274,10 @@ export default function HealthInsurancePlanRegistration() {
         </div>
         <Table
           columns={columns}
-          data={data.map((plan) => {
-            let finalAbbreviation = plan.abbreviation;
-            if (plan.name === plan.abbreviation) {
-              finalAbbreviation += '\u200B';
-            }
-            return {
-              id: plan.id,
-              name: plan.name,
-              type: getHealthInsurancePlanTypeLabel(plan.type),
-              abbreviation: finalAbbreviation,
-            };
-          })}
+          data={data.map((row) => ({
+            id: row.id,
+            Nome: row.name,
+          }))}
           actions={(id) => <Actions id={id} />}
         />
       </div>

@@ -4,7 +4,6 @@ import SearchBar from '@/components/SearchBar';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import useAppRoutes from '@/hooks/useAppRoutes';
 
-
 export default function Registrations() {
   const routes = useAppRoutes();
 
@@ -13,19 +12,19 @@ export default function Registrations() {
       text: 'Religião',
       subText: 'Religiões Cadastradas',
       icon: <Cross weight='bold' className='shrink-0 size-full' />,
-      page: routes.RELIGION_REGISTRATION.path,
+      page: routes.RELIGION.path,
     },
     {
       text: 'Plano de Saúde',
       subText: 'Planos de Saúde Cadastrados',
       icon: <FirstAid weight='bold' className='shrink-0 size-full' />,
-      page: routes.HEALTH_INSURANCE_PLAN_REGISTRATION.path,
+      page: routes.HEALTH_INSURANCE_PLAN.path,
     },
     {
       text: 'Cargo',
       subText: 'Cargos Cadastrados',
       icon: <Briefcase weight='bold' className='shrink-0 size-full' />,
-      page: routes.POSITION_REGISTRATION.path,
+      page: routes.POSITION.path,
     },
   ];
 

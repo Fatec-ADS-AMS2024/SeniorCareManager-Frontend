@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
-import ReligionService from '../services/religionService';
-import Religion from '@/types/models/Religion';
+import { HealthInsurancePlanService } from '@/features/healthInsurancePlan';
+import HealthInsurancePlan from '@/types/models/HealthInsurancePlan';
+import {
+  getHealthInsurancePlanTypeLabel,
+  getHealthInsurancePlanTypeOptions,
+} from '@/types/enums/HealthInsurancePlanType';
 import Table from '@/components/Table';
 import {
   CheckCircle,
@@ -16,20 +20,32 @@ import Modal from '@/components/GenericModal';
 
 const inputs: {
   label: string;
-  attribute: keyof Religion;
+  attribute: keyof HealthInsurancePlan;
   defaultValue: string;
+  options?: { label: string; value: number }[];
 }[] = [
   {
-    label: 'Nome',
+    label: 'Tipo',
+    attribute: 'type',
+    defaultValue: '',
+    options: getHealthInsurancePlanTypeOptions(),
+  },
+  {
+    label: 'Nome do plano de saúde',
     attribute: 'name',
+    defaultValue: '',
+  },
+  {
+    label: 'Abreviação',
+    attribute: 'abbreviation',
     defaultValue: '',
   },
 ];
 
-export default function ReligionRegistration() {
-  const columns = ['Nome'];
-  const [data, setData] = useState<Religion[]>([]);
-  const [originalData, setOriginalData] = useState<Religion[]>([]);
+export default function HealthInsurancePlanOverview() {
+  const columns = ['Nome', 'Tipo', 'Abreviação'];
+  const [data, setData] = useState<HealthInsurancePlan[]>([]);
+  const [originalData, setOriginalData] = useState<HealthInsurancePlan[]>([]);
   const [modalRegister, setModalRegister] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
@@ -39,7 +55,7 @@ export default function ReligionRegistration() {
   const [currentId, setCurrentId] = useState<number | null>(null);
 
   const fetchData = async () => {
-    const res = await ReligionService.getAll();
+    const res = await HealthInsurancePlanService.getAll();
 
     if (res.success && res.data) {
       setData([...res.data]);
@@ -58,8 +74,12 @@ export default function ReligionRegistration() {
       setData(originalData);
       return;
     }
-    const filteredData = originalData.filter((r) =>
-      r.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredData = originalData.filter(
+      (plan) =>
+        plan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        getHealthInsurancePlanTypeLabel(plan.type)
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
     );
     setData(filteredData);
   };
@@ -81,7 +101,9 @@ export default function ReligionRegistration() {
     const rowValues = getRowValues(id);
     if (rowValues) {
       inputs.forEach((input) => {
-        input.defaultValue = String(rowValues[input.attribute]);
+        input.defaultValue = String(
+          rowValues[input.attribute as keyof HealthInsurancePlan]
+        );
       });
       setCurrentId(id);
       setModalEdit(true);
@@ -100,6 +122,8 @@ export default function ReligionRegistration() {
     setModalDelete(true);
   };
 
+  const openCloseModalInfo = () => setModalInfo(false);
+
   const showInfoModal = (message: string, type: 'success' | 'error') => {
     setInfoMessage(message);
     setInfoIcon(
@@ -112,106 +136,119 @@ export default function ReligionRegistration() {
     setModalInfo(true);
   };
 
-  const validateReligion = (
-    model: Religion,
+  const validateHealthInsurancePlan = (
+    model: HealthInsurancePlan,
     idToIgnore?: number
   ): string | null => {
     const name = model.name?.trim() || '';
+    const abbreviation = model.abbreviation?.trim() || '';
 
-    if (name.length < 3 || name.length > 100) {
-      return 'Nome deve ter entre 3 e 100 caracteres.';
-    }
-
-    if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/.test(name)) {
+    if (!name || name.length < 2 || name.length > 100)
+      return 'Nome deve ter entre 2 e 100 caracteres.';
+    if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/.test(name))
       return 'Nome deve conter apenas letras e espaços.';
-    }
-
     if (
       originalData.some(
-        (r) =>
-          r.id !== idToIgnore && r.name.toLowerCase() === name.toLowerCase()
+        (p) =>
+          p.id !== idToIgnore && p.name.toLowerCase() === name.toLowerCase()
       )
-    ) {
-      return 'Já existe uma religião com esse nome.';
-    }
+    )
+      return 'Já existe um Plano de Saúde com esse nome.';
+    if (model.type === null || model.type === undefined)
+      return 'Tipo é obrigatório.';
+    if (!abbreviation || abbreviation.length === 0 || abbreviation.length > 5)
+      return 'Abreviação é obrigatória e deve ter no máximo 5 caracteres.';
+    if (
+      originalData.some(
+        (p) =>
+          p.id !== idToIgnore &&
+          p.abbreviation.toLowerCase() === abbreviation.toLowerCase()
+      )
+    )
+      return 'Já existe um Plano de Saúde com essa abreviação.';
 
     return null;
   };
 
-  const handleSave = (model: Religion) => {
+  const handleSave = (model: HealthInsurancePlan) => {
     if (currentId !== null) {
-      editReligion(currentId, model);
+      editHealthInsurancePlan(currentId, model);
     } else {
-      registerReligion(model);
+      registerHealthInsurancePlan(model);
     }
   };
 
-  const registerReligion = async (model: Religion) => {
-    const errorMessage = validateReligion(model);
+  const registerHealthInsurancePlan = async (model: HealthInsurancePlan) => {
+    const errorMessage = validateHealthInsurancePlan(model);
 
     if (errorMessage) {
       showInfoModal(errorMessage, 'error');
       return;
     }
 
-    const res = await ReligionService.create(model);
+    const payload = { ...model, type: Number(model.type) };
+    const res = await HealthInsurancePlanService.create(payload);
 
     if (res.success) {
       setModalRegister(false);
       await fetchData();
       showInfoModal(
-        `Religião "${res.data?.name}" criada com sucesso!`,
+        `Plano de Saúde "${res.data?.name}" criado com sucesso!`,
         'success'
       );
     } else {
       showInfoModal(
-        res.message || 'Erro inesperado ao criar a religião.',
+        res.message || 'Erro inesperado ao criar o Plano de Saúde.',
         'error'
       );
     }
   };
 
-  const editReligion = async (id: number, model: Religion) => {
-    const errorMessage = validateReligion(model, id);
+  const editHealthInsurancePlan = async (
+    id: number,
+    model: HealthInsurancePlan
+  ) => {
+    const errorMessage = validateHealthInsurancePlan(model, id);
 
     if (errorMessage) {
       showInfoModal(errorMessage, 'error');
       return;
     }
 
-    const res = await ReligionService.update(id, { ...model, id });
+    const payload = { ...model, id, type: Number(model.type) };
+    const res = await HealthInsurancePlanService.update(id, payload);
+
     if (res.success) {
       setModalEdit(false);
       await fetchData();
       showInfoModal(
-        `Religião "${res.data?.name}" atualizada com sucesso!`,
+        `Plano de Saúde "${res.data?.name}" atualizado com sucesso!`,
         'success'
       );
     } else {
       showInfoModal(
-        res.message || 'Erro inesperado ao atualizar a religião.',
+        res.message || 'Erro inesperado ao atualizar o Plano de Saúde.',
         'error'
       );
     }
   };
 
-  const deleteReligion = async (id: number) => {
-    try {
-      const res = await ReligionService.deleteById(id);
-      if (res.success) {
-        const itemName = data.find((item) => item.id === id)?.name || '';
-        setModalDelete(false);
-        setCurrentId(null);
-        showInfoModal(`Religião ${itemName} excluída com sucesso!`, 'success');
-        await fetchData();
-      } else {
-        showInfoModal(
-          res.message || 'Erro inesperado ao excluir a Religião.',
-          'error'
-        );
-      }
-    } catch {
-      showInfoModal('Erro inesperado ao excluir a Religião.', 'error');
+  const deleteHealthInsurancePlan = async (id: number) => {
+    const res = await HealthInsurancePlanService.deleteById(id);
+    if (res.success) {
+      setModalDelete(false);
+      setCurrentId(null);
+      const itemName = data.find((item) => item.id === id)?.name || '';
+      await fetchData();
+      showInfoModal(
+        `Plano de Saúde "${itemName}" excluído com sucesso!`,
+        'success'
+      );
+    } else {
+      showInfoModal(
+        res.message || 'Erro inesperado ao excluir o Plano de Saúde.',
+        'error'
+      );
     }
   };
 
@@ -234,44 +271,47 @@ export default function ReligionRegistration() {
 
   return (
     <div>
-      <BreadcrumbPageTitle title='Cadastro de Religião' />
+      <BreadcrumbPageTitle title='Cadastro de Plano de Saúde' />
       <div className='bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10'>
-        <Modal<Religion>
-          title='Cadastrar Religião'
+        <Modal<HealthInsurancePlan>
+          title='Cadastrar Plano de Saúde'
           inputs={inputs}
           action={handleSave}
           statusModal={modalRegister}
           closeModal={() => setModalRegister(false)}
           type='create'
         />
-        <Modal<Religion>
+        <Modal<HealthInsurancePlan>
           type='update'
-          title='Editar Religião'
+          title='Editar Plano de Saúde'
           inputs={inputs}
           action={handleSave}
           statusModal={modalEdit}
           closeModal={() => openCloseModalEdit()}
         />
-        <Modal<Religion>
+        <Modal<HealthInsurancePlan>
           type='delete'
-          title='Deseja realmente excluir essa Religião?'
-          msgInformation='Ao excluir esta Religião, ela será removida permanentemente do sistema.'
+          title='Deseja realmente excluir esse Plano de Saúde?'
+          msgInformation='Ao excluir este Plano de Saúde, ele será removido permanentemente do sistema.'
           action={() => {
-            if (currentId !== null) deleteReligion(currentId);
+            if (currentId !== null) deleteHealthInsurancePlan(currentId);
           }}
           statusModal={modalDelete}
           closeModal={() => openCloseModalDelete()}
           inputs={inputs}
         />
-        <Modal<Religion>
+        <Modal<HealthInsurancePlan>
           type='info'
           msgInformation={infoMessage}
           icon={infoIcon}
           statusModal={modalInfo}
-          closeModal={() => setModalInfo(false)}
+          closeModal={openCloseModalInfo}
         />
         <div className='flex items-center justify-between mb-4'>
-          <SearchBar action={handleSearch} placeholder='Buscar religião...' />
+          <SearchBar
+            action={handleSearch}
+            placeholder='Buscar plano de saúde...'
+          />
           <Button
             label='Adicionar'
             icon={<Plus />}
@@ -283,7 +323,18 @@ export default function ReligionRegistration() {
         </div>
         <Table
           columns={columns}
-          data={data}
+          data={data.map((plan) => {
+            let finalAbbreviation = plan.abbreviation;
+            if (plan.name === plan.abbreviation) {
+              finalAbbreviation += '\u200B';
+            }
+            return {
+              id: plan.id,
+              name: plan.name,
+              type: getHealthInsurancePlanTypeLabel(plan.type),
+              abbreviation: finalAbbreviation,
+            };
+          })}
           actions={(id) => <Actions id={id} />}
         />
       </div>
