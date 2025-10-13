@@ -61,7 +61,7 @@ export default function Sidebar() {
     <div
       className={`flex flex-col z-10 ${
         isOpen ? 'w-72' : 'w-16'
-      } h-full bg-neutralWhite shadow-lg transition-all duration-500 overflow-hidden`}
+      } h-[calc(100vh-64px-96px)] bg-neutralWhite transition-all duration-500 overflow-hidden sticky left-0 top-24 bottom-0`}
     >
       {/* Botão de Menu */}
       <button
