@@ -5,11 +5,11 @@ interface BreadcrumbPageTitleProps {
   title: string;
 }
 
-export default function Breadcrumb_PageTitle({
+export default function BreadcrumbPageTitle({
   title,
 }: BreadcrumbPageTitleProps) {
   return (
-    <div className='bg-neutral p-5'>
+    <div className='p-5 bg-neutral'>
       <PageTitle title={title} />
       <Breadcrumb />
     </div>
