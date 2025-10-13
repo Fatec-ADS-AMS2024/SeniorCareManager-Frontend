@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { MagnifyingGlass } from '@phosphor-icons/react';
 import Button from '../Button';
 
@@ -13,7 +13,9 @@ export default function SearchBar({ placeholder, action }: SearchBarProps) {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Função para lidar com a ação de pesquisa
-  const handleSearch = () => {
+  const handleSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     if (typeof action === 'function') {
       action(searchTerm);
     } else {
@@ -25,7 +27,7 @@ export default function SearchBar({ placeholder, action }: SearchBarProps) {
     <div className='flex w-full '>
       {/* Search bar */}
       {/* Formulário de pesquisa */}
-      <form className='flex w-full max-w-2xl shadow-md'>
+      <form className='flex w-full max-w-2xl shadow-md' onSubmit={handleSearch}>
         {/* Input para entrada de dados com atualização do termo da pesquisa */}
         <input
           type='text'
@@ -39,8 +41,7 @@ export default function SearchBar({ placeholder, action }: SearchBarProps) {
           label=''
           icon={<MagnifyingGlass size={20} />}
           color='neutralLight'
-          onClick={handleSearch}
-          type='button'
+          type='submit'
         />
       </form>
     </div>
