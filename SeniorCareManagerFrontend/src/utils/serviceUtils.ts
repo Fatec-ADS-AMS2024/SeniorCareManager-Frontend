@@ -17,7 +17,7 @@ export default function generateGenericMethods<T extends { id: number }>(
         data: res.data.data,
       };
     } catch (error) {
-      return handleError(error);
+      return handleServiceError(error);
     }
   };
 
@@ -30,7 +30,7 @@ export default function generateGenericMethods<T extends { id: number }>(
         data: res.data.data,
       };
     } catch (error) {
-      return handleError(error);
+      return handleServiceError(error);
     }
   };
 
@@ -43,7 +43,7 @@ export default function generateGenericMethods<T extends { id: number }>(
         data: res.data.data,
       };
     } catch (error) {
-      return handleError(error);
+      return handleServiceError(error);
     }
   };
 
@@ -56,7 +56,7 @@ export default function generateGenericMethods<T extends { id: number }>(
         data: res.data.data,
       };
     } catch (error) {
-      return handleError(error);
+      return handleServiceError(error);
     }
   };
 
@@ -65,7 +65,7 @@ export default function generateGenericMethods<T extends { id: number }>(
       await api.delete(modelEndpoint + id);
       return { success: true, message: 'Excluído com sucesso' };
     } catch (error) {
-      return handleError(error);
+      return handleServiceError(error);
     }
   };
 
@@ -78,7 +78,7 @@ export default function generateGenericMethods<T extends { id: number }>(
   };
 }
 
-function handleError<T>(error: unknown): ServiceResult<T> {
+export function handleServiceError<T>(error: unknown): ServiceResult<T> {
   if (isAxiosError(error) && error.response) {
     const responseData = error.response.data as ApiResponse<T>;
 
