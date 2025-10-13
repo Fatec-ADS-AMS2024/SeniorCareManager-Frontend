@@ -1,59 +1,71 @@
 import { api } from '@/features/api';
 import { ApiResponse } from '@/features/api';
-import { FieldError } from '@/features/api/types';
+import ServiceResult from '@/types/app/ServiceResult';
+import { isAxiosError } from 'axios';
 
 export default function generateGenericMethods<T extends { id: number }>(
   modelName: string
 ) {
   const modelEndpoint = `${modelName}/`;
 
-  const getAll = async () => {
+  const getAll = async (): Promise<ServiceResult<T[]>> => {
     try {
       const res = await api.get<T[]>(modelEndpoint);
-
-      return res.data;
+      return {
+        success: res.data.success,
+        message: res.data.message,
+        data: res.data.data,
+      };
     } catch (error) {
-      throw new Error(String(error));
+      return handleError(error);
     }
   };
 
-  const getById = async (id: number): Promise<ApiResponse<T>> => {
+  const getById = async (id: number): Promise<ServiceResult<T>> => {
     try {
       const res = await api.get<T>(modelEndpoint + id);
-
-      return res.data;
+      return {
+        success: res.data.success,
+        message: res.data.message,
+        data: res.data.data,
+      };
     } catch (error) {
-      throw new Error(String(error));
+      return handleError(error);
     }
   };
 
-  const create = async (model: T): Promise<ApiResponse<T>> => {
+  const create = async (model: T): Promise<ServiceResult<T>> => {
     try {
       const res = await api.post<T>(modelEndpoint, model);
-
-      return res.data;
+      return {
+        success: res.data.success,
+        message: res.data.message,
+        data: res.data.data,
+      };
     } catch (error) {
-      throw new Error(String(error));
+      return handleError(error);
     }
   };
 
-  const update = async (id: number, model: T): Promise<ApiResponse<T>> => {
+  const update = async (id: number, model: T): Promise<ServiceResult<T>> => {
     try {
       const res = await api.put<T>(modelEndpoint + id, model);
-
-      return res.data;
+      return {
+        success: res.data.success,
+        message: res.data.message,
+        data: res.data.data,
+      };
     } catch (error) {
-      throw new Error(String(error));
+      return handleError(error);
     }
   };
 
-  const deleteById = async (id: number): Promise<ApiResponse<T>> => {
+  const deleteById = async (id: number): Promise<ServiceResult<undefined>> => {
     try {
-      const res = await api.delete<T>(modelEndpoint + id);
-
-      return res.data;
+      await api.delete(modelEndpoint + id);
+      return { success: true, message: 'Excluído com sucesso' };
     } catch (error) {
-      throw new Error(String(error));
+      return handleError(error);
     }
   };
 
@@ -66,29 +78,30 @@ export default function generateGenericMethods<T extends { id: number }>(
   };
 }
 
-export function handleApiResponse<T>(response: ApiResponse<T>) {
-  try {
-    // Se a resposta for bem-sucedida (success: true)
-    if (response.success) {
-      return { data: response.data, error: null };
+function handleError<T>(error: unknown): ServiceResult<T> {
+  if (isAxiosError(error) && error.response) {
+    const responseData = error.response.data as ApiResponse<T>;
+
+    if (responseData.errors && responseData.errors.length > 0) {
+      return {
+        success: false,
+        message: responseData.message || 'Erro de validação',
+        errors: responseData.errors,
+        data: responseData.data,
+      };
     }
 
-    // Se houver erros específicos (campo "errors")
-    if (response.errors && response.errors.length > 0) {
-      return { data: null, error: formatErrors(response.errors) };
+    if (responseData.message) {
+      return {
+        success: false,
+        message: responseData.message,
+        data: responseData.data,
+      };
     }
-
-    // Caso contrário, retorne a mensagem de erro genérica
-    return { data: null, error: response.message || 'Erro desconhecido' };
-  } catch (error) {
-    // Captura qualquer erro inesperado
-    return {
-      data: null,
-      error: error instanceof Error ? error.message : 'Erro desconhecido',
-    };
   }
-}
 
-function formatErrors(errors: FieldError[]): string {
-  return errors.map((e) => e.message || 'Erro desconhecido').join(', '); // Junta os erros, separando-os por vírgula
+  return {
+    success: false,
+    message: 'Erro desconhecido',
+  };
 }
