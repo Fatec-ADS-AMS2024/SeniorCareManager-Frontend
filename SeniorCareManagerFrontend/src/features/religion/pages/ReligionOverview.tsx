@@ -234,7 +234,7 @@ export default function ReligionOverview() {
 
   return (
     <div>
-      <BreadcrumbPageTitle title='Cadastro de Religião' />
+      <BreadcrumbPageTitle title='Religiões' />
       <div className='bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10'>
         <Modal<Religion>
           title='Cadastrar Religião'

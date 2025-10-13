@@ -226,7 +226,7 @@ export default function PositionOverview() {
 
   return (
     <div>
-      <BreadcrumbPageTitle title='Cadastro de Cargo' />
+      <BreadcrumbPageTitle title='Cargos' />
       <div className='bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10'>
         <Modal<Position>
           title='Cadastrar Cargo'

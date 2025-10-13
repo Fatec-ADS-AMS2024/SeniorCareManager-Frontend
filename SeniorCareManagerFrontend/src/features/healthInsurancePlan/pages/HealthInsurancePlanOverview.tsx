@@ -271,7 +271,7 @@ export default function HealthInsurancePlanOverview() {
 
   return (
     <div>
-      <BreadcrumbPageTitle title='Cadastro de Plano de Saúde' />
+      <BreadcrumbPageTitle title='Planos de Saúde' />
       <div className='bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10'>
         <Modal<HealthInsurancePlan>
           title='Cadastrar Plano de Saúde'
