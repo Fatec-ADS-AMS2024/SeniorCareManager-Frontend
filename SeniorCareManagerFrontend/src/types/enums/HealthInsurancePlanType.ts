@@ -1,5 +1,5 @@
 import { createEnumHelpers } from '@/utils/enumUtils';
-import { Enum, EnumLabels } from '../app';
+import { Enum, EnumLabels } from '../app/Enum';
 
 // Declaração do enum e seus valores
 // A chave deve ser escrita em SNAKE_CASE maiúscula

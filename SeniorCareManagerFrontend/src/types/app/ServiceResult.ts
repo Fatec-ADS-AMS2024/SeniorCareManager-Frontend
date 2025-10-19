@@ -1,4 +1,4 @@
-import { FieldError } from "@/features/api/types";
+import { FieldError } from '@/features/api/types';
 
 export default interface ServiceResult<T> {
   success: boolean;

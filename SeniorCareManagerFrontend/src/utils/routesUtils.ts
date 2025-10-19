@@ -1,4 +1,4 @@
-import { RouteDefinition } from '@/types/app';
+import { RouteDefinition } from '@/types/app/RouteDefinition';
 
 /**
  * Cria e valida um objeto de rotas.
