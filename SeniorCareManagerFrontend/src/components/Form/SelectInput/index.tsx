@@ -28,13 +28,14 @@ export default function SelectInput({
       )}
       <select
         value={value}
+        defaultValue={''}
         onChange={(e) => onChange(e.target.value)}
         className={`w-full py-2 text-sm text-textPrimary rounded border focus:outline-none focus:border-neutralDark ${
           error ? 'border-danger' : 'border-neutral'
         } ${icon ? 'pr-2 pl-7' : 'px-1'}`}
         {...props}
       >
-        <option value='' disabled selected>
+        <option value='' disabled>
           Selecione um...
         </option>
         {options.map((option) => (
