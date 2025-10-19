@@ -16,14 +16,22 @@ export default function SelectInput({
   value,
   options,
   onChange,
+  icon,
   ...props
 }: SelectInputProps) {
   return (
     <FormField label={label} error={error} required={required}>
+      {icon && (
+        <span className='absolute top-2.5 left-2 text-xl text-textSecondary shrink-0'>
+          {icon}
+        </span>
+      )}
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className='w-full py-2 px-2 text-sm text-textPrimary rounded border border-neutral focus:outline-none focus:border-neutralDark'
+        className={`w-full py-2 text-sm text-textPrimary rounded border focus:outline-none focus:border-neutralDark ${
+          error ? 'border-danger' : 'border-neutral'
+        } ${icon ? 'pr-2 pl-7' : 'px-1'}`}
         {...props}
       >
         <option value='' disabled selected>

@@ -4,4 +4,5 @@ export interface BaseFieldProps {
   required?: boolean;
   disabled?: boolean;
   className?: string;
+  icon?: JSX.Element;
 }

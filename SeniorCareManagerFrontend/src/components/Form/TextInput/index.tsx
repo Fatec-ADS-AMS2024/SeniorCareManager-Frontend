@@ -18,16 +18,24 @@ export default function TextInput({
   required,
   type = 'text',
   value,
+  icon,
   onChange,
   ...props
 }: TextInputProps) {
   return (
     <FormField label={label} error={error} required={required}>
+      {icon && (
+        <span className='absolute top-2.5 left-2 text-xl text-textSecondary shrink-0'>
+          {icon}
+        </span>
+      )}
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className='w-full py-2 px-2 text-sm text-textPrimary rounded border border-neutral focus:outline-none focus:border-neutralDark'
+        className={`w-full py-2 text-sm text-textPrimary rounded border focus:outline-none focus:border-neutralDark ${
+          error ? 'border-danger' : 'border-neutral'
+        } ${icon ? 'pr-2 pl-8' : 'px-2'}`}
         {...props}
       />
     </FormField>

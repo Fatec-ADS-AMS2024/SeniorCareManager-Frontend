@@ -25,7 +25,7 @@ export function FormField({
           {required && '*'}
         </label>
       )}
-      {children}
+      <div className='relative'>{children}</div>
       {error && (
         <span className='text-danger text-xs flex gap-1 items-center'>
           <XCircle />
