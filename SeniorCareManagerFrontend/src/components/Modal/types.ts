@@ -5,3 +5,7 @@ export interface ModalRootProps {
   title?: string;
   closeOnBackdropClick?: boolean;
 }
+
+export interface FormModalProps extends ModalRootProps {
+  onSubmit: () => void;
+}
