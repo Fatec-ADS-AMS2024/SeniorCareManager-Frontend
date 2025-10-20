@@ -2,14 +2,15 @@ import { BaseFieldProps } from '../types';
 import { FormField } from '../FormField';
 import { SelectHTMLAttributes } from 'react';
 
-interface SelectInputProps
+interface SelectInputProps<T>
   extends BaseFieldProps,
-    Omit<SelectHTMLAttributes<HTMLSelectElement>, 'onChange'> {
+    Omit<SelectHTMLAttributes<HTMLSelectElement>, 'onChange' | 'name'> {
   options: { label: string; value: string | number }[];
-  onChange: (value: string) => void;
+  onChange: (attribute: keyof T, value: string) => void;
+  name: keyof T;
 }
 
-export default function SelectInput({
+export default function SelectInput<T>({
   label,
   error,
   required,
@@ -17,8 +18,9 @@ export default function SelectInput({
   options,
   onChange,
   icon,
+  name,
   ...props
-}: SelectInputProps) {
+}: SelectInputProps<T>) {
   return (
     <FormField label={label} error={error} required={required}>
       {icon && (
@@ -29,15 +31,18 @@ export default function SelectInput({
       <select
         value={value}
         defaultValue={''}
-        onChange={(e) => onChange(e.target.value)}
+        name={String(name)}
+        onChange={(e) => onChange(e.target.name as keyof T, e.target.value)}
         className={`w-full py-2 text-sm text-textPrimary rounded border focus:outline-none focus:border-neutralDarker ${
           error ? 'border-danger' : 'border-neutralDark'
         } ${icon ? 'pr-2 pl-7' : 'px-1'}`}
         {...props}
       >
+        {/* Placeholder */}
         <option value='' disabled>
           Selecione um...
         </option>
+        {/* Lista de opções */}
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}

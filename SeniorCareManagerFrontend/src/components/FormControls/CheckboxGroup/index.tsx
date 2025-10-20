@@ -2,34 +2,42 @@ import { FormField } from '../FormField';
 import { BaseFieldProps } from '../types';
 import Checkbox from '../Checkbox';
 
-interface CheckboxOption {
+interface CheckboxOption<T> {
   value: unknown;
   label: string;
   disabled?: boolean;
+  name: keyof T;
 }
 
-interface CheckboxGroupProps extends BaseFieldProps {
-  options: CheckboxOption[];
+interface CheckboxGroupProps<T> extends BaseFieldProps {
+  options: CheckboxOption<T>[];
   values: unknown[];
-  onChange: (values: unknown[]) => void;
+  onChange: (attribute: keyof T, values: unknown[]) => void;
 }
 
 /**
  * Um grupo de checkboxes para múltiplas seleções
  */
-export default function CheckboxGroup({
+export default function CheckboxGroup<T>({
   label,
   error,
   required,
   options,
   values,
   onChange,
-}: CheckboxGroupProps) {
-  const handleChange = (optionValue: unknown, checked: boolean) => {
+}: CheckboxGroupProps<T>) {
+  const handleChange = (
+    attribute: keyof T,
+    optionValue: unknown,
+    checked: boolean
+  ) => {
     if (checked) {
-      onChange([...values, optionValue]);
+      onChange(attribute, [...values, optionValue]);
     } else {
-      onChange(values.filter((value) => value !== optionValue));
+      onChange(
+        attribute,
+        values.filter((value) => value !== optionValue)
+      );
     }
   };
 
@@ -40,8 +48,11 @@ export default function CheckboxGroup({
           <Checkbox
             key={`Option_${option.value}`}
             label={option.label}
+            name={option.name}
             checked={values.includes(option.value)}
-            onChange={(checked) => handleChange(option.value, checked)}
+            onChange={(name, checked) =>
+              handleChange(name, option.value, checked)
+            }
             disabled={option.disabled}
           />
         ))}
