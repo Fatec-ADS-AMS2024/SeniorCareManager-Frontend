@@ -1,25 +1,28 @@
 import { ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from '@phosphor-icons/react';
+import { ModalRootProps } from './types';
 
-// Definindo os tipos das props
-interface BaseModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  children: ReactNode;
+interface ModalHeaderProps {
+  title?: string;
   showCloseButton?: boolean;
-  closeOnBackdropClick?: boolean;
+  onClose: () => void;
 }
 
-export const BaseModal = ({
+interface ModalContentProps {
+  children: ReactNode;
+}
+
+interface ModalFooterProps {
+  children: ReactNode;
+}
+
+export const ModalRoot = ({
   isOpen,
   onClose,
-  title,
   children,
-  showCloseButton = true,
   closeOnBackdropClick = true,
-}: BaseModalProps) => {
+}: ModalRootProps) => {
   // Efeito para lidar com a tecla "Esc" para fechar a modal
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
@@ -27,12 +30,16 @@ export const BaseModal = ({
         onClose();
       }
     };
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    }
     window.addEventListener('keydown', handleEsc);
 
     return () => {
       window.removeEventListener('keydown', handleEsc);
+      document.body.style.overflow = 'unset';
     };
-  }, [onClose]);
+  }, [isOpen, onClose]);
 
   if (!isOpen) {
     return null;
@@ -49,33 +56,48 @@ export const BaseModal = ({
         className='relative bg-white transition-all rounded-[10px] shadow-lg w-full max-w-xl px-4 py-6 bg-neutralWhite'
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Cabeçalho do Modal */}
-        <div className='flex items-center px-2 pb-1'>
-          <h3 className='text-xl font-semibold text-textPrimary'>{title}</h3>
-          {showCloseButton && (
-            <button
-              type='button'
-              className='ml-auto h-6 w-6 flex items-center justify-center bg-transparent text-textSecondary'
-              onClick={onClose}
-            >
-              <X size={24} />
-            </button>
-          )}
-        </div>
-
-        {/* Separador */}
-        <hr className='border-t border-neutralDark w-full mx-auto' />
-
-        {/* Corpo do Modal */}
-        <div className='px-3 py-4 text-textSecondary'>{children}</div>
-
-        {/* Separador */}
-        <hr className='border-t border-neutralDark w-full mx-auto' />
-
-        {/* Rodapé do Modal */}
-        <div className='flex justify-end gap-7 px-2 pt-4'></div>
+        {children}
       </div>
     </div>,
     document.body
+  );
+};
+
+export const ModalHeader = ({
+  title,
+  showCloseButton = true,
+  onClose,
+}: ModalHeaderProps) => {
+  return (
+    <>
+      <div className='flex items-center px-2 pb-1'>
+        <h3 className='text-xl font-semibold text-textPrimary'>{title}</h3>
+        {showCloseButton && (
+          <button
+            type='button'
+            className='ml-auto h-6 w-6 flex items-center justify-center bg-transparent text-textSecondary'
+            onClick={onClose}
+          >
+            <X size={24} />
+          </button>
+        )}
+      </div>
+
+      {/* Separador */}
+      <hr className='border-t border-neutralDark w-full mx-auto' />
+    </>
+  );
+};
+
+export const ModalContent = ({ children }: ModalContentProps) => {
+  return <div className='px-3 py-4 text-textSecondary'>{children}</div>;
+};
+
+export const ModalFooter = ({ children }: ModalFooterProps) => {
+  return (
+    <>
+      <hr className='border-t border-neutralDark w-full mx-auto' />
+      <div className='flex justify-end gap-7 px-2 pt-4'>{children}</div>
+    </>
   );
 };
