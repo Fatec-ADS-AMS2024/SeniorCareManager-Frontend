@@ -12,7 +12,7 @@ import {
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import SearchBar from '@/components/SearchBar';
 import Button from '@/components/Button';
-import Modal from '@/components/GenericModal';
+import Modal from '@/components/Modal';
 
 const inputs: {
   label: string;
