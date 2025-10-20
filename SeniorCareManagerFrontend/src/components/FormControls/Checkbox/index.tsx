@@ -27,8 +27,8 @@ export default function Checkbox({
           type='checkbox'
           checked={checked}
           onChange={(e) => onChange(e.target.checked)}
-          className={`w-4 h-4 text-textPrimary rounded border focus:ring-2 focus:ring-neutralDark ${
-            error ? 'border-danger' : 'border-neutral'
+          className={`w-4 h-4 text-textPrimary rounded border focus:ring-2 focus:ring-neutralDarker ${
+            error ? 'border-danger' : 'border-neutralDark'
           }`}
           {...props}
         />

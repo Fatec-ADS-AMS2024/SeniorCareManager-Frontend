@@ -33,8 +33,8 @@ export default function TextInput({
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full py-2 text-sm text-textPrimary rounded border focus:outline-none focus:border-neutralDark ${
-          error ? 'border-danger' : 'border-neutral'
+        className={`w-full py-2 text-sm text-textPrimary rounded border focus:outline-none focus:border-neutralDarker ${
+          error ? 'border-danger' : 'border-neutralDark'
         } ${icon ? 'pr-2 pl-8' : 'px-2'}`}
         {...props}
       />

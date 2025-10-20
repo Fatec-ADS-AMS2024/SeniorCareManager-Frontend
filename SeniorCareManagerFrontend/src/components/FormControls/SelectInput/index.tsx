@@ -30,8 +30,8 @@ export default function SelectInput({
         value={value}
         defaultValue={''}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full py-2 text-sm text-textPrimary rounded border focus:outline-none focus:border-neutralDark ${
-          error ? 'border-danger' : 'border-neutral'
+        className={`w-full py-2 text-sm text-textPrimary rounded border focus:outline-none focus:border-neutralDarker ${
+          error ? 'border-danger' : 'border-neutralDark'
         } ${icon ? 'pr-2 pl-7' : 'px-1'}`}
         {...props}
       >
