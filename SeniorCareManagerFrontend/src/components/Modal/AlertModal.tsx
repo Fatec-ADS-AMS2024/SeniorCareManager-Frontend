@@ -1,8 +1,8 @@
 import * as Modal from './BaseModal';
-import { ModalRootProps } from './types';
+import { ModalProps } from './types';
 import { Info, CheckCircle, XCircle } from '@phosphor-icons/react';
 
-interface AlertModalProps extends Omit<ModalRootProps, 'children'> {
+interface AlertModalProps extends Omit<ModalProps, 'children'> {
   type?: 'info' | 'success' | 'error';
   message: string;
 }
@@ -28,11 +28,12 @@ export default function AlertModal({
   onClose,
   message,
   type = 'info',
+  ...props
 }: AlertModalProps) {
   const styles = icons[type];
 
   return (
-    <Modal.ModalRoot isOpen={isOpen} onClose={onClose}>
+    <Modal.ModalRoot isOpen={isOpen} onClose={onClose} {...props}>
       <Modal.ModalContent>
         <div className='flex flex-col items-center justify-center gap-2'>
           <span className={`text-8xl rounded-full shrink-0 ${styles.color}`}>

@@ -1,8 +1,8 @@
 import Button from '../Button';
 import * as Modal from './BaseModal';
-import { ModalRootProps } from './types';
+import { ModalProps } from './types';
 
-interface ConfirmModalProps extends Omit<ModalRootProps, 'children'> {
+interface ConfirmModalProps extends Omit<ModalProps, 'children'> {
   onConfirm: () => void;
   message: string;
 }
@@ -13,9 +13,10 @@ export default function ConfirmModal({
   onConfirm,
   message,
   title,
+  ...props
 }: ConfirmModalProps) {
   return (
-    <Modal.ModalRoot isOpen={isOpen} onClose={onClose}>
+    <Modal.ModalRoot isOpen={isOpen} onClose={onClose} {...props}>
       <Modal.ModalHeader
         title={title}
         onClose={onClose}

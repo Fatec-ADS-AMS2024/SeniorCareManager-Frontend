@@ -1,8 +1,9 @@
 import { FormModalProps } from './types';
 import * as Modal from './BaseModal';
-import { FormEvent, useState } from 'react';
+import { FormEvent } from 'react';
 import Button from '../Button';
 import { Plus, X } from '@phosphor-icons/react';
+import { useModalForm } from '@/hooks/useModalForm';
 
 export default function FormModal({
   isOpen,
@@ -10,23 +11,26 @@ export default function FormModal({
   onSubmit,
   title,
   children,
+  closeOnBackdropClick = false,
+  showCloseButton = true,
 }: FormModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isSubmitting, handleSubmit } = useModalForm();
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    await new Promise(() => onSubmit());
-    setIsSubmitting(false);
-    onClose();
+    await handleSubmit(onSubmit, onClose);
   };
 
   return (
-    <Modal.ModalRoot isOpen={isOpen} onClose={onClose} closeOnBackdropClick={false}>
-      <form onSubmit={handleSubmit}>
+    <Modal.ModalRoot
+      isOpen={isOpen}
+      onClose={onClose}
+      closeOnBackdropClick={closeOnBackdropClick && !isSubmitting}
+    >
+      <form onSubmit={handleFormSubmit}>
         <Modal.ModalHeader
           onClose={onClose}
-          showCloseButton={false}
+          showCloseButton={showCloseButton}
           title={title}
         />
         <Modal.ModalContent>{children}</Modal.ModalContent>

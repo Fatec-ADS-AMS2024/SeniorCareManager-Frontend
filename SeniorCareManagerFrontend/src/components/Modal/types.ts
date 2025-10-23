@@ -1,11 +1,12 @@
-export interface ModalRootProps {
+export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  children: React.ReactNode;
   title?: string;
+  children: React.ReactNode;
   closeOnBackdropClick?: boolean;
+  showCloseButton?: boolean;
 }
 
-export interface FormModalProps extends ModalRootProps {
+export interface FormModalProps extends ModalProps {
   onSubmit: () => void;
 }

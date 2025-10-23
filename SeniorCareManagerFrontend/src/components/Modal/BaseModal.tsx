@@ -1,7 +1,7 @@
 import { ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from '@phosphor-icons/react';
-import { ModalRootProps } from './types';
+import { ModalProps } from './types';
 
 interface ModalHeaderProps {
   title?: string;
@@ -22,22 +22,23 @@ export const ModalRoot = ({
   onClose,
   children,
   closeOnBackdropClick = true,
-}: ModalRootProps) => {
-  // Efeito para lidar com a tecla "Esc" para fechar a modal
+}: ModalProps) => {
+  // Efeito para lidar com a tecla "Esc" e scroll
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();
       }
     };
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    }
+
+    document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', handleEsc);
 
     return () => {
-      window.removeEventListener('keydown', handleEsc);
       document.body.style.overflow = 'unset';
+      window.removeEventListener('keydown', handleEsc);
     };
   }, [isOpen, onClose]);
 
@@ -71,7 +72,9 @@ export const ModalHeader = ({
   return (
     <>
       <div className='flex items-center px-2 pb-1'>
-        <h3 className='text-xl font-semibold text-textPrimary'>{title}</h3>
+        {title && (
+          <h3 className='text-xl font-semibold text-textPrimary'>{title}</h3>
+        )}
         {showCloseButton && (
           <button
             type='button'
