@@ -2,41 +2,27 @@ import { useEffect, useState } from 'react';
 import ReligionService from '../services/religionService';
 import Religion from '@/types/models/Religion';
 import Table from '@/components/Table';
-import {
-  CheckCircle,
-  Pencil,
-  Plus,
-  Trash,
-  XCircle,
-} from '@phosphor-icons/react';
+import { Pencil, Plus, Trash } from '@phosphor-icons/react';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import SearchBar from '@/components/SearchBar';
 import Button from '@/components/Button';
-import Modal from '@/components/Modal';
-
-const inputs: {
-  label: string;
-  attribute: keyof Religion;
-  defaultValue: string;
-}[] = [
-  {
-    label: 'Nome',
-    attribute: 'name',
-    defaultValue: '',
-  },
-];
+import AlertModal from '@/components/Modal/AlertModal';
+import ConfirmModal from '@/components/Modal/ConfirmModal';
+import ReligionFormModal from '@/features/religion/components/ReligionFormModal';
 
 export default function ReligionOverview() {
   const columns = ['Nome'];
   const [data, setData] = useState<Religion[]>([]);
   const [originalData, setOriginalData] = useState<Religion[]>([]);
-  const [modalRegister, setModalRegister] = useState(false);
-  const [modalEdit, setModalEdit] = useState(false);
-  const [modalDelete, setModalDelete] = useState(false);
-  const [modalInfo, setModalInfo] = useState(false);
-  const [infoMessage, setInfoMessage] = useState('');
-  const [infoIcon, setInfoIcon] = useState<JSX.Element | undefined>(undefined);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<'info' | 'success' | 'error'>(
+    'info'
+  );
   const [currentId, setCurrentId] = useState<number | null>(null);
+  const [editingItem, setEditingItem] = useState<Religion | undefined>();
 
   const fetchData = async () => {
     const res = await ReligionService.getAll();
@@ -64,52 +50,32 @@ export default function ReligionOverview() {
     setData(filteredData);
   };
 
-  const getRowValues = (id: number) => data.find((row) => row.id === id);
-
-  const openCloseModalRegister = () => {
+  const openCreateModal = () => {
+    setEditingItem(undefined);
     setCurrentId(null);
-    inputs.forEach((input) => (input.defaultValue = ''));
-    setModalRegister(true);
+    setIsFormModalOpen(true);
   };
 
-  const openCloseModalEdit = (id?: number) => {
-    if (!id) {
-      setModalEdit(false);
-      setCurrentId(null);
-      return;
-    }
-    const rowValues = getRowValues(id);
-    if (rowValues) {
-      inputs.forEach((input) => {
-        input.defaultValue = String(rowValues[input.attribute]);
-      });
+  const openEditModal = (id: number) => {
+    const item = data.find((row) => row.id === id);
+    if (item) {
+      setEditingItem(item);
       setCurrentId(id);
-      setModalEdit(true);
+      setIsFormModalOpen(true);
     } else {
-      showInfoModal('Registro não encontrado', 'error');
+      showAlert('Registro não encontrado', 'error');
     }
   };
 
-  const openCloseModalDelete = (id?: number) => {
-    if (!id) {
-      setModalDelete(false);
-      setCurrentId(null);
-      return;
-    }
+  const openDeleteModal = (id: number) => {
     setCurrentId(id);
-    setModalDelete(true);
+    setIsDeleteModalOpen(true);
   };
 
-  const showInfoModal = (message: string, type: 'success' | 'error') => {
-    setInfoMessage(message);
-    setInfoIcon(
-      type === 'success' ? (
-        <CheckCircle size={90} className='text-success' weight='fill' />
-      ) : (
-        <XCircle size={90} className='text-danger' weight='fill' />
-      )
-    );
-    setModalInfo(true);
+  const showAlert = (message: string, type: 'info' | 'success' | 'error') => {
+    setAlertMessage(message);
+    setAlertType(type);
+    setIsAlertModalOpen(true);
   };
 
   const validateReligion = (
@@ -138,11 +104,11 @@ export default function ReligionOverview() {
     return null;
   };
 
-  const handleSave = (model: Religion) => {
+  const handleSave = async (model: Religion) => {
     if (currentId !== null) {
-      editReligion(currentId, model);
+      await editReligion(currentId, model);
     } else {
-      registerReligion(model);
+      await registerReligion(model);
     }
   };
 
@@ -150,24 +116,18 @@ export default function ReligionOverview() {
     const errorMessage = validateReligion(model);
 
     if (errorMessage) {
-      showInfoModal(errorMessage, 'error');
+      showAlert(errorMessage, 'error');
       return;
     }
 
     const res = await ReligionService.create(model);
 
     if (res.success) {
-      setModalRegister(false);
       await fetchData();
-      showInfoModal(
-        `Religião "${res.data?.name}" criada com sucesso!`,
-        'success'
-      );
+      showAlert(`Religião "${res.data?.name}" criada com sucesso!`, 'success');
     } else {
-      showInfoModal(
-        res.message || 'Erro inesperado ao criar a religião.',
-        'error'
-      );
+      showAlert(res.message || 'Erro inesperado ao criar a religião.', 'error');
+      throw new Error(res.message);
     }
   };
 
@@ -175,56 +135,54 @@ export default function ReligionOverview() {
     const errorMessage = validateReligion(model, id);
 
     if (errorMessage) {
-      showInfoModal(errorMessage, 'error');
+      showAlert(errorMessage, 'error');
       return;
     }
 
     const res = await ReligionService.update(id, { ...model, id });
     if (res.success) {
-      setModalEdit(false);
       await fetchData();
-      showInfoModal(
+      showAlert(
         `Religião "${res.data?.name}" atualizada com sucesso!`,
         'success'
       );
     } else {
-      showInfoModal(
+      showAlert(
         res.message || 'Erro inesperado ao atualizar a religião.',
         'error'
       );
+      throw new Error(res.message);
     }
   };
 
-  const deleteReligion = async (id: number) => {
-    try {
-      const res = await ReligionService.deleteById(id);
-      if (res.success) {
-        const itemName = data.find((item) => item.id === id)?.name || '';
-        setModalDelete(false);
-        setCurrentId(null);
-        showInfoModal(`Religião ${itemName} excluída com sucesso!`, 'success');
-        await fetchData();
-      } else {
-        showInfoModal(
-          res.message || 'Erro inesperado ao excluir a Religião.',
-          'error'
-        );
-      }
-    } catch {
-      showInfoModal('Erro inesperado ao excluir a Religião.', 'error');
+  const deleteReligion = async () => {
+    if (!currentId) return;
+
+    const res = await ReligionService.deleteById(currentId);
+    if (res.success) {
+      setIsDeleteModalOpen(false);
+      const itemName = data.find((item) => item.id === currentId)?.name || '';
+      setCurrentId(null);
+      await fetchData();
+      showAlert(`Religião "${itemName}" excluída com sucesso!`, 'success');
+    } else {
+      showAlert(
+        res.message || 'Erro inesperado ao excluir a Religião.',
+        'error'
+      );
     }
   };
 
   const Actions = ({ id }: { id: number }) => (
     <>
       <button
-        onClick={() => openCloseModalEdit(id)}
+        onClick={() => openEditModal(id)}
         className='text-edit hover:text-hoverEdit'
       >
         <Pencil className='size-6' weight='fill' />
       </button>
       <button
-        onClick={() => openCloseModalDelete(id)}
+        onClick={() => openDeleteModal(id)}
         className='text-danger hover:text-hoverDanger'
       >
         <Trash className='size-6' weight='fill' />
@@ -236,39 +194,29 @@ export default function ReligionOverview() {
     <div>
       <BreadcrumbPageTitle title='Religiões' />
       <div className='bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10'>
-        <Modal<Religion>
-          title='Cadastrar Religião'
-          inputs={inputs}
-          action={handleSave}
-          statusModal={modalRegister}
-          closeModal={() => setModalRegister(false)}
-          type='create'
-        />
-        <Modal<Religion>
-          type='update'
-          title='Editar Religião'
-          inputs={inputs}
-          action={handleSave}
-          statusModal={modalEdit}
-          closeModal={() => openCloseModalEdit()}
-        />
-        <Modal<Religion>
-          type='delete'
-          title='Deseja realmente excluir essa Religião?'
-          msgInformation='Ao excluir esta Religião, ela será removida permanentemente do sistema.'
-          action={() => {
-            if (currentId !== null) deleteReligion(currentId);
+        <ReligionFormModal
+          isOpen={isFormModalOpen}
+          onClose={() => {
+            setIsFormModalOpen(false);
+            setEditingItem(undefined);
           }}
-          statusModal={modalDelete}
-          closeModal={() => openCloseModalDelete()}
-          inputs={inputs}
+          onSubmit={handleSave}
+          objectData={editingItem}
         />
-        <Modal<Religion>
-          type='info'
-          msgInformation={infoMessage}
-          icon={infoIcon}
-          statusModal={modalInfo}
-          closeModal={() => setModalInfo(false)}
+
+        <ConfirmModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={deleteReligion}
+          title='Deseja realmente excluir essa Religião?'
+          message='Ao excluir esta Religião, ela será removida permanentemente do sistema.'
+        />
+
+        <AlertModal
+          isOpen={isAlertModalOpen}
+          onClose={() => setIsAlertModalOpen(false)}
+          message={alertMessage}
+          type={alertType}
         />
         <div className='flex items-center justify-between mb-4'>
           <SearchBar action={handleSearch} placeholder='Buscar religião...' />
@@ -278,7 +226,7 @@ export default function ReligionOverview() {
             iconPosition='left'
             color='success'
             size='medium'
-            onClick={openCloseModalRegister}
+            onClick={openCreateModal}
           />
         </div>
         <Table
