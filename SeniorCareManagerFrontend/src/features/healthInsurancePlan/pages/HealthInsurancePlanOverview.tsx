@@ -9,9 +9,14 @@ import SearchBar from '@/components/SearchBar';
 import Button from '@/components/Button';
 import { AlertModal, ConfirmModal } from '@/components/Modal';
 import HealthInsurancePlanFormModal from '../components/HealthInsurancePlanFormModal';
+import { TableColumn } from '@/components/Table/types';
 
 export default function HealthInsurancePlanOverview() {
-  const columns = ['Nome', 'Tipo', 'Abreviação'];
+  const columns: TableColumn<HealthInsurancePlan>[] = [
+    { label: 'Nome', attribute: 'name' },
+    { label: 'Tipo', attribute: 'type' },
+    { label: 'Abreviação', attribute: 'abbreviation' },
+  ];
   const [data, setData] = useState<HealthInsurancePlan[]>([]);
   const [originalData, setOriginalData] = useState<HealthInsurancePlan[]>([]);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -261,7 +266,7 @@ export default function HealthInsurancePlanOverview() {
             onClick={openCreateModal}
           />
         </div>
-        <Table
+        <Table<HealthInsurancePlan>
           columns={columns}
           data={data.map((plan) => {
             let finalAbbreviation = plan.abbreviation;
