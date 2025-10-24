@@ -1,6 +1,5 @@
 import { SelectInput, TextInput } from '@/components/FormControls';
-import FormModal from '@/components/Modal/FormModal';
-import { ModalProps } from '@/components/Modal/types';
+import { ModalProps, FormModal } from '@/components/Modal';
 import useFormData from '@/hooks/useFormData';
 import {
   getHealthInsurancePlanTypeOptions,

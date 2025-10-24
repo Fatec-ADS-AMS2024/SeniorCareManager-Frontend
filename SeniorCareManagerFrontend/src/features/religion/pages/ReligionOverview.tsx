@@ -6,8 +6,7 @@ import { Pencil, Plus, Trash } from '@phosphor-icons/react';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import SearchBar from '@/components/SearchBar';
 import Button from '@/components/Button';
-import AlertModal from '@/components/Modal/AlertModal';
-import ConfirmModal from '@/components/Modal/ConfirmModal';
+import { AlertModal, ConfirmModal } from '@/components/Modal';
 import ReligionFormModal from '@/features/religion/components/ReligionFormModal';
 
 export default function ReligionOverview() {

@@ -7,9 +7,8 @@ import { Pencil, Plus, Trash } from '@phosphor-icons/react';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import SearchBar from '@/components/SearchBar';
 import Button from '@/components/Button';
-import AlertModal from '@/components/Modal/AlertModal';
-import ConfirmModal from '@/components/Modal/ConfirmModal';
-import HealthInsurancePlanFormModal from '@/features/healthInsurancePlan/components/HealthInsurancePlanFormModal';
+import { AlertModal, ConfirmModal } from '@/components/Modal';
+import HealthInsurancePlanFormModal from '../components/HealthInsurancePlanFormModal';
 
 export default function HealthInsurancePlanOverview() {
   const columns = ['Nome', 'Tipo', 'Abreviação'];
