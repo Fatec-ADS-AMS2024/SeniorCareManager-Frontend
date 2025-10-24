@@ -1,35 +1,62 @@
 import { SelectInput, TextInput } from '@/components/FormControls';
 import FormModal from '@/components/Modal/FormModal';
-import { FormModalProps } from '@/components/Modal/types';
+import { ModalProps } from '@/components/Modal/types';
 import useFormData from '@/hooks/useFormData';
-import { getHealthInsurancePlanTypeOptions } from '@/types/enums/HealthInsurancePlanType';
+import {
+  getHealthInsurancePlanTypeOptions,
+  HealthInsurancePlanType,
+} from '@/types/enums/HealthInsurancePlanType';
 import HealthInsurancePlan from '@/types/models/HealthInsurancePlan';
+import { useEffect } from 'react';
 
-interface HIPFormModalProps extends Omit<FormModalProps, 'onSubmit'> {
-  onSubmit: (data: HealthInsurancePlan) => void;
-  initialData?: Partial<HealthInsurancePlan>;
-  mode?: 'create' | 'edit';
+interface HIPFormModalProps extends Omit<ModalProps, 'children'> {
+  onSubmit: (data: HealthInsurancePlan) => Promise<void>;
+  objectData?: HealthInsurancePlan;
 }
 
 export default function HealthInsurancePlanFormModal({
   onClose,
   onSubmit,
   isOpen,
+  objectData,
 }: HIPFormModalProps) {
-  const { data, updateField } = useFormData<HealthInsurancePlan>(initialData);
+  const { data, setData, updateField, reset } =
+    useFormData<HealthInsurancePlan>({
+      id: 0,
+      name: '',
+      abbreviation: '',
+      type: HealthInsurancePlanType.PUBLIC,
+    });
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (objectData) {
+      setData(objectData);
+    } else {
+      reset();
+    }
+  }, [isOpen, objectData, setData, reset]);
 
   const handleSubmit = async () => {
-    // Agora isso funciona corretamente com async/await
-    // Ou pode ser uma função síncrona também
-    onSubmit(data);
+    await onSubmit(data);
+    handleClose();
   };
+
+  const handleClose = () => {
+    reset();
+    onClose();
+  };
+
+  const title = objectData?.id
+    ? 'Editar Plano de Saúde'
+    : 'Cadastrar Plano de Saúde';
 
   return (
     <FormModal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       onSubmit={handleSubmit}
-      title='Cadastrar Plano de Saúde'
+      title={title}
     >
       <div className='flex flex-col gap-4'>
         <TextInput<HealthInsurancePlan>
@@ -37,19 +64,22 @@ export default function HealthInsurancePlanFormModal({
           label='Nome'
           onChange={updateField}
           value={data.name}
+          required
         />
         <TextInput<HealthInsurancePlan>
           name='abbreviation'
           label='Abreviação'
           onChange={updateField}
           value={data.abbreviation}
+          required
         />
         <SelectInput<HealthInsurancePlan>
           name='type'
           label='Tipo'
           onChange={updateField}
-          value={data.type ? data.type : undefined}
+          value={data.type}
           options={getHealthInsurancePlanTypeOptions()}
+          required
         />
       </div>
     </FormModal>

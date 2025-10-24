@@ -1,9 +1,13 @@
-import { FormModalProps } from './types';
 import * as Modal from './BaseModal';
 import { FormEvent } from 'react';
 import Button from '../Button';
 import { Plus, X } from '@phosphor-icons/react';
 import { useModalForm } from '@/hooks/useModalForm';
+import { ModalProps } from './types';
+
+interface FormModalProps extends ModalProps {
+  onSubmit: (data?: unknown) => void;
+}
 
 export default function FormModal({
   isOpen,

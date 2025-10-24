@@ -1,58 +1,31 @@
 import { useEffect, useState } from 'react';
 import { HealthInsurancePlanService } from '@/features/healthInsurancePlan';
 import HealthInsurancePlan from '@/types/models/HealthInsurancePlan';
-import {
-  getHealthInsurancePlanTypeLabel,
-  getHealthInsurancePlanTypeOptions,
-} from '@/types/enums/HealthInsurancePlanType';
+import { getHealthInsurancePlanTypeLabel } from '@/types/enums/HealthInsurancePlanType';
 import Table from '@/components/Table';
-import {
-  CheckCircle,
-  Pencil,
-  Plus,
-  Trash,
-  XCircle,
-} from '@phosphor-icons/react';
+import { Pencil, Plus, Trash } from '@phosphor-icons/react';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import SearchBar from '@/components/SearchBar';
 import Button from '@/components/Button';
-import Modal from '@/components/Modal';
-
-const inputs: {
-  label: string;
-  attribute: keyof HealthInsurancePlan;
-  defaultValue: string;
-  options?: { label: string; value: number }[];
-}[] = [
-  {
-    label: 'Tipo',
-    attribute: 'type',
-    defaultValue: '',
-    options: getHealthInsurancePlanTypeOptions(),
-  },
-  {
-    label: 'Nome do plano de saúde',
-    attribute: 'name',
-    defaultValue: '',
-  },
-  {
-    label: 'Abreviação',
-    attribute: 'abbreviation',
-    defaultValue: '',
-  },
-];
+import AlertModal from '@/components/Modal/AlertModal';
+import ConfirmModal from '@/components/Modal/ConfirmModal';
+import HealthInsurancePlanFormModal from '@/features/healthInsurancePlan/components/HealthInsurancePlanFormModal';
 
 export default function HealthInsurancePlanOverview() {
   const columns = ['Nome', 'Tipo', 'Abreviação'];
   const [data, setData] = useState<HealthInsurancePlan[]>([]);
   const [originalData, setOriginalData] = useState<HealthInsurancePlan[]>([]);
-  const [modalRegister, setModalRegister] = useState(false);
-  const [modalEdit, setModalEdit] = useState(false);
-  const [modalDelete, setModalDelete] = useState(false);
-  const [modalInfo, setModalInfo] = useState(false);
-  const [infoMessage, setInfoMessage] = useState('');
-  const [infoIcon, setInfoIcon] = useState<JSX.Element | undefined>(undefined);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<'info' | 'success' | 'error'>(
+    'info'
+  );
   const [currentId, setCurrentId] = useState<number | null>(null);
+  const [editingItem, setEditingItem] = useState<
+    HealthInsurancePlan | undefined
+  >();
 
   const fetchData = async () => {
     const res = await HealthInsurancePlanService.getAll();
@@ -84,56 +57,32 @@ export default function HealthInsurancePlanOverview() {
     setData(filteredData);
   };
 
-  const getRowValues = (id: number) => data.find((row) => row.id === id);
-
-  const openCloseModalRegister = () => {
+  const openCreateModal = () => {
+    setEditingItem(undefined);
     setCurrentId(null);
-    inputs.forEach((input) => (input.defaultValue = ''));
-    setModalRegister(true);
+    setIsFormModalOpen(true);
   };
 
-  const openCloseModalEdit = (id?: number) => {
-    if (!id) {
-      setModalEdit(false);
-      setCurrentId(null);
-      return;
-    }
-    const rowValues = getRowValues(id);
-    if (rowValues) {
-      inputs.forEach((input) => {
-        input.defaultValue = String(
-          rowValues[input.attribute as keyof HealthInsurancePlan]
-        );
-      });
+  const openEditModal = (id: number) => {
+    const item = data.find((row) => row.id === id);
+    if (item) {
+      setEditingItem(item);
       setCurrentId(id);
-      setModalEdit(true);
+      setIsFormModalOpen(true);
     } else {
-      showInfoModal('Registro não encontrado', 'error');
+      showAlert('Registro não encontrado', 'error');
     }
   };
 
-  const openCloseModalDelete = (id?: number) => {
-    if (!id) {
-      setModalDelete(false);
-      setCurrentId(null);
-      return;
-    }
+  const openDeleteModal = (id: number) => {
     setCurrentId(id);
-    setModalDelete(true);
+    setIsDeleteModalOpen(true);
   };
 
-  const openCloseModalInfo = () => setModalInfo(false);
-
-  const showInfoModal = (message: string, type: 'success' | 'error') => {
-    setInfoMessage(message);
-    setInfoIcon(
-      type === 'success' ? (
-        <CheckCircle size={90} className='text-success' weight='fill' />
-      ) : (
-        <XCircle size={90} className='text-danger' weight='fill' />
-      )
-    );
-    setModalInfo(true);
+  const showAlert = (message: string, type: 'info' | 'success' | 'error') => {
+    setAlertMessage(message);
+    setAlertType(type);
+    setIsAlertModalOpen(true);
   };
 
   const validateHealthInsurancePlan = (
@@ -170,11 +119,11 @@ export default function HealthInsurancePlanOverview() {
     return null;
   };
 
-  const handleSave = (model: HealthInsurancePlan) => {
+  const handleSave = async (model: HealthInsurancePlan) => {
     if (currentId !== null) {
-      editHealthInsurancePlan(currentId, model);
+      await editHealthInsurancePlan(currentId, model);
     } else {
-      registerHealthInsurancePlan(model);
+      await registerHealthInsurancePlan(model);
     }
   };
 
@@ -182,7 +131,7 @@ export default function HealthInsurancePlanOverview() {
     const errorMessage = validateHealthInsurancePlan(model);
 
     if (errorMessage) {
-      showInfoModal(errorMessage, 'error');
+      showAlert(errorMessage, 'error');
       return;
     }
 
@@ -190,17 +139,17 @@ export default function HealthInsurancePlanOverview() {
     const res = await HealthInsurancePlanService.create(payload);
 
     if (res.success) {
-      setModalRegister(false);
       await fetchData();
-      showInfoModal(
+      showAlert(
         `Plano de Saúde "${res.data?.name}" criado com sucesso!`,
         'success'
       );
     } else {
-      showInfoModal(
+      showAlert(
         res.message || 'Erro inesperado ao criar o Plano de Saúde.',
         'error'
       );
+      throw new Error(res.message);
     }
   };
 
@@ -211,7 +160,7 @@ export default function HealthInsurancePlanOverview() {
     const errorMessage = validateHealthInsurancePlan(model, id);
 
     if (errorMessage) {
-      showInfoModal(errorMessage, 'error');
+      showAlert(errorMessage, 'error');
       return;
     }
 
@@ -219,33 +168,35 @@ export default function HealthInsurancePlanOverview() {
     const res = await HealthInsurancePlanService.update(id, payload);
 
     if (res.success) {
-      setModalEdit(false);
       await fetchData();
-      showInfoModal(
+      showAlert(
         `Plano de Saúde "${res.data?.name}" atualizado com sucesso!`,
         'success'
       );
     } else {
-      showInfoModal(
+      showAlert(
         res.message || 'Erro inesperado ao atualizar o Plano de Saúde.',
         'error'
       );
+      throw new Error(res.message);
     }
   };
 
-  const deleteHealthInsurancePlan = async (id: number) => {
-    const res = await HealthInsurancePlanService.deleteById(id);
+  const deleteHealthInsurancePlan = async () => {
+    if (!currentId) return;
+
+    const res = await HealthInsurancePlanService.deleteById(currentId);
     if (res.success) {
-      setModalDelete(false);
+      setIsDeleteModalOpen(false);
+      const itemName = data.find((item) => item.id === currentId)?.name || '';
       setCurrentId(null);
-      const itemName = data.find((item) => item.id === id)?.name || '';
       await fetchData();
-      showInfoModal(
+      showAlert(
         `Plano de Saúde "${itemName}" excluído com sucesso!`,
         'success'
       );
     } else {
-      showInfoModal(
+      showAlert(
         res.message || 'Erro inesperado ao excluir o Plano de Saúde.',
         'error'
       );
@@ -255,13 +206,13 @@ export default function HealthInsurancePlanOverview() {
   const Actions = ({ id }: { id: number }) => (
     <>
       <button
-        onClick={() => openCloseModalEdit(id)}
+        onClick={() => openEditModal(id)}
         className='text-edit hover:text-hoverEdit'
       >
         <Pencil className='size-6' weight='fill' />
       </button>
       <button
-        onClick={() => openCloseModalDelete(id)}
+        onClick={() => openDeleteModal(id)}
         className='text-danger hover:text-hoverDanger'
       >
         <Trash className='size-6' weight='fill' />
@@ -273,39 +224,29 @@ export default function HealthInsurancePlanOverview() {
     <div>
       <BreadcrumbPageTitle title='Planos de Saúde' />
       <div className='bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10'>
-        <Modal<HealthInsurancePlan>
-          title='Cadastrar Plano de Saúde'
-          inputs={inputs}
-          action={handleSave}
-          statusModal={modalRegister}
-          closeModal={() => setModalRegister(false)}
-          type='create'
-        />
-        <Modal<HealthInsurancePlan>
-          type='update'
-          title='Editar Plano de Saúde'
-          inputs={inputs}
-          action={handleSave}
-          statusModal={modalEdit}
-          closeModal={() => openCloseModalEdit()}
-        />
-        <Modal<HealthInsurancePlan>
-          type='delete'
-          title='Deseja realmente excluir esse Plano de Saúde?'
-          msgInformation='Ao excluir este Plano de Saúde, ele será removido permanentemente do sistema.'
-          action={() => {
-            if (currentId !== null) deleteHealthInsurancePlan(currentId);
+        <HealthInsurancePlanFormModal
+          isOpen={isFormModalOpen}
+          onClose={() => {
+            setIsFormModalOpen(false);
+            setEditingItem(undefined);
           }}
-          statusModal={modalDelete}
-          closeModal={() => openCloseModalDelete()}
-          inputs={inputs}
+          onSubmit={handleSave}
+          objectData={editingItem}
         />
-        <Modal<HealthInsurancePlan>
-          type='info'
-          msgInformation={infoMessage}
-          icon={infoIcon}
-          statusModal={modalInfo}
-          closeModal={openCloseModalInfo}
+
+        <ConfirmModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={deleteHealthInsurancePlan}
+          title='Deseja realmente excluir esse Plano de Saúde?'
+          message='Ao excluir este Plano de Saúde, ele será removido permanentemente do sistema.'
+        />
+
+        <AlertModal
+          isOpen={isAlertModalOpen}
+          onClose={() => setIsAlertModalOpen(false)}
+          message={alertMessage}
+          type={alertType}
         />
         <div className='flex items-center justify-between mb-4'>
           <SearchBar
@@ -318,7 +259,7 @@ export default function HealthInsurancePlanOverview() {
             iconPosition='left'
             color='success'
             size='medium'
-            onClick={openCloseModalRegister}
+            onClick={openCreateModal}
           />
         </div>
         <Table

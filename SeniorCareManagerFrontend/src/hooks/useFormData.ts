@@ -1,11 +1,16 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
-export default function useFormData<T>(initial: Partial<T>) {
-  const [data, setData] = useState<Partial<T>>(initial);
+export default function useFormData<T>(initial: T) {
+  const [data, setData] = useState(initial);
+  const [originalData] = useState(initial);
 
   const updateField = (fieldName: keyof T, value: unknown) => {
     setData((prev) => ({ ...prev, [fieldName]: value }));
   };
 
-  return { data, updateField, setData };
+  const reset = useCallback(() => {
+    setData(originalData);
+  }, [originalData]);
+
+  return { data, updateField, setData, reset };
 }

@@ -30,7 +30,6 @@ export default function SelectInput<T>({
       )}
       <select
         value={value}
-        defaultValue={''}
         name={String(name)}
         onChange={(e) => onChange(e.target.name as keyof T, e.target.value)}
         className={`w-full py-2 text-sm text-textPrimary rounded border focus:outline-none focus:border-neutralDarker ${
