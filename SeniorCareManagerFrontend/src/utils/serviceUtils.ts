@@ -79,29 +79,34 @@ export default function generateGenericMethods<T extends { id: number }>(
 }
 
 export function handleServiceError<T>(error: unknown): ServiceResult<T> {
-  if (isAxiosError(error) && error.response) {
-    const responseData = error.response.data as ApiResponse<T>;
+  if (!isAxiosError(error) || !error.response) {
+    return {
+      success: false,
+      message: 'Erro desconhecido',
+    };
+  }
 
-    if (responseData.errors && responseData.errors.length > 0) {
-      return {
-        success: false,
-        message: responseData.message || 'Erro de validação',
-        errors: responseData.errors,
-        data: responseData.data,
-      };
-    }
+  if (error.status === 401) {
+    return {
+      success: false,
+      message: 'Não autorizado',
+    };
+  }
 
-    if (responseData.message) {
-      return {
-        success: false,
-        message: responseData.message,
-        data: responseData.data,
-      };
-    }
+  const responseData = error.response.data as ApiResponse<T>;
+
+  if (responseData.errors && responseData.errors.length > 0) {
+    return {
+      success: false,
+      message: responseData.message || 'Erro de validação',
+      errors: responseData.errors,
+      data: responseData.data,
+    };
   }
 
   return {
     success: false,
-    message: 'Erro desconhecido',
+    message: responseData.message,
+    data: responseData.data,
   };
 }
