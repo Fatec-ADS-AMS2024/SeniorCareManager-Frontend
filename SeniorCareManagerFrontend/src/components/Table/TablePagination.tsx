@@ -22,10 +22,12 @@ export default function TablePagination({
   };
 
   return (
-    <div className="flex items-center justify-end select-none gap-4 w-[50%]">
+    <div className='flex items-center justify-end select-none gap-4 w-[50%]'>
       {/* Botão Anterior */}
       <button
-        className={`px-4 py-2 border border-neutralDark text-textPrimary rounded hover:bg-hoverButton hover:border-neutralWhite hover:text-neutralWhite transition-colors disabled:invisible ${totalPages === 1 ? 'hidden' : ''}`}
+        className={`px-4 py-2 border border-neutralDark text-textPrimary rounded hover:bg-hoverButton hover:border-neutralWhite hover:text-neutralWhite transition-colors disabled:invisible ${
+          totalPages === 1 ? 'hidden' : ''
+        }`}
         disabled={currentPage === 1}
         onClick={handlePrevious}
       >
@@ -33,13 +35,15 @@ export default function TablePagination({
       </button>
 
       {/* Dropdown de seleção de página */}
-      <span className="px-4 py-2 border border-neutralDark rounded">
+      <span className='px-4 py-2 border border-neutralDark rounded'>
         Página {currentPage} de {totalPages}
       </span>
 
       {/* Botão Próximo */}
       <button
-        className={`px-4 py-2 border border-neutralDark text-textPrimary rounded hover:bg-hoverButton hover:border-neutralWhite hover:text-neutralWhite transition-colors disabled:invisible ${totalPages === 1 ? 'hidden' : ''}`}
+        className={`px-4 py-2 border border-neutralDark text-textPrimary rounded hover:bg-hoverButton hover:border-neutralWhite hover:text-neutralWhite transition-colors disabled:invisible ${
+          totalPages === 1 ? 'hidden' : ''
+        }`}
         disabled={currentPage === totalPages}
         onClick={handleNext}
       >
