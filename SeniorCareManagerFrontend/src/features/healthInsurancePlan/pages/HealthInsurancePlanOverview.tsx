@@ -14,7 +14,11 @@ import { TableColumn } from '@/components/Table/types';
 export default function HealthInsurancePlanOverview() {
   const columns: TableColumn<HealthInsurancePlan>[] = [
     { label: 'Nome', attribute: 'name' },
-    { label: 'Tipo', attribute: 'type' },
+    {
+      label: 'Tipo',
+      attribute: 'type',
+      render: (value) => getHealthInsurancePlanTypeLabel(Number(value)),
+    },
     { label: 'Abreviação', attribute: 'abbreviation' },
   ];
   const [data, setData] = useState<HealthInsurancePlan[]>([]);
@@ -268,18 +272,13 @@ export default function HealthInsurancePlanOverview() {
         </div>
         <Table<HealthInsurancePlan>
           columns={columns}
-          data={data.map((plan) => {
-            let finalAbbreviation = plan.abbreviation;
-            if (plan.name === plan.abbreviation) {
-              finalAbbreviation += '\u200B';
-            }
-            return {
-              id: plan.id,
-              name: plan.name,
-              type: getHealthInsurancePlanTypeLabel(plan.type),
-              abbreviation: finalAbbreviation,
-            };
-          })}
+          data={data.map((plan) => ({
+            ...plan,
+            abbreviation:
+              plan.name === plan.abbreviation
+                ? plan.abbreviation + '\u200B'
+                : plan.abbreviation,
+          }))}
           actions={(id) => <Actions id={id} />}
         />
       </div>

@@ -52,6 +52,7 @@ export default function Table<T extends { id: number }>({
           <TableRow<T>
             key={row.id}
             data={row}
+            columns={columns}
             index={rowIndex}
             actions={actions ? actions(row.id) : undefined}
             onSelect={handleRowSelection}

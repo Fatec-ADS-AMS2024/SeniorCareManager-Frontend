@@ -1,5 +1,8 @@
+import { TableColumn } from './types';
+
 interface TableRowProps<T extends { id: number }> {
   data: T;
+  columns: TableColumn<T>[];
   index: number;
   actions?: JSX.Element;
   onSelect: (rowId: number) => void;
@@ -8,13 +11,12 @@ interface TableRowProps<T extends { id: number }> {
 
 export default function TableRow<T extends { id: number }>({
   data,
+  columns,
   index,
   actions,
   onSelect,
   isSelected,
 }: TableRowProps<T>) {
-  const values = Object.values(data);
-
   const handleClick = () => {
     onSelect(data.id);
   };
@@ -38,8 +40,12 @@ export default function TableRow<T extends { id: number }>({
       </td>
 
       {/* Conteúdo */}
-      {values.map((value, index) => {
-        if (index > 0) return <td key={`Table_${value}`}>{value}</td>;
+      {columns.map((column, index) => {
+        const value = data[column.attribute];
+        const displayValue = column.render
+          ? column.render(value, data)
+          : String(value);
+        return <td key={index}>{displayValue}</td>;
       })}
 
       {/* Célula dos botões */}

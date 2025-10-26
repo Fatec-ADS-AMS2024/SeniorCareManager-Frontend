@@ -8,9 +8,12 @@ import SearchBar from '@/components/SearchBar';
 import Button from '@/components/Button';
 import { AlertModal, ConfirmModal } from '@/components/Modal';
 import PositionFormModal from '@/features/position/components/PositionFormModal';
+import { TableColumn } from '@/components/Table/types';
 
 export default function PositionOverview() {
-  const columns = ['Nome'];
+  const columns: TableColumn<Position>[] = [
+    { label: 'Nome', attribute: 'name' },
+  ];
   const [data, setData] = useState<Position[]>([]);
   const [originalData, setOriginalData] = useState<Position[]>([]);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -217,12 +220,9 @@ export default function PositionOverview() {
             onClick={openCreateModal}
           />
         </div>
-        <Table
+        <Table<Position>
           columns={columns}
-          data={data.map((row) => ({
-            id: row.id,
-            Nome: row.name,
-          }))}
+          data={data}
           actions={(id) => <Actions id={id} />}
         />
       </div>

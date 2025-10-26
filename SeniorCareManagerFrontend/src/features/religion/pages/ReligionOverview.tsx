@@ -8,9 +8,12 @@ import SearchBar from '@/components/SearchBar';
 import Button from '@/components/Button';
 import { AlertModal, ConfirmModal } from '@/components/Modal';
 import ReligionFormModal from '@/features/religion/components/ReligionFormModal';
+import { TableColumn } from '@/components/Table/types';
 
 export default function ReligionOverview() {
-  const columns = ['Nome'];
+  const columns: TableColumn<Religion>[] = [
+    { label: 'Nome', attribute: 'name' },
+  ];
   const [data, setData] = useState<Religion[]>([]);
   const [originalData, setOriginalData] = useState<Religion[]>([]);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -228,7 +231,7 @@ export default function ReligionOverview() {
             onClick={openCreateModal}
           />
         </div>
-        <Table
+        <Table<Religion>
           columns={columns}
           data={data}
           actions={(id) => <Actions id={id} />}
