@@ -1,57 +1,43 @@
-import { Link, useLocation } from "react-router-dom";
-import { CaretRight } from "@phosphor-icons/react";
-import { routes } from "../../routes/routes";
+import { Link } from 'react-router-dom';
+import { CaretRight } from '@phosphor-icons/react';
+import useBreadcrumbs from '@/hooks/useBreadcrumbs';
 
 export default function Breadcrumb() {
-  const location = useLocation();
-  const pathnames = location.pathname.split("/").filter((x) => x);
-
-  // Mapeamento para traduzir as rotas
-  // ADICIONAR A ROTA DA SUA PÁGINA E COLOCAR EM PORTUGUÊS ENTRE ASPAS
-  //EXEMPLO: REGISTER: "CADASTROS"
-  const breadcrumbNameMap: { [key: string]: string } = {
-    generalAdministrator: "Visão Geral",
-    registrations: "Cadastros",
-    religionregistration: "Cadastro de Religião",
-    healthinsuranceplanregistration: "Cadastro de Plano de Saúde",
-    positionregistration: "Cadastro de Cargos",
-    accessibility: "Acessibilidade",
-  };
+  const breadcrumbs = useBreadcrumbs();
 
   return (
-    <nav className="flex items-center space-x-2" aria-label="Breadcrumb">
-      <ul className="flex items-center space-x-1">
-        {/* Primeiro item: Início */}
-        <li className="flex items-center">
-          <Link
-            to={routes.GENERALADM}
-            className="text-secondary hover:text-primary font-medium"
-          >
-            Início
-          </Link>
-        </li>
-
+    <nav
+      className='flex items-center space-x-2 capitalize'
+      aria-label='Breadcrumb'
+    >
+      <ul className='flex items-center space-x-1'>
         {/* Renderização dinâmica dos caminhos */}
-        {pathnames.map((value, index) => {
-          const to = `/${pathnames.slice(0, index + 1).join("/")}`;
-          const isLast = index === pathnames.length - 1;
+        {breadcrumbs.map((crumb, index) => {
+          const isLast = index === breadcrumbs.length - 1;
+          const hasPath = !!crumb.path;
+
+          const item =
+            hasPath && !isLast && crumb.hasPage ? (
+              <Link
+                className='text-secondary hover:text-primary font-medium'
+                to={crumb.path}
+              >
+                {crumb.name}
+              </Link>
+            ) : (
+              <span className='text-textSecondary font-medium'>
+                {crumb.name}
+              </span>
+            );
+
+          const separator = !isLast && (
+            <CaretRight className='text-textSecondary h-5 w-5 mx-1' />
+          );
 
           return (
-            <li key={to} className="flex items-center">
-              {/* Seta entre os itens */}
-              <CaretRight className="text-textSecondary h-5 w-5 mx-1" />
-              {isLast ? (
-                <span className="text-textSecondary font-medium">
-                  {breadcrumbNameMap[value] || value}
-                </span>
-              ) : (
-                <Link
-                  to={to}
-                  className="text-secondary hover:text-primary font-medium"
-                >
-                  {breadcrumbNameMap[value] || value}
-                </Link>
-              )}
+            <li key={crumb.path} className='flex items-center'>
+              {item}
+              {separator}
             </li>
           );
         })}
