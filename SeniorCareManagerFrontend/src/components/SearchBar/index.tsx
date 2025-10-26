@@ -15,12 +15,7 @@ export default function SearchBar({ placeholder, action }: SearchBarProps) {
   // Função para lidar com a ação de pesquisa
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    if (typeof action === 'function') {
-      action(searchTerm);
-    } else {
-      console.log(searchTerm);
-    }
+    if (action) action(searchTerm);
   };
 
   return (
