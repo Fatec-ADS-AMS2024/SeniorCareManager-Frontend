@@ -175,27 +175,33 @@ export default function ReligionOverview() {
     }
   };
 
-  const Actions = ({ id }: { id: number }) => (
-    <>
-      <button
-        onClick={() => openEditModal(id)}
-        className='text-edit hover:text-hoverEdit'
-      >
-        <Pencil className='size-6' weight='fill' />
-      </button>
-      <button
-        onClick={() => openDeleteModal(id)}
-        className='text-danger hover:text-hoverDanger'
-      >
-        <Trash className='size-6' weight='fill' />
-      </button>
-    </>
-  );
+  const Actions = ({ id }: { id: number }) => {
+    const itemName = data.find((item) => item.id === id)?.name || 'esta religião';
+    return (
+      <>
+        <button
+          onClick={() => openEditModal(id)}
+          className='text-edit hover:text-hoverEdit'
+          aria-label={`Editar religião: ${itemName}`}
+        >
+          <Pencil className='size-6' weight='fill' aria-hidden='true' />
+        </button>
+        <button
+          onClick={() => openDeleteModal(id)}
+          className='text-danger hover:text-hoverDanger'
+          aria-label={`Excluir religião: ${itemName}`}
+        >
+          <Trash className='size-6' weight='fill' aria-hidden='true' />
+        </button>
+      </>
+    );
+  };
 
   return (
-    <div>
+    <main role='main'>
       <BreadcrumbPageTitle title='Religiões' />
       <div className='bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10'>
+        {/* Modais assumem ARIA em seus componentes internos (role="dialog", aria-modal, etc.) */}
         <ReligionFormModal
           isOpen={isFormModalOpen}
           onClose={() => {
@@ -221,6 +227,7 @@ export default function ReligionOverview() {
           type={alertType}
         />
         <div className='flex items-center justify-between mb-4'>
+          {/* SearchBar deve usar aria-label ou label visível */}
           <SearchBar action={handleSearch} placeholder='Buscar religião...' />
           <Button
             label='Adicionar'
@@ -235,8 +242,9 @@ export default function ReligionOverview() {
           columns={columns}
           data={data}
           actions={(id) => <Actions id={id} />}
+          aria-label='Tabela de Religiões Cadastradas'
         />
       </div>
-    </div>
+    </main>
   );
 }

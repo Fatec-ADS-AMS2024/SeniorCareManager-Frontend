@@ -6,16 +6,16 @@ export default function Breadcrumb() {
   const breadcrumbs = useBreadcrumbs();
 
   return (
+    // 1. O 'aria-label' na <nav> já está perfeito.
     <nav
       className='flex items-center space-x-2 capitalize'
       aria-label='Breadcrumb'
     >
-      <ul className='flex items-center space-x-1'>
-        {/* Renderização dinâmica dos caminhos */}
+      {/* Mudar para <ol> para melhor semântica de ordem */}
+      <ol className='flex items-center space-x-1'>
         {breadcrumbs.map((crumb, index) => {
           const isLast = index === breadcrumbs.length - 1;
           const hasPath = !!crumb.path;
-
           const item =
             hasPath && !isLast && crumb.hasPage ? (
               <Link
@@ -25,13 +25,19 @@ export default function Breadcrumb() {
                 {crumb.name}
               </Link>
             ) : (
-              <span className='text-textSecondary font-medium'>
+              <span
+                className='text-textSecondary font-medium'
+                aria-current={isLast ? 'page' : undefined}
+              >
                 {crumb.name}
               </span>
             );
 
           const separator = !isLast && (
-            <CaretRight className='text-textSecondary h-5 w-5 mx-1' />
+            <CaretRight
+              className='text-textSecondary h-5 w-5 mx-1'
+              aria-hidden="true"
+            />
           );
 
           return (
@@ -41,7 +47,7 @@ export default function Breadcrumb() {
             </li>
           );
         })}
-      </ul>
+      </ol>
     </nav>
   );
 }

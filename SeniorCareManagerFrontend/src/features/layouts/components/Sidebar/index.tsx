@@ -57,8 +57,12 @@ export default function Sidebar() {
     },
   ];
 
+  const menuId = 'main-sidebar-menu';
+
   return (
     <div
+      role='navigation'
+      aria-label='Navegação Principal do Sistema'
       className={`flex flex-col z-10 ${
         isOpen ? 'w-72' : 'w-16'
       } h-[calc(100vh-64px-96px)] bg-neutralWhite transition-all duration-500 overflow-hidden sticky left-0 top-24 bottom-0`}
@@ -67,32 +71,53 @@ export default function Sidebar() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className='flex w-full items-center justify-center h-16 text-primary hover:bg-neutralLighter border-x-4 border-x-transparent hover:border-r-primary relative '
+
+        aria-expanded={isOpen}
+
+        aria-controls={menuId}
+
+        aria-label={isOpen ? 'Fechar Menu Lateral' : 'Abrir Menu Lateral'}
       >
+        {/* Ícones são apenas decorativos (aria-hidden="true" não é necessário no icon se o botão tem aria-label) */}
         {isOpen ? (
-          <X className='size-6 absolute right-4' />
+          <X className='size-6 absolute right-4' aria-hidden="true" />
         ) : (
-          <List className='size-8' />
+          <List className='size-8' aria-hidden="true" />
         )}
       </button>
 
       {/* Botões do Sidebar */}
-      <div className='flex flex-col'>
-        {buttons.map((button) => (
-          <button
-            key={button.id}
-            onClick={() => navigate(button.route)}
-            className={`flex items-center gap-2 h-14 whitespace-nowrap border-x-transparent border-x-4 ${
-              isOpen ? 'px-4' : 'justify-center'
-            } ${
-              location.pathname === button.route
-                ? 'bg-secondary text-neutralWhite border-r-primary' // Estilo para a página ativa
-                : 'text-primary hover:bg-neutralLighter hover:border-r-primary'
-            }`}
-          >
-            {button.icon}
-            {isOpen && <span className='text-sm'>{button.label}</span>}
-          </button>
-        ))}
+      <div
+        className='flex flex-col'
+        id={menuId}
+
+        aria-hidden={!isOpen}
+      >
+        {buttons.map((button) => {
+          const isActive = location.pathname === button.route;
+
+          return (
+            <button
+              key={button.id}
+              onClick={() => navigate(button.route)}
+              className={`flex items-center gap-2 h-14 whitespace-nowrap border-x-transparent border-x-4 ${
+                isOpen ? 'px-4' : 'justify-center'
+              } ${
+                isActive
+                  ? 'bg-secondary text-neutralWhite border-r-primary'
+                  : 'text-primary hover:bg-neutralLighter hover:border-r-primary'
+              }`}
+
+              {...(isActive && { 'aria-current': 'page' })}
+
+              aria-label={button.label}
+
+            >
+              <span aria-hidden="true">{button.icon}</span>
+              {isOpen && <span className='text-sm'>{button.label}</span>}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

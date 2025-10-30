@@ -1,5 +1,7 @@
 import { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
 
+// A interface já estende as props nativas do HTMLButtonElement,
+// o que significa que 'aria-label' já está implicitamente incluído.
 interface ButtonProps
   extends DetailedHTMLProps<
     ButtonHTMLAttributes<HTMLButtonElement>,
@@ -44,15 +46,24 @@ export default function Button({
     medium: 'px-6 py-2 text-base',
     large: 'px-7 py-2 text-lg',
   };
+  const showLabel = label && label.trim().length > 0;
 
   return (
     <button
       className={`flex items-center justify-center gap-1 rounded-[4px] shadow-md transition ${colorClasses[color]} ${sizeClasses[size]} ${className}`}
       {...props}
     >
-      {iconPosition === 'left' && <span>{icon}</span>}
-      <span>{label}</span>
-      {iconPosition === 'right' && <span>{icon}</span>}
+      {iconPosition === 'left' && icon && <span>{icon}</span>}
+
+      {}
+      {showLabel && <span>{label}</span>}
+      {!showLabel && icon && props['aria-label'] && (
+        <span className='sr-only'>{props['aria-label']}</span>
+      )}
+      {}
+
+
+      {iconPosition === 'right' && icon && <span>{icon}</span>}
     </button>
   );
 }
