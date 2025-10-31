@@ -1,8 +1,8 @@
-import { HealthInsurancePlanType } from '../enums/HealthInsurancePlanType';
+import { HealthPlanType } from '../enums/HealthPlanType';
 
 export default interface HealthInsurancePlan {
   id: number;
   name: string;
-  type: HealthInsurancePlanType;
+  type: HealthPlanType;
   abbreviation: string;
 }
