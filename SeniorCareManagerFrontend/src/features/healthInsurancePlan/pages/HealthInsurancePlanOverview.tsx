@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { HealthInsurancePlanService } from '@/features/healthInsurancePlan';
 import HealthInsurancePlan from '@/types/models/HealthInsurancePlan';
-import { getHealthInsurancePlanTypeLabel } from '@/types/enums/HealthInsurancePlanType';
+import { getHealthInsurancePlanTypeLabel } from '@/types/enums/HealthPlanType';
 import Table from '@/components/Table';
 import { Pencil, Plus, Trash } from '@phosphor-icons/react';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';

@@ -3,8 +3,8 @@ import { ModalProps, FormModal } from '@/components/Modal';
 import useFormData from '@/hooks/useFormData';
 import {
   getHealthInsurancePlanTypeOptions,
-  HealthInsurancePlanType,
-} from '@/types/enums/HealthInsurancePlanType';
+  HealthPlanType,
+} from '@/types/enums/HealthPlanType';
 import HealthInsurancePlan from '@/types/models/HealthInsurancePlan';
 import { useEffect } from 'react';
 
@@ -24,7 +24,7 @@ export default function HealthInsurancePlanFormModal({
       id: 0,
       name: '',
       abbreviation: '',
-      type: HealthInsurancePlanType.PUBLIC,
+      type: HealthPlanType.PUBLIC,
     });
 
   useEffect(() => {
