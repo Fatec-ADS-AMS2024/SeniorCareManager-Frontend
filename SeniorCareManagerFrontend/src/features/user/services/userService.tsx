@@ -1,10 +1,10 @@
-import Religion from '@/types/models/Religion';
+import User from '@/types/models/User';
 import generateGenericMethods from '@/utils/serviceUtils';
 
-const genericMethods = generateGenericMethods<Religion>('Religion');
+const genericMethods = generateGenericMethods<User>('User');
 
-const ReligionService = {
+const UserService = {
   ...genericMethods,
 }
 
-export default ReligionService;
+export default UserService;

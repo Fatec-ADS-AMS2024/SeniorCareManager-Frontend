@@ -10,14 +10,11 @@ import { AlertModal, ConfirmModal } from '@/components/Modal';
 import UserFormModal from '@/features/user/components/UserFormModal';
 import { TableColumn } from '@/components/Table/types';
 
-// Assumindo que UserType e UserStatus são strings para fins de exibição na tabela
 export default function UserOverview() {
   const columns: TableColumn<User>[] = [
-    // ATRIBUTOS ADICIONADOS/ALTERADOS CONFORME SOLICITADO
     { label: 'Email', attribute: 'email' },
-    { label: 'Senha', attribute: 'password' },
-    { label: 'Tipo de Usuário', attribute: 'UserType' },
-    { label: 'Status Usuário', attribute: 'UserStatus' },
+    { label: 'Tipo de Usuário', attribute: 'userType' },
+    { label: 'Status Usuário', attribute: 'userStatus' },
   ];
   const [data, setData] = useState<User[]>([]);
   const [originalData, setOriginalData] = useState<User[]>([]);
@@ -51,7 +48,6 @@ export default function UserOverview() {
       setData(originalData);
       return;
     }
-    // BUSCA AGORA É BASEADA NO EMAIL
     const filteredData = originalData.filter((r) =>
       r.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -90,34 +86,23 @@ export default function UserOverview() {
     model: User,
     idToIgnore?: number
   ): string | null => {
-    const name = model.name?.trim() || '';
-    const email = model.email?.trim() || ''; // Novo campo de validação
+    const name = model.email?.trim() || '';
 
-    // Validação do Nome (MANTIDA para compatibilidade, mas pode ser removida)
     if (name.length < 3 || name.length > 100) {
       return 'Nome deve ter entre 3 e 100 caracteres.';
     }
+
     if (!/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/.test(name)) {
       return 'Nome deve conter apenas letras e espaços.';
     }
 
-    // Validação do Email (NOVA VALIDAÇÃO PRINCIPAL)
-    if (!email) {
-        return 'Email é obrigatório.';
-    }
-    // Validação básica de formato de e-mail
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return 'Email deve ter um formato válido.';
-    }
-
-    // Checagem de duplicidade por Email
     if (
       originalData.some(
         (r) =>
-          r.id !== idToIgnore && r.email.toLowerCase() === email.toLowerCase()
+          r.id !== idToIgnore && r.email.toLowerCase() === name.toLowerCase()
       )
     ) {
-      return 'Já existe um usuário cadastrado com esse email.';
+      return 'Já existe um email com esse nome.';
     }
 
     return null;
@@ -143,9 +128,9 @@ export default function UserOverview() {
 
     if (res.success) {
       await fetchData();
-      showAlert(`Usuário "${res.data?.email}" criado com sucesso!`, 'success'); // Mensagem agora usa email
+      showAlert(`Email "${res.data?.email}" criada com sucesso!`, 'success');
     } else {
-      showAlert(res.message || 'Erro inesperado ao criar o usuário.', 'error');
+      showAlert(res.message || 'Erro inesperado ao criar a email.', 'error');
       throw new Error(res.message);
     }
   };
@@ -162,12 +147,12 @@ export default function UserOverview() {
     if (res.success) {
       await fetchData();
       showAlert(
-        `Usuário "${res.data?.email}" atualizado com sucesso!`, // Mensagem agora usa email
+        `Email "${res.data?.email}" atualizada com sucesso!`,
         'success'
       );
     } else {
       showAlert(
-        res.message || 'Erro inesperado ao atualizar o usuário.',
+        res.message || 'Erro inesperado ao atualizar a email.',
         'error'
       );
       throw new Error(res.message);
@@ -180,14 +165,13 @@ export default function UserOverview() {
     const res = await UserService.deleteById(currentId);
     if (res.success) {
       setIsDeleteModalOpen(false);
-      // Busca o email do item excluído
-      const itemEmail = data.find((item) => item.id === currentId)?.email || '';
+      const itemName = data.find((item) => item.id === currentId)?.email || '';
       setCurrentId(null);
       await fetchData();
-      showAlert(`Usuário "${itemEmail}" excluído com sucesso!`, 'success'); // Mensagem agora usa email
+      showAlert(`Email "${itemName}" excluída com sucesso!`, 'success');
     } else {
       showAlert(
-        res.message || 'Erro inesperado ao excluir o Usuário.',
+        res.message || 'Erro inesperado ao excluir a Email.',
         'error'
       );
     }
@@ -212,7 +196,7 @@ export default function UserOverview() {
 
   return (
     <div>
-      <BreadcrumbPageTitle title='Usuários' />
+      <BreadcrumbPageTitle title='Religiões' />
       <div className='bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10'>
         <UserFormModal
           isOpen={isFormModalOpen}
@@ -228,8 +212,8 @@ export default function UserOverview() {
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
           onConfirm={deleteUser}
-          title='Deseja realmente excluir esse Usuário?'
-          message='Ao excluir este Usuário, ele será removido permanentemente do sistema.'
+          title='Deseja realmente excluir essa Email?'
+          message='Ao excluir esta Email, ela será removida permanentemente do sistema.'
         />
 
         <AlertModal
@@ -239,7 +223,7 @@ export default function UserOverview() {
           type={alertType}
         />
         <div className='flex items-center justify-between mb-4'>
-          <SearchBar action={handleSearch} placeholder='Buscar usuário por email...' /> {/* Placeholder alterado para email */}
+          <SearchBar action={handleSearch} placeholder='Buscar email...' />
           <Button
             label='Adicionar'
             icon={<Plus />}

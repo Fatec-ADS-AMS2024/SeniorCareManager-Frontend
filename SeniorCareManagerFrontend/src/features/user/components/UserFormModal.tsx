@@ -1,7 +1,6 @@
 import { TextInput } from '@/components/FormControls';
 import { ModalProps, FormModal } from '@/components/Modal';
 import useFormData from '@/hooks/useFormData';
-import { UserType } from '@/types/enums/UserType';
 import User from '@/types/models/User'; // Tipo alterado
 import { useEffect } from 'react';
 
@@ -59,10 +58,40 @@ export default function UserFormModal({
       <div className='flex flex-col gap-4'>
         {/* Tipo de TextInput alterado para User */}
         <TextInput<User>
-          name='name'
-          label='Nome'
+          name='email'
+          label='Email'
           onChange={updateField}
-          value={data.name}
+          value={data.email}
+          required
+        />
+      </div>
+           <div className='flex flex-col gap-4'>
+        {/* Tipo de TextInput alterado para User */}
+        <TextInput<User>
+          name='password'
+          label='Password'
+          onChange={updateField}
+          value={data.password}
+          required
+        />
+      </div>
+      <div className='flex flex-col gap-4'>
+        {/* Tipo de TextInput alterado para User */}
+        <TextInput<User>
+          name='userType'
+          label='UserType'
+          onChange={updateField}
+          value={data.userType}
+          required
+        />
+      </div>
+      <div className='flex flex-col gap-4'>
+        {/* Tipo de TextInput alterado para User */}
+        <TextInput<User>
+          name='userStatus'
+          label='UserStatus'
+          onChange={updateField}
+          value={data.userStatus}
           required
         />
       </div>
