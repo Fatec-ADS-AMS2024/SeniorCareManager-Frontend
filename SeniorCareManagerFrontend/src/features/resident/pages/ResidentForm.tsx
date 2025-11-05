@@ -2,10 +2,10 @@ import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import Button from '@/components/Button';
 import SelectInput from '@/components/FormControls/SelectInput';
 import TextInput from '@/components/FormControls/TextInput';
+import SearchBar from '@/components/SearchBar';
 import Table from '@/components/Table';
 import { TableColumn } from '@/components/Table/types';
 import Resident from '@/types/models/Resident';
-import { Plus } from '@phosphor-icons/react';
 import { useState } from 'react';
 
 export default function ResidentForm() {
@@ -43,41 +43,40 @@ export default function ResidentForm() {
   });
 
   const columns: TableColumn<Resident>[] = [
-  {
-    label: 'Nome social', // Cabeçalho da coluna
-    attribute: 'socialName', // Atributo do objeto Resident
-  },
-  {
-    label: 'Nome de registro',
-    attribute: 'registeredName',
-  },
-  {
-    label: 'CPF',
-    attribute: 'cpf',
-  },
-  {
-    label: 'Sexo',
-    attribute: 'sex',
-    // O campo "sex" é um enum, então é convertido para rótulo
-    // render: (value) => getSexLabel(value as number),
-  },
-  {
-    label: 'Idade',
-    attribute: 'age',
-  },
-  {
-    label: 'Etnia',
-    attribute: 'ethnicity',
-    // O campo "ethnicity" também é um enum
-    // render: (value) => getEthnicityLabel(value as number),
-  },
-];
+    {
+      label: 'Nome', // Cabeçalho da coluna
+      attribute: 'nome', // Atributo do dado
+    },
+    {
+      label: 'Tipo',
+      attribute: 'tipo',
+    },
+    {
+      label: 'Descrição',
+      attribute: 'descricao',
+    },
+    {
+      label: 'Data de detecção',
+      attribute: 'dataDeteccao',
+    },
+    {
+      label: 'Data de liberação',
+      attribute: 'dataLiberacao',
+    },
+  ];
 
-  const stepsData = [
+  const tabLabels = [
     'Residente',
-    'Alergias do Residente',
+    'Alergias',
     'Plano de Saúde',
     'Familiares do Residente',
+  ];
+
+  const stepTitles = [
+    'Dados do Residente',
+    'Adicionar Alergia do Residente',
+    'Dados do Plano de Saúde',
+    'Adicionar Familiar do Residente',
   ];
 
   const opcoesSexo = [
@@ -138,13 +137,20 @@ export default function ResidentForm() {
     else alert('⚠️ Preencha todos os campos.');
   };
 
+  const isAlergiasOrParentesStep = step === 1 || step === 3;
+  const titleClasses = `mb-6 ${
+    isAlergiasOrParentesStep
+      ? 'text-textSecondary text-sl font-medium'
+      : 'text-textPrimary text-xl font-semibold'
+  }`;
+
   return (
     <div>
       <BreadcrumbPageTitle title='Cadastro Residente' />
       <div className='flex flex-col p-12'>
         {/* Abas */}
         <div className='flex flex-row w-full mx-auto bg-white'>
-          {stepsData.map((label, index) => {
+          {tabLabels.map((label, index) => {
             const isActive = index === step;
             return (
               <button
@@ -167,11 +173,9 @@ export default function ResidentForm() {
           })}
         </div>
 
-        <form className='bg-white shadow-lg p-8 relative' >
+        <form className='bg-white shadow-lg p-8 relative'>
           {/* Título da aba */}
-          <h2 className='text-xl font-semibold text-textPrimary mb-6'>
-            {stepsData[step]}
-          </h2>
+          <h2 className={titleClasses}>{stepTitles[step]}</h2>
 
           {/* Conteúdo das abas */}
           {step === 0 && (
@@ -394,14 +398,14 @@ export default function ResidentForm() {
                 <SelectInput
                   label='Tipo:'
                   name='tipo'
-                  value={formData.residente.religiao}
+                  // value={formData.residente.religiao}
                   options={[]} // <-- Adicione suas opções aqui
                   onChange={(key, v) => updateSection('residente', key, v)}
                 />
                 <SelectInput
                   label='Nome:'
                   name='nome'
-                  value={formData.residente.escolaridade}
+                  // value={formData.residente.escolaridade}
                   options={[]} // <-- Adicione suas opções aqui
                   onChange={(key, v) => updateSection('residente', key, v)}
                 />
@@ -411,14 +415,14 @@ export default function ResidentForm() {
                 <TextInput
                   label='Data de detecção'
                   name='cpf'
-                  value={formData.residente.cpf}
+                  // value={formData.residente.cpf}
                   onChange={(key, v) => updateSection('residente', key, v)}
                   required
                 />
                 <TextInput
                   label='Data de liberação'
                   name='pisPasep'
-                  value={formData.residente.pisPasep}
+                  // value={formData.residente.pisPasep}
                   onChange={(key, v) => updateSection('residente', key, v)}
                 />
               </div>
@@ -429,7 +433,7 @@ export default function ResidentForm() {
                   <TextInput
                     label='Descrição:'
                     name='descricao'
-                    value={formData.residente.cpf}
+                    // value={formData.residente.cpf}
                     onChange={(key, v) => updateSection('residente', key, v)}
                     required
                   />
@@ -452,8 +456,15 @@ export default function ResidentForm() {
                   />
                 </div>
               </div>
-              <div className='relative -left-8 -right-8 w-[calc(100%+64px)] px-8 bg-red-400'>
-                <div className='w-full'>
+              <div className='relative -left-8 -right-8 w-[calc(100%+64px)] bg-background mt-12 shadow-sm'>
+                <hr className='w-full border-t border-textPrimary mt-4' />
+                <div className='w-full p-8'>
+                  <h1 className='text-textPrimary text-xl font-semibold mb-6'>
+                    Alergias do Residente
+                  </h1>
+                  <div className='mb-4'>
+                    <SearchBar placeholder='Buscar alergia...'></SearchBar>
+                  </div>
                   <Table
                     columns={columns} // Colunas configuradas
                     data={[]} // Dados da tabela
@@ -466,63 +477,238 @@ export default function ResidentForm() {
             </div>
           )}
           {step === 2 && (
-            <div className='grid grid-cols-2 gap-4'>
-              <Input
-                label='Plano de saúde'
-                value={formData.planoSaude.plano}
-                onChange={(v) => updateSection('planoSaude', 'plano', v)}
-                required
-              />
-              <Input
-                label='Número da carteirinha'
-                value={formData.planoSaude.numeroCarteirinha}
-                onChange={(v) =>
-                  updateSection('planoSaude', 'numeroCarteirinha', v)
-                }
-              />
+            <div>
+              <div className='grid grid-cols-2 gap-4'>
+                <SelectInput
+                  label='Tipo:'
+                  name='tipo'
+                  // value={formData.residente.religiao}
+                  options={[]} // <-- Adicione suas opções aqui
+                  onChange={(key, v) => updateSection('residente', key, v)}
+                />
+                <SelectInput
+                  label='Nome:'
+                  name='nome'
+                  // value={formData.residente.escolaridade}
+                  options={[]} // <-- Adicione suas opções aqui
+                  onChange={(key, v) => updateSection('residente', key, v)}
+                />
+              </div>
+              <div className='flex justify-end mt-6'>
+                <a
+                  href='#'
+                  className='text-textSecondary underline hover:text-secondary text-sm font-medium'
+                >
+                  Plano de Saúde não encontrado
+                </a>
+              </div>
+              <hr className='w-full border-t border-textPrimary mt-4 mb-8' />
             </div>
           )}
           {step === 3 && (
-            <div className='grid grid-cols-2 gap-4'>
-              <Input
-                label='Nome do familiar'
-                value={formData.familiares.nomeFamiliar}
-                onChange={(v) => updateSection('familiares', 'nomeFamiliar', v)}
-                required
-              />
-              <Input
-                label='Parentesco'
-                value={formData.familiares.parentesco}
-                onChange={(v) => updateSection('familiares', 'parentesco', v)}
-              />
-              <Input
-                label='Telefone'
-                value={formData.familiares.telefone}
-                onChange={(v) => updateSection('familiares', 'telefone', v)}
-              />
+            <div className='flex flex-col'>
+
+              {/* Linha 1: Nome e Parentesco */}
+              <div className='grid grid-cols-2 gap-4 mb-4'>
+                <TextInput
+                  label='Nome'
+                  name='nomeFamiliar'
+                  value={formData.familiares.nomeFamiliar}
+                  onChange={(key, v) => updateSection('familiares', key, v)}
+                  required
+                />
+                <SelectInput
+                  label='Parentesco'
+                  name='parentesco'
+                  value={formData.familiares.parentesco}
+                  options={[
+                    { label: 'Pai', value: 'pai' },
+                    { label: 'Mãe', value: 'mae' },
+                    { label: 'Filho(a)', value: 'filho' },
+                    { label: 'Irmão(ã)', value: 'irmao' },
+                    { label: 'Outro', value: 'outro' },
+                  ]}
+                  onChange={(key, v) => updateSection('familiares', key, v)}
+                />
+              </div>
+
+              {/* Linha 2: RG, Órgão Emissor, Estado Emissor */}
+              <div className='grid grid-cols-4 gap-4 mb-4'>
+                <div className='col-span-2'>
+                  <TextInput
+                    label='RG'
+                    name='rg'
+                    value={formData.familiares.rg || ''}
+                    onChange={(key, v) => updateSection('familiares', key, v)}
+                  />
+                </div>
+                <TextInput
+                  label='Órgão Emissor'
+                  name='orgaoEmissor'
+                  value={formData.familiares.orgaoEmissor || ''}
+                  onChange={(key, v) => updateSection('familiares', key, v)}
+                />
+                <TextInput
+                  label='Estado Emissor'
+                  name='estadoEmissor'
+                  value={formData.familiares.estadoEmissor || ''}
+                  onChange={(key, v) => updateSection('familiares', key, v)}
+                />
+              </div>
+
+              {/* Linha 3: CPF e E-mail */}
+              <div className='grid grid-cols-2 gap-4 mb-4'>
+                <TextInput
+                  label='CPF'
+                  name='cpf'
+                  value={formData.familiares.cpf || ''}
+                  onChange={(key, v) => updateSection('familiares', key, v)}
+                />
+                <TextInput
+                  label='E-mail'
+                  name='email'
+                  value={formData.familiares.email || ''}
+                  onChange={(key, v) => updateSection('familiares', key, v)}
+                />
+              </div>
+
+              {/* Linha 4: Telefones */}
+              <div className='grid grid-cols-2 gap-4 mb-4'>
+                <TextInput
+                  label='Número de celular'
+                  name='celular'
+                  type='number'
+                  value={formData.familiares.celular || ''}
+                  onChange={(key, v) => updateSection('familiares', key, v)}
+                />
+                <TextInput
+                  label='Número de telefone residencial'
+                  name='telefoneResidencial'
+                  type='number'
+                  value={formData.familiares.telefoneResidencial || ''}
+                  onChange={(key, v) => updateSection('familiares', key, v)}
+                />
+              </div>
+
+              <hr className='w-full border-t border-textPrimary mt-4 mb-8' />
+
+              {/* Linha 5: Endereço */}
+              <div className='grid grid-cols-4 gap-4 mb-4'>
+                <div className='col-span-2'>
+                  <TextInput
+                    label='Rua'
+                    name='rua'
+                    value={formData.familiares.rua || ''}
+                    onChange={(key, v) => updateSection('familiares', key, v)}
+                  />
+                </div>
+                <TextInput
+                  label='Número'
+                  name='numero'
+                  value={formData.familiares.numero || ''}
+                  onChange={(key, v) => updateSection('familiares', key, v)}
+                />
+                <TextInput
+                  label='CEP'
+                  name='cep'
+                  value={formData.familiares.cep || ''}
+                  onChange={(key, v) => updateSection('familiares', key, v)}
+                />
+              </div>
+
+              <div className='grid grid-cols-2 gap-4 mb-4'>
+                <TextInput
+                  label='Bairro'
+                  name='bairro'
+                  value={formData.familiares.bairro || ''}
+                  onChange={(key, v) => updateSection('familiares', key, v)}
+                />
+                <TextInput
+                  label='Complemento (opcional)'
+                  name='complemento'
+                  value={formData.familiares.complemento || ''}
+                  onChange={(key, v) => updateSection('familiares', key, v)}
+                />
+              </div>
+
+              <div className='grid grid-cols-4 gap-4 mb-4'>
+                <div className='col-span-2'>
+                  <TextInput
+                    label='Cidade'
+                    name='cidade'
+                    value={formData.familiares.cidade || ''}
+                    onChange={(key, v) => updateSection('familiares', key, v)}
+                  />
+                </div>
+                <TextInput
+                  label='Estado'
+                  name='estado'
+                  value={formData.familiares.estado || ''}
+                  onChange={(key, v) => updateSection('familiares', key, v)}
+                />
+              </div>
+
+              {/* Botão de adicionar familiar */}
+              <div className='flex justify-end mt-6'>
+                <Button
+                  label='+ Adicionar familiar do residente'
+                  onClick={() => alert('Familiar adicionado!')}
+                  color='success'
+                  size='medium'
+                  className='font-medium'
+                />
+              </div>
+
+              {/* Seção: Lista de familiares */}
+              <div className='relative -left-8 -right-8 w-[calc(100%+64px)] bg-background mt-12 shadow-sm'>
+                <hr className='w-full border-t border-textPrimary' />
+                <div className='w-full p-8'>
+                  <h2 className='text-textPrimary text-xl font-semibold mb-6'>
+                    Familiares do Residente
+                  </h2>
+                  <div className='mb-4'>
+                    <SearchBar placeholder='Buscar familiar...' />
+                  </div>
+                  <Table
+                    columns={[
+                      { label: 'Nome', attribute: 'nomeFamiliar' },
+                      { label: 'Parentesco', attribute: 'parentesco' },
+                    ]}
+                    data={[]} // ← Aqui entram os familiares cadastrados
+                    rowsPerPage={5}
+                  />
+                </div>
+              </div>
             </div>
           )}
 
           {/* Botões de navegação */}
-          <div className='flex justify-between mt-8'>
-            {step > 0 ? (
+          <div className='flex justify-end mt-8 gap-4'>
+            {step > 0 && (
               <Button
                 label='Voltar'
                 onClick={handleBack}
                 color='neutralLight'
-                className='border border-gray-300 hover:bg-gray-100 shadow-none'
+                size='medium'
+                className='hover:bg-neutralDark/10 text-textPrimary shadow-none'
               />
-            ) : (
-              <div />
             )}
 
-            {step < stepsData.length - 1 ? (
-              <Button label='Avançar' onClick={handleNext} color='primary' />
+            {step < stepTitles.length - 1 ? (
+              <Button
+                label='Avançar'
+                onClick={handleNext}
+                color='primary'
+                size='medium'
+                className='font-medium'
+              />
             ) : (
               <Button
-                label='Finalizar'
+                label='Finalizar cadastro de residente'
                 onClick={handleSubmit}
-                color='success'
+                color='primary'
+                size='medium'
+                className='font-medium'
               />
             )}
           </div>
@@ -532,32 +718,3 @@ export default function ResidentForm() {
   );
 }
 
-/* Input Genérico */
-interface InputProps {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  type?: string;
-  required?: boolean;
-}
-function Input({
-  label,
-  value,
-  onChange,
-  type = 'text',
-  required,
-}: InputProps) {
-  return (
-    <div className='flex flex-col'>
-      <label className='text-sm font-medium text-gray-700 mb-1'>
-        {label} {required && <span className='text-red-500'>*</span>}
-      </label>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className='border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'
-      />
-    </div>
-  );
-}
