@@ -2,6 +2,7 @@ import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import Button from '@/components/Button';
 import SelectInput from '@/components/FormControls/SelectInput';
 import TextInput from '@/components/FormControls/TextInput';
+import { FormModal } from '@/components/Modal';
 import SearchBar from '@/components/SearchBar';
 import Table from '@/components/Table';
 import { TableColumn } from '@/components/Table/types';
@@ -10,6 +11,28 @@ import { useState } from 'react';
 
 export default function ResidentForm() {
   const [step, setStep] = useState(0);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
+
+  const handleSubmitModal = (data?: unknown) => {
+    // Lógica que será executada ao salvar a nova alergia
+    console.log('Nova alergia cadastrada:', data);
+    handleCloseModal();
+  };
+
+  // Modal de Plano de Saúde
+  const [isModalPlanoOpen, setIsModalPlanoOpen] = useState(false);
+
+  const handleOpenPlanoModal = () => setIsModalPlanoOpen(true);
+  const handleClosePlanoModal = () => setIsModalPlanoOpen(false);
+
+  const handleSubmitPlanoModal = (data?: unknown) => {
+    console.log('Novo plano de saúde cadastrado:', data);
+    handleClosePlanoModal();
+  };
 
   const [formData, setFormData] = useState({
     residente: {
@@ -79,12 +102,14 @@ export default function ResidentForm() {
     'Adicionar Familiar do Residente',
   ];
 
+  // Apagar apó integração
   const opcoesSexo = [
     { label: 'Masculino', value: 'M' },
     { label: 'Feminino', value: 'F' },
     { label: 'Outro', value: 'O' },
   ];
 
+  // Apagar apó integração
   const opcoesEstadoCivil = [
     { label: 'Solteiro(a)', value: 'solteiro' },
     { label: 'Casado(a)', value: 'casado' },
@@ -92,6 +117,7 @@ export default function ResidentForm() {
     { label: 'Viúvo(a)', value: 'viuvo' },
   ];
 
+  // Apagar apó integração
   const opcoesEtnia = [
     { label: 'Branca', value: 'branca' },
     { label: 'Preta', value: 'preta' },
@@ -443,10 +469,39 @@ export default function ResidentForm() {
                 <div className='flex items-center gap-4'>
                   <a
                     href='#'
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleOpenModal();
+                    }}
                     className='text-textSecondary underline hover:text-secondary text-sm font-medium'
                   >
                     Alergia não encontrada
                   </a>
+
+                  <FormModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    onSubmit={handleSubmitModal}
+                    title='Cadastrar nova alergia'
+                  >
+                    <div className='flex flex-col gap-4'>
+                      <SelectInput
+                        label='Tipo:'
+                        name='tipo'
+                        options={[
+                          { label: 'Alimentar', value: 'alimentar' },
+                          { label: 'Medicamento', value: 'medicamento' },
+                          { label: 'Outros', value: 'outros' },
+                        ]}
+                        onChange={() => {}}
+                      />
+                      <TextInput
+                        label='Nome da alergia:'
+                        name='nomeAlergia'
+                        onChange={() => {}}
+                      />
+                    </div>
+                  </FormModal>
 
                   <Button
                     label='+ Adicionar alergia do residente'
@@ -483,7 +538,12 @@ export default function ResidentForm() {
                   label='Tipo:'
                   name='tipo'
                   // value={formData.residente.religiao}
-                  options={[]} // <-- Adicione suas opções aqui
+                  options={[
+                    {
+                      label: 'Nenhum',
+                      value: undefined,
+                    },
+                  ]} // <-- Adicione suas opções aqui
                   onChange={(key, v) => updateSection('residente', key, v)}
                 />
                 <SelectInput
@@ -497,17 +557,50 @@ export default function ResidentForm() {
               <div className='flex justify-end mt-6'>
                 <a
                   href='#'
-                  className='text-textSecondary underline hover:text-secondary text-sm font-medium'
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleOpenPlanoModal();
+                  }}
+                  className='text-textSecondary underline hover:text-secondary text-sm font-medium mt-2'
                 >
-                  Plano de Saúde não encontrado
+                  Plano de saúde não encontrado
                 </a>
+
+                <FormModal
+                  isOpen={isModalPlanoOpen}
+                  onClose={handleClosePlanoModal}
+                  onSubmit={handleSubmitPlanoModal}
+                  title='Cadastrar novo plano de saúde'
+                >
+                  <div className='flex flex-col gap-4'>
+                    <SelectInput
+                      label='Tipo:'
+                      name='tipo'
+                      options={[
+                        { label: 'Privado', value: 'privado' },
+                        { label: 'Público (SUS)', value: 'publico' },
+                        { label: 'Outros', value: 'outros' },
+                      ]}
+                      onChange={() => {}}
+                    />
+                    <TextInput
+                      label='Nome do plano:'
+                      name='nomePlano'
+                      onChange={() => {}}
+                    />
+                    <TextInput
+                      label='Abreviação:'
+                      name='abreviacao'
+                      onChange={() => {}}
+                    />
+                  </div>
+                </FormModal>
               </div>
               <hr className='w-full border-t border-textPrimary mt-4 mb-8' />
             </div>
           )}
           {step === 3 && (
             <div className='flex flex-col'>
-
               {/* Linha 1: Nome e Parentesco */}
               <div className='grid grid-cols-2 gap-4 mb-4'>
                 <TextInput
@@ -717,4 +810,3 @@ export default function ResidentForm() {
     </div>
   );
 }
-
