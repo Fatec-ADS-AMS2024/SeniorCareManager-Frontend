@@ -8,9 +8,14 @@ export const residentRoutes = createRoutes({
     displayName: 'Residentes',
     element: <ResidentOverview />,
   },
-   RESIDENT_FORM: {
-    path: '/residentForm',
-    displayName: 'FormularioResidente',
+  RESIDENT_REGISTRATION: {
+    path: '/resident/registration',
+    displayName: 'Cadastro Residente',
+    element: <ResidentForm />,
+  },
+  RESIDENT_EDIT: {
+    path: '/resident/edit/:id',
+    displayName: 'Editar Residente',
     element: <ResidentForm />,
   },
 });
