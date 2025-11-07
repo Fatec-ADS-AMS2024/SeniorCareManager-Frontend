@@ -1,4 +1,4 @@
-import { Cross, FirstAid, Briefcase } from '@phosphor-icons/react';
+import { Cross, FirstAid, Briefcase, Buildings } from '@phosphor-icons/react';
 import Card from '@/components/Card';
 import SearchBar from '@/components/SearchBar';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
@@ -29,7 +29,7 @@ export default function Registrations() {
      {
       text: 'Empresa',
       subText: 'Empresas Cadastradas',
-      icon: <Cross weight='bold' className='shrink-0 size-full' />,
+      icon: <Buildings weight='bold' className='shrink-0 size-full' />,
       page: routes.COMPANY.path,
     },
   ];

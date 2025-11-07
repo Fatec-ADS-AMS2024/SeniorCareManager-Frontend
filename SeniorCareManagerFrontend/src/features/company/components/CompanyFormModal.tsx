@@ -61,8 +61,11 @@ export default function CompanyFormModal({
       onClose={handleClose}
       onSubmit={handleSubmit}
       title={title}
+      // @ts-ignore passar classes personalizadas para modal de empresa
+      widthClass='max-w-4xl'
+      heightClass='h-[85vh]'
     >
-      <div className='flex flex-col gap-4'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <TextInput<Company>
           name='companyName'
           label='Nome'
