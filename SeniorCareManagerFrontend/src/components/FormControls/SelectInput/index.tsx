@@ -5,7 +5,7 @@ import { SelectHTMLAttributes } from 'react';
 interface SelectInputProps<T>
   extends BaseFieldProps,
     Omit<SelectHTMLAttributes<HTMLSelectElement>, 'onChange' | 'name'> {
-  options: { label: string; value: string | number }[];
+  options: { label: string; value?: string | number }[];
   onChange: (attribute: keyof T, value: string) => void;
   name: keyof T;
 }
