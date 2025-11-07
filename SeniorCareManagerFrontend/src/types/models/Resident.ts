@@ -1,6 +1,6 @@
 import { MaritalStatus } from '../enums/MaritalStatus';
 import { Ethnicity } from '../enums/Ethnicity';
-import { Sex } from '../enums/Sex'; 
+import { Sex } from '../enums/Sex';
 
 export default interface Resident {
   id: number;
@@ -25,4 +25,5 @@ export default interface Resident {
   homePhoneNumber: string;
   height: number;
   weight: number;
+  healthInsurancePlanId: number | undefined;
 }
