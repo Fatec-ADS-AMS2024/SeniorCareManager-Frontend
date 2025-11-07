@@ -98,7 +98,7 @@ export default function ResidentTable() {
 
   return (
     <div>
-      <BreadcrumbPageTitle title='Religiões' />
+      <BreadcrumbPageTitle title='Residentes' />
       <div className='bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10'>
         <div className='flex items-center justify-between mb-4'>
           <SearchBar placeholder='Buscar religião...' />
@@ -108,7 +108,7 @@ export default function ResidentTable() {
             iconPosition='left'
             color='success'
             size='medium'
-            onClick={() => navigate('/ResidentForm')}
+            onClick={() => navigate('/resident/registration')}
           />
         </div>
         <Table
