@@ -26,6 +26,12 @@ export default function Registrations() {
       icon: <Briefcase weight='bold' className='shrink-0 size-full' />,
       page: routes.POSITION.path,
     },
+     {
+      text: 'Empresa',
+      subText: 'Empresas Cadastradas',
+      icon: <Cross weight='bold' className='shrink-0 size-full' />,
+      page: routes.COMPANY.path,
+    },
   ];
 
   return (
