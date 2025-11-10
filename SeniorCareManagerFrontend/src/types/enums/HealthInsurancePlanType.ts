@@ -6,6 +6,7 @@ import { Enum, EnumLabels } from '../app/Enum';
 const HealthInsurancePlanType: Enum = {
   PUBLIC: 1,
   PRIVATE: 2,
+  
 } as const;
 
 type HealthInsurancePlanType =
