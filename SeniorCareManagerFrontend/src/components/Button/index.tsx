@@ -1,7 +1,5 @@
 import { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
 
-// A interface já estende as props nativas do HTMLButtonElement,
-// o que significa que 'aria-label' já está implicitamente incluído.
 interface ButtonProps
   extends DetailedHTMLProps<
     ButtonHTMLAttributes<HTMLButtonElement>,
@@ -60,7 +58,6 @@ export default function Button({
       {!showLabel && icon && props['aria-label'] && (
         <span className='sr-only'>{props['aria-label']}</span>
       )}
-      {}
 
 
       {iconPosition === 'right' && icon && <span>{icon}</span>}

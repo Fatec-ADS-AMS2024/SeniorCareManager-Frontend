@@ -30,17 +30,14 @@ export default function Registrations() {
 
   return (
     <main role='main' className='min-h bg-neutralLighter'>
-      {}
       <BreadcrumbPageTitle title='Cadastros' />
 
       <div className='py-8 px-4 flex flex-col flex-wrap items-start gap-8'>
         {/* Search Bar Section */}
         <div className='w-96'>
-          {}
           <SearchBar placeholder='Digite aqui...' action={console.log} />
         </div>
 
-        {}
         <div role='list' className='flex flex-wrap gap-8 justify-center'>
           {/* Card Grid */}
           {cards.map(({ text, icon, page, subText }) => (

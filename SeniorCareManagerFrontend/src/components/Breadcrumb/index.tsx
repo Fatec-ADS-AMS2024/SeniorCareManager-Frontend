@@ -6,7 +6,6 @@ export default function Breadcrumb() {
   const breadcrumbs = useBreadcrumbs();
 
   return (
-    // 1. O 'aria-label' na <nav> já está perfeito.
     <nav
       className='flex items-center space-x-2 capitalize'
       aria-label='Breadcrumb'

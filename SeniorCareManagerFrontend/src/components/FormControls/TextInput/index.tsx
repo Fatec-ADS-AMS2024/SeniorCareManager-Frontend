@@ -32,6 +32,7 @@ export default function TextInput<T>({
         </span>
       )}
       <input
+        aria-required={required}
         type={type}
         value={value}
         name={String(name)}

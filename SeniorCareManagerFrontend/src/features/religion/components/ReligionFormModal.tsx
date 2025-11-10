@@ -55,7 +55,6 @@ export default function ReligionFormModal({
           onChange={updateField}
           value={data.name}
           required
-          aria-required='true'
         />
       </div>
     </FormModal>

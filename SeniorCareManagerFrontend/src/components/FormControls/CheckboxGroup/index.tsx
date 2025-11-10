@@ -15,9 +15,6 @@ interface CheckboxGroupProps<T> extends BaseFieldProps {
   onChange: (attribute: keyof T, values: unknown[]) => void;
 }
 
-/**
- * Um grupo de checkboxes para múltiplas seleções
- */
 export default function CheckboxGroup<T>({
   label,
   error,
