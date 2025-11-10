@@ -7,4 +7,5 @@ export default interface User {
   password:string;
   userType: UserType;
   userStatus: UserStatus;
+  employeeId: number;
 }

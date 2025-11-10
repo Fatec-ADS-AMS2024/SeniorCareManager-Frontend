@@ -1,29 +1,31 @@
-import { TextInput } from '@/components/FormControls';
+import { SelectInput, TextInput } from '@/components/FormControls';
 import { ModalProps, FormModal } from '@/components/Modal';
 import useFormData from '@/hooks/useFormData';
-import User from '@/types/models/User'; // Tipo alterado
-import { useEffect } from 'react';
+import { getUserStatusOptions } from '@/types/enums/UserStatus';
+import { getUserTypeOptions, UserType } from '@/types/enums/UserType';
+import Employee from '@/types/models/Employee';
+import User from '@/types/models/User';
+import { useEffect, useState } from 'react';
 
-// Interface do componente alterada para User
 interface UserFormModalProps extends Omit<ModalProps, 'children'> {
   onSubmit: (data: User) => Promise<void>;
   objectData?: User;
 }
 
-// Nome da função e componente alterados
 export default function UserFormModal({
   onClose,
   onSubmit,
   isOpen,
   objectData,
 }: UserFormModalProps) {
-  // Uso do tipo User para o hook de dados
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const { data, setData, updateField, reset } = useFormData<User>({
     id: 0,
     email: '',
     password: '',
     userType: 1,
-    userStatus: 2
+    userStatus: 1,
+    employeeId: 0,
   });
 
   useEffect(() => {
@@ -65,7 +67,7 @@ export default function UserFormModal({
           required
         />
       </div>
-           <div className='flex flex-col gap-4'>
+      <div className='flex flex-col gap-4'>
         {/* Tipo de TextInput alterado para User */}
         <TextInput<User>
           name='password'
@@ -77,21 +79,37 @@ export default function UserFormModal({
       </div>
       <div className='flex flex-col gap-4'>
         {/* Tipo de TextInput alterado para User */}
-        <TextInput<User>
+        <SelectInput<User>
           name='userType'
           label='UserType'
           onChange={updateField}
           value={data.userType}
+          options={getUserTypeOptions()}
           required
         />
       </div>
       <div className='flex flex-col gap-4'>
         {/* Tipo de TextInput alterado para User */}
-        <TextInput<User>
+        <SelectInput<User>
           name='userStatus'
           label='UserStatus'
           onChange={updateField}
           value={data.userStatus}
+          options={getUserStatusOptions()}
+          required
+        />
+      </div>
+      <div className='flex flex-col gap-4'>
+        {/* Tipo de TextInput alterado para User */}
+        <SelectInput<User>
+          name='employeeId'
+          label='Funcionário'
+          onChange={updateField}
+          value={data.employeeId}
+          options={employees.map((employee) => ({
+            label: employee.name,
+            value: employee.id,
+          }))}
           required
         />
       </div>
