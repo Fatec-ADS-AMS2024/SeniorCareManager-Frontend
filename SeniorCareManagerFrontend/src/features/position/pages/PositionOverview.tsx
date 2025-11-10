@@ -164,27 +164,36 @@ export default function PositionOverview() {
     }
   };
 
-  const Actions = ({ id }: { id: number }) => (
-    <>
-      <button
-        onClick={() => openEditModal(id)}
-        className='text-edit hover:text-hoverEdit'
-      >
-        <Pencil className='size-6' weight='fill' />
-      </button>
-      <button
-        onClick={() => openDeleteModal(id)}
-        className='text-danger hover:text-hoverDanger'
-      >
-        <Trash className='size-6' weight='fill' />
-      </button>
-    </>
-  );
+  const Actions = ({ id }: { id: number }) => {
+    const itemName = data.find((item) => item.id === id)?.name || 'este cargo';
+    return (
+      <>
+        {/* Botão de Edição */}
+        <button
+          onClick={() => openEditModal(id)}
+          className='text-edit hover:text-hoverEdit'
+          aria-label={`Editar cargo: ${itemName}`}
+        >
+          <Pencil className='size-6' weight='fill' aria-hidden='true' />
+        </button>
+        {/* Botão de Exclusão */}
+        <button
+          onClick={() => openDeleteModal(id)}
+          className='text-danger hover:text-hoverDanger'
+          aria-label={`Excluir cargo: ${itemName}`}
+        >
+          <Trash className='size-6' weight='fill' aria-hidden='true' />
+        </button>
+      </>
+    );
+  };
 
   return (
-    <div>
+    <main role='main'>
       <BreadcrumbPageTitle title='Cargos' />
       <div className='bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10'>
+        {/* 4. Modais (Assumindo que FormModal, ConfirmModal e AlertModal
+            implementam o ARIA de modal: role="dialog", aria-modal="true", aria-labelledby, etc.) */}
         <PositionFormModal
           isOpen={isFormModalOpen}
           onClose={() => {
@@ -210,6 +219,8 @@ export default function PositionOverview() {
           type={alertType}
         />
         <div className='flex items-center justify-between mb-4'>
+          {/* 5. SearchBar (Assumindo que o componente SearchBar
+              usa aria-label ou label visível para o campo de busca) */}
           <SearchBar action={handleSearch} placeholder='Buscar cargo...' />
           <Button
             label='Adicionar'
@@ -220,12 +231,14 @@ export default function PositionOverview() {
             onClick={openCreateModal}
           />
         </div>
+        {/* 6. Tabela (Assumindo que o componente Table usa caption/aria-label) */}
         <Table<Position>
           columns={columns}
           data={data}
           actions={(id) => <Actions id={id} />}
+          aria-label='Tabela de Cargos Cadastrados'
         />
       </div>
-    </div>
+    </main>
   );
 }

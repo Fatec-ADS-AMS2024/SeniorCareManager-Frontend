@@ -55,6 +55,7 @@ export default function PositionFormModal({
           onChange={updateField}
           value={data.name}
           required
+          aria-required='true'
         />
       </div>
     </FormModal>

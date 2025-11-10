@@ -29,7 +29,7 @@ export default function Registrations() {
   ];
 
   return (
-    <div className='min-h bg-neutralLighter'>
+    <main role='main' className='min-h bg-neutralLighter'>
       <BreadcrumbPageTitle title='Cadastros' />
 
       <div className='py-8 px-4 flex flex-col flex-wrap items-start gap-8'>
@@ -38,19 +38,20 @@ export default function Registrations() {
           <SearchBar placeholder='Digite aqui...' action={console.log} />
         </div>
 
-        <div className='flex flex-wrap gap-8 justify-center'>
+        <div role='list' className='flex flex-wrap gap-8 justify-center'>
           {/* Card Grid */}
           {cards.map(({ text, icon, page, subText }) => (
-            <Card
-              key={text}
-              subText={subText}
-              text={text}
-              icon={icon}
-              page={page}
-            />
+            <div key={text} role='listitem'>
+              <Card
+                subText={subText}
+                text={text}
+                icon={icon}
+                page={page}
+              />
+            </div>
           ))}
         </div>
       </div>
-    </div>
+    </main>
   );
 }

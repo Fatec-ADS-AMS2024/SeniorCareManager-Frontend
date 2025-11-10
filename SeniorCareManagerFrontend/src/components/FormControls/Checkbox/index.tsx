@@ -10,9 +10,6 @@ interface CheckboxProps<T>
   name: keyof T;
 }
 
-/**
- * Um checkbox para seleção única
- */
 export default function Checkbox<T>({
   label,
   error,
@@ -20,16 +17,25 @@ export default function Checkbox<T>({
   checked,
   name,
   onChange,
+  id,
   ...props
 }: CheckboxProps<T>) {
+  const inputId = id || `checkbox-${String(name)}`;
+
+  const errorId = error ? `${inputId}-error` : undefined;
+
   return (
-    <FormField error={error} required={required}>
-      <label className='flex items-center cursor-pointer'>
+    <FormField error={error} required={required} id={inputId}>
+      <label className='flex items-center cursor-pointer' htmlFor={inputId}>
         <input
+          aria-required={required}
           type='checkbox'
+          id={inputId}
           checked={checked}
           name={String(name)}
           onChange={(e) => onChange(e.target.name as keyof T, e.target.checked)}
+          aria-invalid={!!error}
+          {...(errorId && { 'aria-describedby': errorId })}
           className={`w-4 h-4 text-textPrimary rounded border focus:ring-2 focus:ring-neutralDarker ${
             error ? 'border-danger' : 'border-neutralDark'
           }`}
