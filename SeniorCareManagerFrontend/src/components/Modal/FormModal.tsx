@@ -7,6 +7,8 @@ import { ModalProps } from './types';
 
 interface FormModalProps extends ModalProps {
   onSubmit: (data?: unknown) => void;
+  widthClass?: string;
+  heightClass?: string;
 }
 
 export default function FormModal({
@@ -17,6 +19,8 @@ export default function FormModal({
   children,
   closeOnBackdropClick = false,
   showCloseButton = true,
+  widthClass,
+  heightClass,
 }: FormModalProps) {
   const { isSubmitting, handleSubmit } = useModalForm();
 
@@ -30,6 +34,8 @@ export default function FormModal({
       isOpen={isOpen}
       onClose={onClose}
       closeOnBackdropClick={closeOnBackdropClick && !isSubmitting}
+      widthClass={widthClass}
+      heightClass={heightClass}
     >
       <form onSubmit={handleFormSubmit}>
         <Modal.ModalHeader

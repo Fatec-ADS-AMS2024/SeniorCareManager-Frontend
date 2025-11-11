@@ -17,12 +17,19 @@ interface ModalFooterProps {
   children: ReactNode;
 }
 
+interface ModalPropsWithSize extends ModalProps {
+  widthClass?: string; // classes tailwind para largura personalizada
+  heightClass?: string; // classes tailwind para altura personalizada
+}
+
 export const ModalRoot = ({
   isOpen,
   onClose,
   children,
   closeOnBackdropClick = true,
-}: ModalProps) => {
+  widthClass,
+  heightClass,
+}: ModalPropsWithSize) => {
   // Efeito para lidar com a tecla "Esc" e scroll
   useEffect(() => {
     if (!isOpen) return;
@@ -48,13 +55,13 @@ export const ModalRoot = ({
 
   return createPortal(
     <div
-      // Overlay
       className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'
       onClick={closeOnBackdropClick ? onClose : undefined}
     >
       <div
-        // Container da Modal
-        className='relative bg-white transition-all rounded-[10px] shadow-lg w-full max-w-xl px-4 py-6 bg-neutralWhite'
+        className={`relative bg-white transition-all rounded-[10px] shadow-lg w-full px-4 py-6 bg-neutralWhite ${
+          widthClass ? widthClass : 'max-w-xl'
+        } ${heightClass ? heightClass : ''}`}
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -80,6 +87,8 @@ export const ModalHeader = ({
             type='button'
             className='ml-auto h-6 w-6 flex items-center justify-center bg-transparent text-textSecondary'
             onClick={onClose}
+            aria-label='Fechar modal'
+            title='Fechar'
           >
             <X size={24} />
           </button>
