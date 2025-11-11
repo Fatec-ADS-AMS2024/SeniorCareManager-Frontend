@@ -4,28 +4,34 @@ import {
   Route,
   RouterProvider,
   useRouteError,
-} from "react-router-dom";
-import { routes } from "./routes";
-import Layout from "../components/Layout";
-import AcessibilityPage from "../pages/AcessibilityPage";
-
-import LandingPage from "../pages/LandingPage";
-import LoginPage from "../pages/LoginPage";
-import GeneralAdministrator from "../pages/GeneralAdministrator";
-import Registrations from "../pages/Registrations";
-import ReligionRegistration from "../pages/Registrations/ReligionRegistration";
+} from 'react-router-dom';
+import { routes } from './routes';
+import { AppLayout } from '@/features/layouts';
+import HeaderFooterLayout from '@/features/layouts/HeaderFooterLayout';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="" element={<Layout />} errorElement={<GlobalErrorBoundary />}>
-      <Route path={routes.ACCESSIBILITY} element={<AcessibilityPage />} />
-
-      <Route path={routes.LANDING} element={<LandingPage />} />
-      <Route path={routes.LOGIN} element={<LoginPage />} />
-      <Route path={routes.GENERALADM} element={<GeneralAdministrator />} />
-      <Route path={routes.REGISTRATIONS} element={<Registrations />} />
-      <Route path={routes.RELIGIONREGISTRATION} element={<ReligionRegistration />} />
-
+    <Route>
+      <Route
+        path=''
+        element={<AppLayout />}
+        errorElement={<GlobalErrorBoundary />}
+      >
+        <Route {...routes.ADMIN_OVERVIEW} />
+        <Route {...routes.REGISTRATIONS} />
+        <Route {...routes.RELIGION} />
+        <Route {...routes.HEALTH_INSURANCE_PLAN} />
+        <Route {...routes.POSITION} />
+      </Route>
+      <Route
+        path=''
+        element={<HeaderFooterLayout />}
+        errorElement={<GlobalErrorBoundary />}
+      >
+        <Route {...routes.LOGIN} />
+        <Route {...routes.ACCESSIBILITY} />
+        <Route {...routes.LANDING} />
+      </Route>
     </Route>
   )
 );
@@ -38,10 +44,8 @@ function GlobalErrorBoundary() {
   console.error(error);
 
   return (
-    <main className="min-h-screen w-screen p-4">
-      <h1 className="text-2xl text-danger">
-        Erro ao tentar acessar a página!
-      </h1>
+    <main className='min-h-screen w-screen p-4'>
+      <h1 className='text-2xl text-danger'>Erro ao tentar acessar a página!</h1>
     </main>
   );
 }
