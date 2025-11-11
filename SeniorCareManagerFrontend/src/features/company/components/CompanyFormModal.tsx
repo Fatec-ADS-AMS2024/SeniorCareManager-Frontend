@@ -4,7 +4,7 @@ import useFormData from '@/hooks/useFormData';
 import Company from '@/types/models/Company';
 import { useEffect } from 'react';
 
-interface HIPFormModalProps extends Omit<ModalProps, 'children'> {
+interface CompanyFormModalProps extends Omit<ModalProps, 'children'> {
   onSubmit: (data: Company) => Promise<void>;
   objectData?: Company;
 }
@@ -14,7 +14,7 @@ export default function CompanyFormModal({
   onSubmit,
   isOpen,
   objectData,
-}: HIPFormModalProps) {
+}: CompanyFormModalProps) {
   const { data, setData, updateField, reset } =
     useFormData<Company>({
       id: 0,
@@ -28,7 +28,7 @@ export default function CompanyFormModal({
       addreesComplement: '',
       city: '',
       state: '',
-      postaCode: '',
+      postalCode: '',
       companyLogo: '',
     });
 
@@ -61,7 +61,6 @@ export default function CompanyFormModal({
       onClose={handleClose}
       onSubmit={handleSubmit}
       title={title}
-      // @ts-ignore passar classes personalizadas para modal de empresa
       widthClass='max-w-4xl'
       heightClass='h-[85vh]'
     >
@@ -136,10 +135,10 @@ export default function CompanyFormModal({
           required
         />
         <TextInput<Company>
-          name='postaCode'
+          name='postalCode'
           label='Codigo Postal'
           onChange={updateField}
-          value={data.postaCode}
+          value={data.postalCode}
           required
         />
         <FileInput<Company>

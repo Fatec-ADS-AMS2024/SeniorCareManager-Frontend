@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import CompanyService from '@/features/company/services/companyService';
+import { CompanyService } from '@/features/company';
 import Company from '@/types/models/Company';
 import Table from '@/components/Table';
 import { Pencil, Plus, Trash } from '@phosphor-icons/react';

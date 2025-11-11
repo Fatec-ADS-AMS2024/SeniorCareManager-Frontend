@@ -10,6 +10,6 @@ export default interface Company {
   addreesComplement: string;
   city: string;
   state: string;
-  postaCode: string;
+  postalCode: string;
   companyLogo: string;
 }
