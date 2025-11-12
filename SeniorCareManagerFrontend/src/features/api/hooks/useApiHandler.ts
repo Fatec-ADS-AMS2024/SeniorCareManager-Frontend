@@ -6,13 +6,16 @@ interface HandleRequestOptions {
   successMessage?: string;
 }
 
-export default function useApiHandler<T>(serviceMethod: () => Promise<ApiResponse<T>>) {
+export default function useApiHandler<T>() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<T | null>(null);
   const { showAlert } = useAlert();
 
-  const handleRequest = async (options?: HandleRequestOptions) => {
+  const handleRequest = async (
+    serviceMethod: () => Promise<ApiResponse<T>>,
+    options?: HandleRequestOptions
+  ) => {
     setLoading(true);
     setError(null);
     const result = await serviceMethod();

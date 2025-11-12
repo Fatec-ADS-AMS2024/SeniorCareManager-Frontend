@@ -17,57 +17,65 @@
   }
 
   :root {
-    /* Cores Base do Sistema */
     --color-background: #f9f9f9;
-    --color-neutral-lighter: #fafafa; /* Fundo claro */
+    --color-neutral-lighter: #fafafa;
     --color-neutral-light: #e0e3e0;
-    --color-neutral: #f3f3f3; /* Tons intermediários */
-    --color-neutral-darker: #c6c6c6; /* Tons mais escuros */
-    --color-neutral-dark: #d9d9d9; /* Ideal para contraste suave */
+    --color-neutral: #f3f3f3;
+    --color-neutral-darker: #c6c6c6;
+    --color-neutral-dark: #d9d9d9;
     --color-neutral-white: #ffffff;
     --color-text-primary: #495453;
     --color-text-secondary: #6d8385;
-
-    /* Cores Específicas do Módulo */
     --color-primary: #009f96;
     --color-secondary: #10c5bb;
     --color-surface-user: #d2edeb;
     --color-hoverButton: #10c5bb;
-
-    /* Cores Especiais */
     --color-danger: #bd0000;
     --color-hoverDanger: #870101;
-
     --color-edit: #5db6dc;
     --color-hoverEdit: #279bcd;
-
     --color-success: #009f55;
     --color-hoverSuccess: #027841;
-
     --color-warning: #ffc107;
   }
 
   [data-theme='high-contrast'] {
-    /* Cores Base do Sistema */
     --color-text-primary: #000000;
     --color-text-secondary: #3f3f3f;
-
-    /* Cores Específicas do Módulo */
     --color-primary: #000000;
     --color-secondary: #242424;
     --color-surface-user: #d2d2d2;
     --color-hoverButton: #242424;
-
-    /* Cores Especiais */
     --color-danger: #000000;
     --color-hoverDanger: #242424;
-
     --color-edit: #000000;
     --color-hoverEdit: #242424;
-
     --color-success: #000000;
     --color-hoverSuccess: #242424;
-
     --color-warning: #000000;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role='button'],
+  [role='link'] {
+    @apply transition-all duration-200 ease-in-out transform-gpu;
+  }
+
+  button:hover,
+  a:hover,
+  [role='button']:hover,
+  [role='link']:hover {
+    @apply scale-[1.02];
+  }
+
+  button:active,
+  a:active,
+  [role='button']:active,
+  [role='link']:active {
+    @apply scale-[0.98];
   }
 }
