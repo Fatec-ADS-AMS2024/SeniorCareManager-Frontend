@@ -7,8 +7,6 @@ export default {
   theme: {
     extend: {
       colors: {
-
-        /* Cores Base do Sistema */
         background: 'var(--color-background)',
         neutralLighter: 'var(--color-neutral-lighter)',
         neutralLight: 'var(--color-neutral-light)',
@@ -18,27 +16,33 @@ export default {
         neutralWhite: 'var( --color-neutral-white)',
         textPrimary: 'var(--color-text-primary)',
         textSecondary: 'var(--color-text-secondary)',
-
-        /* Cores Específicas do Módulo */
         primary: 'var(--color-primary)',
         secondary: 'var(--color-secondary)',
         surfaceUser: 'var(--color-surface-user)',
         hoverButton: 'var(--color-hoverButton)',
-
-        /* Cores Especiais */
         danger: 'var(--color-danger)',
         hoverDanger: 'var(--color-hoverDanger)',
-
         edit: 'var(--color-edit)',
         hoverEdit: 'var(--color-hoverEdit)',
-
         success: 'var(--color-success)',
         hoverSuccess: 'var(--color-hoverSuccess)',
-        
         warning: 'var(--color-warning)',
-      }
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideInUp: {
+          '0%': { transform: 'translateY(20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+      },
+      animation: {
+        fadeIn: 'fadeIn 0.3s ease-in-out',
+        slideInUp: 'slideInUp 0.4s ease-in-out',
+      },
     },
   },
   plugins: [],
 }
-
