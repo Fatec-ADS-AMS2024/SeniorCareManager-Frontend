@@ -40,7 +40,7 @@ export default function EmployeeForm() {
     number: '',
     neighborhood: '',
     statusEmployee: StatusEmployee.ACTIVE,
-    positionId: 0,
+    positionId: 1,
   });
 
   const [originalData, setOriginalData] = useState<Employee[]>([]);
@@ -195,6 +195,25 @@ export default function EmployeeForm() {
     }
   };
 
+  function formatDatetimeForInput(value?: string) {
+  if (!value) return "";
+
+  const date = new Date(value);
+  const pad = (n: number) => n.toString().padStart(2, "0");
+
+  return (
+    date.getFullYear() +
+    "-" +
+    pad(date.getMonth() + 1) +
+    "-" +
+    pad(date.getDate()) +
+    "T" +
+    pad(date.getHours()) +
+    ":" +
+    pad(date.getMinutes())
+  );
+}
+
   return (
     <div>
       <BreadcrumbPageTitle title='Funcionário' />
@@ -327,36 +346,39 @@ export default function EmployeeForm() {
 
           <div className='w-full border border-neutralDarker mt-8 mb-8'></div>
 
-          <div className='w-full flex flex-row gap-4'>
-            <div className='flex-1'>
-              <SelectInput<Employee>
-                label='Status'
-                value={data.statusEmployee}
-                onChange={updateField}
-                name='statusEmployee'
-                options={getStatusEmployeeOptions()}
-                required
-              />
-            </div>
-            <div className='flex-1'>
-              <label
-                htmlFor='hireDate'
-                className='block text-sm font-medium text-gray-700'
-              >
-                Data de Contratação*
-              </label>
-              <input
-                type='date'
-                id='hireDate'
-                name='hireDate'
-                value={formatDateForInput(data.hireDate)}
-                onChange={(e) => updateField('hireDate', e.target.value)}
-                required
-                className='mt-1 block w-full rounded px-3 py-1.5 border border-neutralDark shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm appearance-none'
-              />
-            </div>
-          </div>
+<div className='w-full flex flex-row gap-4'>
+  <div className='flex-1'>
+    <SelectInput<Employee>
+      label='Status'
+      value={data.statusEmployee}
+      onChange={updateField}
+      name='statusEmployee'
+      options={getStatusEmployeeOptions()}
+      required
+    />
+  </div>
 
+  <div className='flex-1'>
+    <label
+      htmlFor='hireDate'
+      className='block text-sm font-medium text-gray-700'
+    >
+      Data de Contratação*
+    </label>
+    <input
+      type='datetime-local'
+      id='hireDate'
+      name='hireDate'
+      value={formatDatetimeForInput(data.hireDate)}
+      onChange={(e) =>
+        updateField('hireDate', new Date(e.target.value).toISOString())
+      }
+      required
+      className='mt-1 block w-full rounded px-3 py-1.5 border border-neutralDark shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm appearance-none'
+    />
+  </div>
+</div>
+  
           <div className='w-full border border-neutralDarker mt-4 mb-8'></div>
 
           <div className='flex justify-end w-full gap-4'>
