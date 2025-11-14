@@ -102,7 +102,7 @@ export default function AllergyOverview() {
           p.id !== idToIgnore && p.name.toLowerCase() === name.toLowerCase()
       )
     )
-      return 'Já existe um Plano de Saúde com esse nome.';
+      return 'Já existe uma alergia com esse nome.';
     if (model.type === null || model.type === undefined)
       return 'Tipo é obrigatório.';
     
