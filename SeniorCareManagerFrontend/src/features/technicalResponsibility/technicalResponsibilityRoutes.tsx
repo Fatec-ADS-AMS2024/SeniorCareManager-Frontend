@@ -10,12 +10,12 @@ export const technicalResponsibilityRoutes = createRoutes({
   },
   TECHNICAL_RESPONSIBILITY_REGISTRATION: {
     path: '/technical_responsibility/registration',
-    displayName: 'Cadastrar Funcionário',
+    displayName: 'Cadastrar Responsabilidade Técnica',
     element: <TechnicalResponsibilityForm />,
   },
   TECHNICAL_RESPONSIBILITY_EDIT: {
     path: '/technical_responsibility/edit/:id',
-    displayName: 'Editar Funcionário',
+    displayName: 'Editar Responsabilidade Técnica',
     element: <TechnicalResponsibilityForm />,
   },
 });

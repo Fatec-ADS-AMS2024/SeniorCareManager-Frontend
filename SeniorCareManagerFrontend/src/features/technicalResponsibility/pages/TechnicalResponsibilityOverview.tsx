@@ -105,10 +105,10 @@ export default function TechnicalResponsibilityOverview() {
 
   return (
     <div>
-      <BreadcrumbPageTitle title='Cadastro de Funcionário' />
+      <BreadcrumbPageTitle title='Cadastro de Responsabilidade Técnica' />
       <div className='bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10'>
         <div className='flex items-center justify-between mb-4'>
-          <SearchBar action={handleSearch} placeholder='Buscar Funcionário...' />
+          <SearchBar action={handleSearch} placeholder='Buscar Responsabilidade Técnica...' />
           <Button
             label='Adicionar'
             icon={<Plus />}
@@ -121,8 +121,8 @@ export default function TechnicalResponsibilityOverview() {
             isOpen={isDeleteModalOpen}
             onClose={() => setIsDeleteModalOpen(false)}
             onConfirm={deleteTechnicalResponsibility}
-            title='Deseja realmente excluir este funcionário?'
-            message='Ao excluir este funcionário, ele será removido permanentemente do sistema.'
+            title='Deseja realmente excluir esta responsabilidade técnica?'
+            message='Ao excluir esta responsabilidade técnica, ele será removido permanentemente do sistema.'
           />
           <AlertModal
             isOpen={isAlertModalOpen}
