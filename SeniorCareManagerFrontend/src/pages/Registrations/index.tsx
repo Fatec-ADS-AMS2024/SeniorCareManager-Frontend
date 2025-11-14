@@ -26,6 +26,12 @@ export default function Registrations() {
       icon: <Briefcase weight='bold' className='shrink-0 size-full' />,
       page: routes.POSITION.path,
     },
+        {
+      text: 'Alergia',
+      subText: 'Alergias Cadastradas',
+      icon: <FirstAid weight='bold' className='shrink-0 size-full' />,
+      page: routes.ALLERGY.path,
+    },
   ];
 
   return (
