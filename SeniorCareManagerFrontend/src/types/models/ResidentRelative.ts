@@ -1,21 +1,18 @@
-import { Relationship } from '../enums/Relationship';
-
 export default interface ResidentRelative {
   id: number;
+  residentId: number;
+  relationship: string;
   name: string;
-  cpf: string;
-  rg: string;
-  issuingState: string;
-  relationship: Relationship;
-  mobileNumber: string;
-  homePhoneNumber: string;
-  email: string;
-  street: string;
-  number: string;
-  district: string;
-  addressComplement: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  issuingBody: string;
+  citizenship?: string;
+  mobileNumber?: string;
+  homePhoneNumber?: string;
+  email?: string;
+  street?: string;
+  number?: string;
+  addressComplement?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  issuingBody?: string;
+  phoneNumber?: string;
 }

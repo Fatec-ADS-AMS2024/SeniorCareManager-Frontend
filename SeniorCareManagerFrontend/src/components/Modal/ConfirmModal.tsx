@@ -23,7 +23,7 @@ export default function ConfirmModal({
         showCloseButton={false}
       />
       <Modal.ModalContent>
-        <p>{message}</p>
+        <p className='text-textSecondary text-base'>{message}</p>
       </Modal.ModalContent>
       <Modal.ModalFooter>
         <Button
@@ -34,9 +34,9 @@ export default function ConfirmModal({
           size='medium'
         />
         <Button
-          label='Confirmar'
+          label='Sim, desejo remover!'
           onClick={onConfirm}
-          color='primary'
+          color='success'
           className='font-semibold'
           size='medium'
         />
