@@ -7,7 +7,7 @@ export default interface Company {
   street: string;
   number: string;
   district: string;
-  addreesComplement: string;
+  addressComplement: string;
   city: string;
   state: string;
   postalCode: string;
