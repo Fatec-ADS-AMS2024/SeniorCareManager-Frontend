@@ -12,7 +12,7 @@ import {
   getStatusEmployeeOptions,
   StatusEmployee,
 } from '@/types/enums/StatusEmployee';
-import PositionService from '@/features/employee/services/positionService';
+import { PositionService } from '@/features/position';
 import Position from '@/types/models/Position';
 
 export default function EmployeeForm() {

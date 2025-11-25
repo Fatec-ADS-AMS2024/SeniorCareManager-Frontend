@@ -11,7 +11,7 @@ import { AlertModal, ConfirmModal } from '@/components/Modal';
 import useAppRoutes from '@/hooks/useAppRoutes';
 import { useNavigate } from 'react-router-dom';
 import { getStatusEmployeeLabel } from '@/types/enums/StatusEmployee';
-import PositionService from '../services/positionService';
+import { PositionService } from '@/features/position';
 import Position from '@/types/models/Position';
 
 export default function EmployeeOverview() {
