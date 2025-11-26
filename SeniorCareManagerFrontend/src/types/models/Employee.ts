@@ -15,4 +15,8 @@ export default interface Employee {
   neighborhood: string;
   statusEmployee: StatusEmployee;
   positionId: number;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 63-sprint-11---desenvolver-tela-de-employee

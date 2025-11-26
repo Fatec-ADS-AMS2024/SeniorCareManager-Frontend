@@ -6,10 +6,10 @@ import { SelectInput, TextInput } from '@/components/FormControls';
 import useAppRoutes from '@/hooks/useAppRoutes';
 import useFormData from '@/hooks/useFormData';
 import { AlertModal } from '@/components/Modal';
-import PositionService from '@/features/technicalResponsibility/services/positionService';
+import { PositionService } from '@/features/position';
 import Position from '@/types/models/Position';
-import EmployeeService from '@/features/technicalResponsibility/services/employeeService';
 import Employee from '@/types/models/Employee';
+import { EmployeeService } from '@/features/employee';
 import TechnicalResponsibility from '@/types/models/TechnicalResponsibility';
 import TechnicalResponsibilityService from '../services/technicalResponsibilityService';
 

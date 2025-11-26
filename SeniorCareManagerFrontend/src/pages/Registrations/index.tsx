@@ -1,4 +1,4 @@
-import { Cross, FirstAid, Briefcase, ShieldCheck } from '@phosphor-icons/react';
+import { Cross, FirstAid, Briefcase, ShieldCheck, IdentificationBadge } from '@phosphor-icons/react';
 import Card from '@/components/Card';
 import SearchBar from '@/components/SearchBar';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
@@ -31,6 +31,12 @@ export default function Registrations() {
       subText: 'Responsáveis Técnicos Cadastrados',
       icon: <ShieldCheck weight='bold' className='shrink-0 size-full' />,
       page: routes.TECHNICAL_RESPONSIBILITY.path,
+    },
+    {
+      text: 'Funcionário',
+      subText: 'Funcionários Cadastrados',
+      icon: <IdentificationBadge weight='bold' className='shrink-0 size-full' />,
+      page: routes.EMPLOYEE.path,
     },
   ];
 

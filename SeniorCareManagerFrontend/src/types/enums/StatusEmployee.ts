@@ -33,4 +33,8 @@ export {
   StatusEmployee,
   getEnumLabel as getStatusEmployeeLabel,
   getEnumOptions as getStatusEmployeeOptions,
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> 63-sprint-11---desenvolver-tela-de-employee
