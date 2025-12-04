@@ -23,6 +23,9 @@ const router = createBrowserRouter(
         <Route {...routes.HEALTH_INSURANCE_PLAN} />
         <Route {...routes.POSITION} />
         <Route {...routes.ALLERGY} />
+        <Route {...routes.EMPLOYEE} />
+        <Route {...routes.EMPLOYEE_REGISTRATION} />
+        <Route {...routes.EMPLOYEE_EDIT} />
       </Route>
       <Route
         path=''

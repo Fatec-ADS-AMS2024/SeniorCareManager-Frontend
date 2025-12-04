@@ -3,6 +3,7 @@ import { healthInsurancePlanRoutes } from '@/features/healthInsurancePlan';
 import { positionRoutes } from '@/features/position';
 import { religionRoutes } from '@/features/religion';
 import { allergyRoutes } from '@/features/allergy';
+import { employeeRoutes } from '@/features/employee';
 import AccessibilityPage from '@/pages/AccessibilityPage';
 import AdminOverview from '@/pages/Admin/AdminOverview';
 import LandingPage from '@/pages/LandingPage';
@@ -41,4 +42,5 @@ export const routes = {
   ...positionRoutes,
   ...religionRoutes,
   ...allergyRoutes,
+  ...employeeRoutes,
 } as const;
