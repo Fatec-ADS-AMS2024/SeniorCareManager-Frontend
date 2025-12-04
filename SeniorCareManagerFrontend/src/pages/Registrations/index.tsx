@@ -1,4 +1,4 @@
-import { Cross, FirstAid, Briefcase } from '@phosphor-icons/react';
+import { Cross, FirstAid, Briefcase, IdentificationBadge } from '@phosphor-icons/react';
 import Card from '@/components/Card';
 import SearchBar from '@/components/SearchBar';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
@@ -25,6 +25,12 @@ export default function Registrations() {
       subText: 'Cargos Cadastrados',
       icon: <Briefcase weight='bold' className='shrink-0 size-full' />,
       page: routes.POSITION.path,
+    },
+    {
+      text: 'Funcionário',
+      subText: 'Funcionários Cadastrados',
+      icon: <IdentificationBadge weight='bold' className='shrink-0 size-full' />,
+      page: routes.EMPLOYEE.path,
     },
   ];
 
