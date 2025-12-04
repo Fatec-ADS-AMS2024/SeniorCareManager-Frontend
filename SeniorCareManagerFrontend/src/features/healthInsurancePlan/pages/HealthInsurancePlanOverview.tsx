@@ -211,22 +211,31 @@ export default function HealthInsurancePlanOverview() {
     }
   };
 
-  const Actions = ({ id }: { id: number }) => (
-    <>
-      <button
-        onClick={() => openEditModal(id)}
-        className='text-edit hover:text-hoverEdit'
-      >
-        <Pencil className='size-6' weight='fill' />
-      </button>
-      <button
-        onClick={() => openDeleteModal(id)}
-        className='text-danger hover:text-hoverDanger'
-      >
-        <Trash className='size-6' weight='fill' />
-      </button>
-    </>
-  );
+  // --- MODIFICAÇÃO ARIA AQUI ---
+  const Actions = ({ id }: { id: number }) => {
+    const itemName = data.find((item) => item.id === id)?.name || `ID ${id}`;
+
+    return (
+      <>
+        {/* Botão de Edição (apenas ícone) */}
+        <button
+          onClick={() => openEditModal(id)}
+          className='text-edit hover:text-hoverEdit'
+          aria-label={`Editar plano ${itemName}`}
+        >
+          <Pencil className='size-6' weight='fill' />
+        </button>
+        {/* Botão de Exclusão (apenas ícone) */}
+        <button
+          onClick={() => openDeleteModal(id)}
+          className='text-danger hover:text-hoverDanger'
+          aria-label={`Excluir plano ${itemName}`}
+        >
+          <Trash className='size-6' weight='fill' />
+        </button>
+      </>
+    );
+  };
 
   return (
     <div>
@@ -257,6 +266,7 @@ export default function HealthInsurancePlanOverview() {
           type={alertType}
         />
         <div className='flex items-center justify-between mb-4'>
+          {/* O SearchBar e o Button já devem ter ARIA implementado internamente */}
           <SearchBar
             action={handleSearch}
             placeholder='Buscar plano de saúde...'
@@ -280,6 +290,7 @@ export default function HealthInsurancePlanOverview() {
                 : plan.abbreviation,
           }))}
           actions={(id) => <Actions id={id} />}
+          aria-label='Tabela de Planos de Saúde'
         />
       </div>
     </div>

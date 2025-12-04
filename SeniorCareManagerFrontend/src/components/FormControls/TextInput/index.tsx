@@ -32,9 +32,11 @@ export default function TextInput<T>({
         </span>
       )}
       <input
+        aria-required={required}
         type={type}
         value={value}
         name={String(name)}
+        aria-label={label}
         onChange={(e) => onChange(e.target.name as keyof T, e.target.value)}
         className={`w-full py-2 text-sm text-textPrimary rounded border focus:outline-none focus:border-neutralDarker ${
           error ? 'border-danger' : 'border-neutralDark'

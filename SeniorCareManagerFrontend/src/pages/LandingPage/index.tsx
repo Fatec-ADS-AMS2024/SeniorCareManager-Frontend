@@ -15,7 +15,11 @@ export default function LandingPage() {
 
   return (
     <div className='flex'>
-      <div className='w-[40%] h-full bg-neutralWhite flex flex-col justify-center'>
+      {/* 1. ARIA OBRIGATÓRIO: Define a região principal do conteúdo */}
+      <main
+        role='main'
+        className='w-[40%] h-full bg-neutralWhite flex flex-col justify-center'
+      >
         <h1 className='text-secondary font-bold text-5xl mx-16'>
           Plataforma de ferramentas para gerenciar o cuidado e bem-estar de
           idosos.
@@ -30,10 +34,11 @@ export default function LandingPage() {
         >
           Fazer login
         </button>
-      </div>
+      </main>
       <img
         src={fotoEntradaSistema}
-        alt='Foto Entrada do Sistema'
+
+        alt='Foto que representa a entrada no sistema, mostrando um cenário de cuidado de idosos.'
         className={`w-[60%] h-full object-cover ${
           theme === 'high-contrast' ? 'grayscale' : 'grayscale-0'
         }`}

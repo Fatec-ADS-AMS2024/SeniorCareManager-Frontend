@@ -1,6 +1,7 @@
 import { BaseFieldProps } from '../types';
 import { FormField } from '../FormField';
 import { SelectHTMLAttributes } from 'react';
+import { useId } from 'react';
 
 interface SelectInputProps<T>
   extends BaseFieldProps,
@@ -8,6 +9,7 @@ interface SelectInputProps<T>
   options: { label: string; value: string | number }[];
   onChange: (attribute: keyof T, value: string) => void;
   name: keyof T;
+  id?: string;
 }
 
 export default function SelectInput<T>({
@@ -19,19 +21,32 @@ export default function SelectInput<T>({
   onChange,
   icon,
   name,
+  id,
   ...props
 }: SelectInputProps<T>) {
+  const defaultId = useId();
+  const selectId = id || defaultId;
+
+  const errorId = error ? `${selectId}-error` : undefined;
+
   return (
-    <FormField label={label} error={error} required={required}>
+    <FormField label={label} error={error} required={required} id={selectId}>
       {icon && (
-        <span className='absolute top-2.5 left-2 text-xl text-textSecondary shrink-0'>
+        <span
+          className='absolute top-2.5 left-2 text-xl text-textSecondary shrink-0'
+          aria-hidden='true'
+        >
           {icon}
         </span>
       )}
       <select
+        aria-required={required}
+        id={selectId}
         value={value}
         name={String(name)}
         onChange={(e) => onChange(e.target.name as keyof T, e.target.value)}
+        aria-invalid={!!error}
+        {...(errorId && { 'aria-describedby': errorId })}
         className={`w-full py-2 text-sm text-textPrimary rounded border focus:outline-none focus:border-neutralDarker ${
           error ? 'border-danger' : 'border-neutralDark'
         } ${icon ? 'pr-2 pl-7' : 'px-1'}`}
