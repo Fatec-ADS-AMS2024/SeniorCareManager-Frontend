@@ -18,7 +18,9 @@ export default function TechnicalResponsibilityOverview() {
   const routes = useAppRoutes();
   const navigate = useNavigate();
   const [data, setData] = useState<TechnicalResponsibility[]>([]);
-  const [originalData, setOriginalData] = useState<TechnicalResponsibility[]>([]);
+  const [originalData, setOriginalData] = useState<TechnicalResponsibility[]>(
+    []
+  );
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -48,7 +50,9 @@ export default function TechnicalResponsibilityOverview() {
     }
 
     const filteredData = originalData.filter((technicalResponsibility) =>
-      technicalResponsibility.responsibleName.toLowerCase().includes(searchTerm.toLowerCase())
+      technicalResponsibility.responsibleName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
     );
     setData(filteredData);
   };
@@ -75,7 +79,10 @@ export default function TechnicalResponsibilityOverview() {
       setCurrentId(null);
 
       await fetchData();
-      showAlert(`Responsabilidade Técnica "${itemName}" excluída com sucesso!`, 'success');
+      showAlert(
+        `Responsabilidade técnica "${itemName}" excluída com sucesso!`,
+        'success'
+      );
     } else {
       showAlert(
         res.message || 'Erro inesperado ao excluir a responsabilidade técnica.',
@@ -88,7 +95,9 @@ export default function TechnicalResponsibilityOverview() {
     <>
       <button
         onClick={() =>
-          navigate(routes.TECHNICAL_RESPONSIBILITY_EDIT.path.replace(':id', `${id}`))
+          navigate(
+            routes.TECHNICAL_RESPONSIBILITY_EDIT.path.replace(':id', `${id}`)
+          )
         }
         className='text-edit hover:text-hoverEdit'
       >
@@ -108,21 +117,26 @@ export default function TechnicalResponsibilityOverview() {
       <BreadcrumbPageTitle title='Cadastro de Responsabilidade Técnica' />
       <div className='bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10'>
         <div className='flex items-center justify-between mb-4'>
-          <SearchBar action={handleSearch} placeholder='Buscar Responsabilidade Técnica...' />
+          <SearchBar
+            action={handleSearch}
+            placeholder='Buscar responsabilidade técnica...'
+          />
           <Button
             label='Adicionar'
             icon={<Plus />}
             iconPosition='left'
             color='success'
             size='medium'
-            onClick={() => navigate(routes.TECHNICAL_RESPONSIBILITY_REGISTRATION.path)}
+            onClick={() =>
+              navigate(routes.TECHNICAL_RESPONSIBILITY_REGISTRATION.path)
+            }
           />
           <ConfirmModal
             isOpen={isDeleteModalOpen}
             onClose={() => setIsDeleteModalOpen(false)}
             onConfirm={deleteTechnicalResponsibility}
             title='Deseja realmente excluir esta responsabilidade técnica?'
-            message='Ao excluir esta responsabilidade técnica, ele será removido permanentemente do sistema.'
+            message='Ao excluir esta responsabilidade técnica, ela será removida permanentemente do sistema.'
           />
           <AlertModal
             isOpen={isAlertModalOpen}

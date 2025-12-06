@@ -19,3 +19,4 @@ export const technicalResponsibilityRoutes = createRoutes({
     element: <TechnicalResponsibilityForm />,
   },
 });
+
