@@ -4,14 +4,13 @@ import { Enum, EnumLabels } from '../app/Enum';
 // Declaração do enum e seus valores
 // A chave deve ser escrita em SNAKE_CASE maiúscula
 const StatusEmployee: Enum = {
-	ACTIVE: 1,
-	FIRED: 2,
-	PAID_LEAVE: 3,
-	ANNUAL_LEAVE: 4
+  ACTIVE: 1,
+  FIRED: 2,
+  PAID_LEAVE: 3,
+  ANNUAL_LEAVE: 4,
 } as const;
 
-type StatusEmployee =
-  (typeof StatusEmployee)[keyof typeof StatusEmployee];
+type StatusEmployee = (typeof StatusEmployee)[keyof typeof StatusEmployee];
 
 // Definição dos rótulos
 const labels: EnumLabels = {
