@@ -33,6 +33,12 @@ export default function Registrations() {
       page: routes.TECHNICAL_RESPONSIBILITY.path,
     },
     {
+      text: 'Alergia',
+      subText: 'Alergias Cadastradas',
+      icon: <FirstAid weight='bold' className='shrink-0 size-full' />,
+      page: routes.ALLERGY.path,
+    },
+    {
       text: 'Funcionário',
       subText: 'Funcionários Cadastrados',
       icon: <IdentificationBadge weight='bold' className='shrink-0 size-full' />,

@@ -2,14 +2,23 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
 import { ApiResponse } from './types';
 
-// Centraliza a configuração do axios na aplicação
 const axiosInstance = axios.create({
   baseURL: 'https://localhost:7053/api/v1/',
 });
 
-// Interceptor para adicionar o token JWT a cada requisição
+let activeRequests = 0;
+
+const dispatchLoadingEvent = (isLoading: boolean) => {
+  window.dispatchEvent(new CustomEvent('api-loading', { detail: { isLoading } }));
+};
+
 axiosInstance.interceptors.request.use(
   (config) => {
+    if (activeRequests === 0) {
+      dispatchLoadingEvent(true);
+    }
+    activeRequests++;
+
     const token = Cookies.get('auth_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -17,11 +26,31 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
+    activeRequests--;
+    if (activeRequests === 0) {
+      dispatchLoadingEvent(false);
+    }
     return Promise.reject(error);
   }
 );
 
-// Exporta um encapsulamento para uso na aplicação
+axiosInstance.interceptors.response.use(
+  (response) => {
+    activeRequests--;
+    if (activeRequests === 0) {
+      dispatchLoadingEvent(false);
+    }
+    return response;
+  },
+  (error) => {
+    activeRequests--;
+    if (activeRequests === 0) {
+      dispatchLoadingEvent(false);
+    }
+    return Promise.reject(error);
+  }
+);
+
 const api = {
   get: async <T>(url: string, config?: AxiosRequestConfig) => {
     const response = await axiosInstance.get(url, config);

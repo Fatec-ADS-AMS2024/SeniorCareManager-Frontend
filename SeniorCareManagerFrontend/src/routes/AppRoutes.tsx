@@ -25,6 +25,7 @@ const router = createBrowserRouter(
         <Route {...routes.TECHNICAL_RESPONSIBILITY} />
         <Route {...routes.TECHNICAL_RESPONSIBILITY_REGISTRATION} />
         <Route {...routes.TECHNICAL_RESPONSIBILITY_EDIT} />
+        <Route {...routes.ALLERGY} />
         <Route {...routes.EMPLOYEE} />
         <Route {...routes.EMPLOYEE_REGISTRATION} />
         <Route {...routes.EMPLOYEE_EDIT} />
