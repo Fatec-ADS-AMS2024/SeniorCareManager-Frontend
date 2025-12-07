@@ -1,7 +1,6 @@
 import * as Modal from './BaseModal';
 import { ModalProps } from './types';
 import { Info, CheckCircle, XCircle } from '@phosphor-icons/react';
-import Button from '../Button';
 
 interface AlertModalProps extends Omit<ModalProps, 'children'> {
   type?: 'info' | 'success' | 'error';
@@ -12,15 +11,15 @@ interface AlertModalProps extends Omit<ModalProps, 'children'> {
 const icons = {
   info: {
     color: 'text-secondary',
-    icon: <Info weight='regular' />,
+    icon: <Info weight='fill' />,
   },
   success: {
     color: 'text-success',
-    icon: <CheckCircle weight='regular' style={{ color: '#009F55' }} />,
+    icon: <CheckCircle weight='fill' />,
   },
   error: {
     color: 'text-danger',
-    icon: <XCircle weight='regular' />,
+    icon: <XCircle weight='fill' />,
   },
 };
 
@@ -36,24 +35,15 @@ export default function AlertModal({
   return (
     <Modal.ModalRoot isOpen={isOpen} onClose={onClose} {...props}>
       <Modal.ModalContent>
-        <div className='flex flex-col items-center justify-center gap-4'>
-          <div className={`${styles.color} flex items-center justify-center`} style={{ fontSize: '64px' }}>
+        <div className='flex flex-col items-center justify-center gap-2'>
+          <span className={`text-8xl rounded-full shrink-0 ${styles.color}`}>
             {styles.icon}
-          </div>
+          </span>
           <p className='text-textSecondary text-xl font-semibold text-center'>
             {message}
           </p>
         </div>
       </Modal.ModalContent>
-      <Modal.ModalFooter>
-        <Button
-          label='OK'
-          onClick={onClose}
-          color={type === 'error' ? 'danger' : type === 'success' ? 'success' : 'secondary'}
-          className='font-semibold'
-          size='medium'
-        />
-      </Modal.ModalFooter>
     </Modal.ModalRoot>
   );
 }

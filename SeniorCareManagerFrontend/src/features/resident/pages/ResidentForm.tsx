@@ -24,7 +24,10 @@ import { getMaritalStatusOptions } from '@/types/enums/MaritalStatus';
 import { getEthnicityOptions } from '@/types/enums/Ethnicity';
 import { getRelationshipOptions } from '@/types/enums/Relationship';
 import { getAllergyTypeOptions } from '@/types/enums/AllergyType';
-import { getHealthInsurancePlanTypeOptions, HealthPlanType } from '@/types/enums/HealthPlanType';
+import {
+  getHealthPlanTypeOptions,
+  HealthPlanType,
+} from '@/types/enums/HealthPlanType';
 import { CheckCircle, Circle, Trash, Pencil } from '@phosphor-icons/react';
 
 interface FormErrors {
@@ -43,31 +46,47 @@ export default function ResidentForm() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [allergies, setAllergies] = useState<Allergy[]>([]);
-  const [residentAllergies, setResidentAllergies] = useState<ResidentAllergy[]>([]);
+  const [residentAllergies, setResidentAllergies] = useState<ResidentAllergy[]>(
+    []
+  );
   const [pendingAllergies, setPendingAllergies] = useState<number[]>([]);
   const [healthPlans, setHealthPlans] = useState<any[]>([]);
   const [religions] = useState<any[]>([]);
-  const [residentRelatives, setResidentRelatives] = useState<ResidentRelative[]>([]);
+  const [residentRelatives, setResidentRelatives] = useState<
+    ResidentRelative[]
+  >([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalPlanoOpen, setIsModalPlanoOpen] = useState(false);
 
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState<'info' | 'success' | 'error'>('info');
-  
-  const [isDeleteAllergyConfirmOpen, setIsDeleteAllergyConfirmOpen] = useState(false);
+  const [alertType, setAlertType] = useState<'info' | 'success' | 'error'>(
+    'info'
+  );
+
+  const [isDeleteAllergyConfirmOpen, setIsDeleteAllergyConfirmOpen] =
+    useState(false);
   const [deleteAllergyId, setDeleteAllergyId] = useState<number | null>(null);
-  const [deleteAllergyResidentId, setDeleteAllergyResidentId] = useState<number | null>(null);
-  
+  const [deleteAllergyResidentId, setDeleteAllergyResidentId] = useState<
+    number | null
+  >(null);
+
   const [editingAllergyId, setEditingAllergyId] = useState<number | null>(null);
-  const [editingResidentAllergyId, setEditingResidentAllergyId] = useState<number | null>(null);
-  
-  const [editingRelativeId, setEditingRelativeId] = useState<number | null>(null);
-  
-  const [isDeleteRelativeConfirmOpen, setIsDeleteRelativeConfirmOpen] = useState(false);
+  const [editingResidentAllergyId, setEditingResidentAllergyId] = useState<
+    number | null
+  >(null);
+
+  const [editingRelativeId, setEditingRelativeId] = useState<number | null>(
+    null
+  );
+
+  const [isDeleteRelativeConfirmOpen, setIsDeleteRelativeConfirmOpen] =
+    useState(false);
   const [deleteRelativeId, setDeleteRelativeId] = useState<number | null>(null);
-  const [deleteRelativeResidentId, setDeleteRelativeResidentId] = useState<number | null>(null);
+  const [deleteRelativeResidentId, setDeleteRelativeResidentId] = useState<
+    number | null
+  >(null);
 
   const showAlert = (message: string, type: 'info' | 'success' | 'error') => {
     setAlertMessage(message);
@@ -184,12 +203,14 @@ export default function ResidentForm() {
                 idade: resident.age || '',
                 sexo: resident.sex?.toString() || '',
                 etnia: resident.ethnicity?.toString() || '',
-                altura: resident.height != null && !isNaN(Number(resident.height)) 
-                  ? resident.height.toString() 
-                  : '',
-                peso: resident.weight != null && !isNaN(Number(resident.weight))
-                  ? resident.weight.toString()
-                  : '',
+                altura:
+                  resident.height != null && !isNaN(Number(resident.height))
+                    ? resident.height.toString()
+                    : '',
+                peso:
+                  resident.weight != null && !isNaN(Number(resident.weight))
+                    ? resident.weight.toString()
+                    : '',
                 religiao: resident.religionId?.toString() || '',
                 nomePai: resident.fatherName || '',
                 nomeMae: resident.motherName || '',
@@ -202,7 +223,7 @@ export default function ResidentForm() {
                 planoSaude: resident.healthInsurancePlanId?.toString() || '',
               },
               alergia: { tipo: '', nome: '' },
-    planoSaude: { plano: '', numeroCarteirinha: '' },
+              planoSaude: { plano: '', numeroCarteirinha: '' },
               familiar: {
                 nomeFamiliar: '',
                 parentesco: '',
@@ -225,7 +246,9 @@ export default function ResidentForm() {
 
             if (currentResidentId) {
               try {
-                const allergiesRes = await ResidentService.getAllergies(currentResidentId);
+                const allergiesRes = await ResidentService.getAllergies(
+                  currentResidentId
+                );
                 if (allergiesRes.success && allergiesRes.data) {
                   setResidentAllergies(allergiesRes.data);
                 }
@@ -234,7 +257,9 @@ export default function ResidentForm() {
               }
 
               try {
-                const relativesRes = await ResidentService.getRelatives(currentResidentId);
+                const relativesRes = await ResidentService.getRelatives(
+                  currentResidentId
+                );
                 if (relativesRes.success && relativesRes.data) {
                   setResidentRelatives(relativesRes.data);
                 }
@@ -266,31 +291,35 @@ export default function ResidentForm() {
 
   const calculateAge = (dateOfBirth: string): string => {
     if (!dateOfBirth || dateOfBirth.trim() === '') return '';
-    
+
     let normalizedDate = dateOfBirth.trim();
     const brazilianDateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
     if (brazilianDateRegex.test(normalizedDate)) {
-      const [, day, month, year] = normalizedDate.match(brazilianDateRegex) || [];
+      const [, day, month, year] =
+        normalizedDate.match(brazilianDateRegex) || [];
       normalizedDate = `${year}-${month}-${day}`;
     }
-    
+
     const birthDate = new Date(normalizedDate + 'T00:00:00');
-    
+
     if (isNaN(birthDate.getTime())) {
       return '';
     }
-    
+
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
       age--;
     }
-    
+
     if (isNaN(age) || age < 0) {
       return '';
     }
-    
+
     return age.toString();
   };
 
@@ -300,10 +329,11 @@ export default function ResidentForm() {
     }
 
     let normalizedDate = dateString.trim();
-    
+
     const brazilianDateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
     if (brazilianDateRegex.test(normalizedDate)) {
-      const [, day, month, year] = normalizedDate.match(brazilianDateRegex) || [];
+      const [, day, month, year] =
+        normalizedDate.match(brazilianDateRegex) || [];
       normalizedDate = `${year}-${month}-${day}`;
     }
 
@@ -344,20 +374,20 @@ export default function ResidentForm() {
   // Função para validar CPF (verifica dígitos verificadores)
   const validateCPF = (cpf: string): boolean => {
     if (!cpf) return false;
-    
+
     // Remove caracteres não numéricos
     const cpfClean = cpf.replace(/\D/g, '');
-    
+
     // Verifica se tem 11 dígitos
     if (cpfClean.length !== 11) return false;
-    
+
     // Verifica se todos os dígitos são iguais (CPFs inválidos como 111.111.111-11)
     if (/^(\d)\1{10}$/.test(cpfClean)) return false;
-    
+
     // Validação dos dígitos verificadores
     let sum = 0;
     let remainder;
-    
+
     // Validação do primeiro dígito verificador
     for (let i = 1; i <= 9; i++) {
       sum += parseInt(cpfClean.substring(i - 1, i)) * (11 - i);
@@ -365,7 +395,7 @@ export default function ResidentForm() {
     remainder = (sum * 10) % 11;
     if (remainder === 10 || remainder === 11) remainder = 0;
     if (remainder !== parseInt(cpfClean.substring(9, 10))) return false;
-    
+
     // Validação do segundo dígito verificador
     sum = 0;
     for (let i = 1; i <= 10; i++) {
@@ -374,7 +404,7 @@ export default function ResidentForm() {
     remainder = (sum * 10) % 11;
     if (remainder === 10 || remainder === 11) remainder = 0;
     if (remainder !== parseInt(cpfClean.substring(10, 11))) return false;
-    
+
     return true;
   };
 
@@ -384,20 +414,21 @@ export default function ResidentForm() {
     value: string | number | undefined | null
   ) => {
     // Garantir que o valor seja sempre uma string válida
-    const stringValue = value !== null && value !== undefined ? String(value) : '';
-    
+    const stringValue =
+      value !== null && value !== undefined ? String(value) : '';
+
     setFormData((prev) => {
       const newData = {
         ...prev,
         [section]: { ...prev[section], [field]: stringValue },
       };
-      
+
       // Se mudou a data de nascimento, calcular idade automaticamente
       if (section === 'residente' && field === 'dataNascimento') {
         const calculatedAge = calculateAge(stringValue);
         newData.residente.idade = calculatedAge;
       }
-      
+
       return newData;
     });
     // Limpar erro do campo quando o usuário começar a digitar
@@ -419,12 +450,16 @@ export default function ResidentForm() {
     if (!r.nome || typeof r.nome !== 'string' || r.nome.trim() === '') {
       return false;
     }
-    
+
     // Nome Social
-    if (!r.nomeSocial || typeof r.nomeSocial !== 'string' || r.nomeSocial.trim() === '') {
+    if (
+      !r.nomeSocial ||
+      typeof r.nomeSocial !== 'string' ||
+      r.nomeSocial.trim() === ''
+    ) {
       return false;
     }
-    
+
     // CPF
     if (!r.cpf || typeof r.cpf !== 'string' || r.cpf.trim() === '') {
       return false;
@@ -432,39 +467,61 @@ export default function ResidentForm() {
     if (!validateCPF(r.cpf)) {
       return false;
     }
-    
+
     // RG
     if (!r.rg || typeof r.rg !== 'string' || r.rg.trim() === '') {
       return false;
     }
-    
+
     // Órgão Emissor
-    if (!r.orgaoEmissor || typeof r.orgaoEmissor !== 'string' || r.orgaoEmissor.trim() === '') {
+    if (
+      !r.orgaoEmissor ||
+      typeof r.orgaoEmissor !== 'string' ||
+      r.orgaoEmissor.trim() === ''
+    ) {
       return false;
     }
-    
+
     // Estado Emissor
-    if (!r.estadoEmissor || typeof r.estadoEmissor !== 'string' || r.estadoEmissor.trim() === '') {
+    if (
+      !r.estadoEmissor ||
+      typeof r.estadoEmissor !== 'string' ||
+      r.estadoEmissor.trim() === ''
+    ) {
       return false;
     }
-    
+
     // PIS/PASEP
-    if (!r.pisPasep || typeof r.pisPasep !== 'string' || r.pisPasep.trim() === '') {
+    if (
+      !r.pisPasep ||
+      typeof r.pisPasep !== 'string' ||
+      r.pisPasep.trim() === ''
+    ) {
       return false;
     }
-    
+
     // Data de Nascimento
-    if (!r.dataNascimento || typeof r.dataNascimento !== 'string' || r.dataNascimento.trim() === '') {
+    if (
+      !r.dataNascimento ||
+      typeof r.dataNascimento !== 'string' ||
+      r.dataNascimento.trim() === ''
+    ) {
       return false;
     }
     const dateError = validateDateOfBirth(r.dataNascimento);
     if (dateError !== null) {
       return false;
     }
-    
+
     // Sexo (pode vir como número ou string - updateSection converte para string)
     const sexoValue = String(r.sexo || '').trim();
-    if (!sexoValue || sexoValue === '' || sexoValue === '0' || sexoValue === 'undefined' || sexoValue === 'null') {
+    if (
+      !sexoValue ||
+      sexoValue === '' ||
+      sexoValue === '0' ||
+      sexoValue === 'undefined' ||
+      sexoValue === 'null'
+    ) {
       return false;
     }
     // Verificar se é um número válido maior que 0
@@ -472,10 +529,16 @@ export default function ResidentForm() {
     if (isNaN(sexoNum) || sexoNum <= 0) {
       return false;
     }
-    
+
     // Estado Civil (pode vir como número ou string)
     const estadoCivilValue = String(r.estadoCivil || '').trim();
-    if (!estadoCivilValue || estadoCivilValue === '' || estadoCivilValue === '0' || estadoCivilValue === 'undefined' || estadoCivilValue === 'null') {
+    if (
+      !estadoCivilValue ||
+      estadoCivilValue === '' ||
+      estadoCivilValue === '0' ||
+      estadoCivilValue === 'undefined' ||
+      estadoCivilValue === 'null'
+    ) {
       return false;
     }
     // Verificar se é um número válido maior que 0
@@ -483,10 +546,16 @@ export default function ResidentForm() {
     if (isNaN(estadoCivilNum) || estadoCivilNum <= 0) {
       return false;
     }
-    
+
     // Etnia (pode vir como número ou string)
     const etniaValue = String(r.etnia || '').trim();
-    if (!etniaValue || etniaValue === '' || etniaValue === '0' || etniaValue === 'undefined' || etniaValue === 'null') {
+    if (
+      !etniaValue ||
+      etniaValue === '' ||
+      etniaValue === '0' ||
+      etniaValue === 'undefined' ||
+      etniaValue === 'null'
+    ) {
       return false;
     }
     // Verificar se é um número válido maior que 0
@@ -494,14 +563,22 @@ export default function ResidentForm() {
     if (isNaN(etniaNum) || etniaNum <= 0) {
       return false;
     }
-    
+
     // Nome do Pai
-    if (!r.nomePai || typeof r.nomePai !== 'string' || r.nomePai.trim() === '') {
+    if (
+      !r.nomePai ||
+      typeof r.nomePai !== 'string' ||
+      r.nomePai.trim() === ''
+    ) {
       return false;
     }
-    
+
     // Nome da Mãe
-    if (!r.nomeMae || typeof r.nomeMae !== 'string' || r.nomeMae.trim() === '') {
+    if (
+      !r.nomeMae ||
+      typeof r.nomeMae !== 'string' ||
+      r.nomeMae.trim() === ''
+    ) {
       return false;
     }
 
@@ -599,7 +676,11 @@ export default function ResidentForm() {
     }
 
     const estadoCivilValue = r.estadoCivil?.toString().trim() || '';
-    if (!estadoCivilValue || estadoCivilValue === '' || estadoCivilValue === '0') {
+    if (
+      !estadoCivilValue ||
+      estadoCivilValue === '' ||
+      estadoCivilValue === '0'
+    ) {
       newErrors['residente.estadoCivil'] = 'Estado civil é obrigatório.';
     }
 
@@ -631,7 +712,8 @@ export default function ResidentForm() {
     if (r.cartaoPrivado && r.cartaoPrivado.trim() !== '') {
       const cartaoClean = r.cartaoPrivado.replace(/\D/g, '');
       if (cartaoClean.length !== 15) {
-        newErrors['residente.cartaoPrivado'] = 'Cartão privado deve ter 15 caracteres.';
+        newErrors['residente.cartaoPrivado'] =
+          'Cartão privado deve ter 15 caracteres.';
       }
     }
 
@@ -680,41 +762,47 @@ export default function ResidentForm() {
   };
 
   // Verificar se os campos obrigatórios de cada aba estão preenchidos
-  const isStepComplete = useCallback((stepIndex: number): boolean => {
-    if (stepIndex === 0) {
-      // Step 0 (Residente): só completa quando todos os campos obrigatórios estão preenchidos
-      // E você já avançou para a próxima aba (step > 0)
-      return checkResidentValidation() && step > 0;
-    }
-    
-    // Para outras abas (1, 2, 3), só mostra check se você já passou por ela
-    // Isso significa que você completou essa aba e avançou para a próxima
-    return step > stepIndex;
-  }, [checkResidentValidation, step]);
+  const isStepComplete = useCallback(
+    (stepIndex: number): boolean => {
+      if (stepIndex === 0) {
+        // Step 0 (Residente): só completa quando todos os campos obrigatórios estão preenchidos
+        // E você já avançou para a próxima aba (step > 0)
+        return checkResidentValidation() && step > 0;
+      }
+
+      // Para outras abas (1, 2, 3), só mostra check se você já passou por ela
+      // Isso significa que você completou essa aba e avançou para a próxima
+      return step > stepIndex;
+    },
+    [checkResidentValidation, step]
+  );
 
   // Verificar se pode navegar para um step específico
-  const canNavigateToStep = useCallback((targetStep: number): boolean => {
-    // Sempre pode voltar ou ficar na mesma aba
-    if (targetStep <= step) return true;
-    
-    // Step 0 (Residente) é obrigatório - precisa estar completo para avançar
-    if (step === 0 && targetStep === 1) {
-      return isStepComplete(0);
-    }
-    
-    // Se já passou do step 0, pode navegar livremente entre as abas opcionais
-    // Steps 1, 2, 3 são opcionais (Alergias, Plano de Saúde, Familiares)
-    if (step > 0) {
+  const canNavigateToStep = useCallback(
+    (targetStep: number): boolean => {
+      // Sempre pode voltar ou ficar na mesma aba
+      if (targetStep <= step) return true;
+
+      // Step 0 (Residente) é obrigatório - precisa estar completo para avançar
+      if (step === 0 && targetStep === 1) {
+        return isStepComplete(0);
+      }
+
+      // Se já passou do step 0, pode navegar livremente entre as abas opcionais
+      // Steps 1, 2, 3 são opcionais (Alergias, Plano de Saúde, Familiares)
+      if (step > 0) {
+        return true;
+      }
+
+      // Para ir para steps mais à frente a partir do step 0, precisa ter completado o step 0
+      if (step === 0 && targetStep > 1) {
+        return isStepComplete(0);
+      }
+
       return true;
-    }
-    
-    // Para ir para steps mais à frente a partir do step 0, precisa ter completado o step 0
-    if (step === 0 && targetStep > 1) {
-      return isStepComplete(0);
-    }
-    
-    return true;
-  }, [step, isStepComplete]);
+    },
+    [step, isStepComplete]
+  );
 
   const handleNext = () => {
     // Validar o step atual antes de avançar
@@ -726,7 +814,7 @@ export default function ResidentForm() {
         setStep(0); // Garante que está na primeira aba para mostrar os erros
         return;
       }
-      
+
       // Verifica se está completo (sem atualizar erros)
       const isValid = checkResidentValidation();
       if (!isValid) {
@@ -734,12 +822,12 @@ export default function ResidentForm() {
         validateResident();
         return;
       }
-      
+
       // Se passou em todas as validações, avançar para a próxima aba
       setStep(1);
       return;
     }
-    
+
     // Para outros steps (1, 2, 3), são opcionais - pode avançar sem completar
     // Steps: 1 = Alergias, 2 = Plano de Saúde, 3 = Familiares
     const nextStep = step + 1;
@@ -755,7 +843,7 @@ export default function ResidentForm() {
   const cleanName = (name: string): string => {
     if (!name) return '';
     let cleaned = name.trim();
-    
+
     // Remove padrões comuns de texto extra usando múltiplas abordagens
     // 1. Usando indexOf e substring para pegar apenas a primeira parte
     const patterns = [
@@ -772,7 +860,7 @@ export default function ResidentForm() {
       'Nome do Pai',
       'nome do pai',
     ];
-    
+
     // Aplicar para cada padrão encontrado (case-insensitive)
     for (const pattern of patterns) {
       const lowerPattern = pattern.toLowerCase();
@@ -782,13 +870,13 @@ export default function ResidentForm() {
         cleaned = cleaned.substring(0, index).trim();
       }
     }
-    
+
     // 2. Usando regex como fallback para remover qualquer padrão restante
     cleaned = cleaned.replace(/\s*Nome\s+da\s+M[aeã]e\s*:.*/gi, '').trim();
     cleaned = cleaned.replace(/\s*Nome\s+do\s+Pai\s*:.*/gi, '').trim();
     cleaned = cleaned.replace(/\s+Nome\s+da\s+M[aeã]e.*/gi, '').trim();
     cleaned = cleaned.replace(/\s+Nome\s+do\s+Pai.*/gi, '').trim();
-    
+
     return cleaned;
   };
 
@@ -811,21 +899,23 @@ export default function ResidentForm() {
       if (!calculatedAge || calculatedAge === '') {
         calculatedAge = '0';
       }
-      
+
       // Normalizar data de nascimento para formato ISO (YYYY-MM-DD)
       let normalizedDateOfBirth = r.dataNascimento || '';
       if (normalizedDateOfBirth) {
         const brazilianDateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
         if (brazilianDateRegex.test(normalizedDateOfBirth)) {
-          const [, day, month, year] = normalizedDateOfBirth.match(brazilianDateRegex) || [];
+          const [, day, month, year] =
+            normalizedDateOfBirth.match(brazilianDateRegex) || [];
           normalizedDateOfBirth = `${year}-${month}-${day}`;
         }
       }
-      
+
       const residentDTO: ResidentDTO = {
         registeredName: r.nome.trim(),
         socialName: r.nomeSocial?.trim() || '', // Obrigatório
-        dateOfBirth: normalizedDateOfBirth || new Date().toISOString().split('T')[0],
+        dateOfBirth:
+          normalizedDateOfBirth || new Date().toISOString().split('T')[0],
         age: calculatedAge,
         cpf: r.cpf.replace(/\D/g, ''),
         rg: r.rg?.trim() || '', // Obrigatório
@@ -833,7 +923,10 @@ export default function ResidentForm() {
         issuingState: r.estadoEmissor?.trim() || '', // Obrigatório
         pisPasep: r.pisPasep?.trim() || '', // Obrigatório
         sex: r.sexo && !isNaN(parseInt(r.sexo)) ? parseInt(r.sexo) : 1,
-        maritalStatus: r.estadoCivil && !isNaN(parseInt(r.estadoCivil)) ? parseInt(r.estadoCivil) : 1, // Obrigatório
+        maritalStatus:
+          r.estadoCivil && !isNaN(parseInt(r.estadoCivil))
+            ? parseInt(r.estadoCivil)
+            : 1, // Obrigatório
         ethnicity: r.etnia && !isNaN(parseInt(r.etnia)) ? parseInt(r.etnia) : 1, // Obrigatório
         fatherName: cleanName(r.nomePai || '').trim() || '', // Obrigatório - remove texto extra se houver
         motherName: cleanName(r.nomeMae || '').trim() || '', // Obrigatório - remove texto extra se houver
@@ -842,14 +935,22 @@ export default function ResidentForm() {
         privateHealthCardNumber: r.cartaoPrivado?.trim() || undefined,
         mobileNumber: r.celular?.trim() || undefined,
         homePhoneNumber: r.telefone?.trim() || undefined,
-        height: r.altura && r.altura.trim() !== '' && !isNaN(parseFloat(r.altura)) 
-          ? parseFloat(r.altura) 
-          : undefined,
-        weight: r.peso && r.peso.trim() !== '' && !isNaN(parseFloat(r.peso))
-          ? parseFloat(r.peso)
-          : undefined,
-        religionId: r.religiao && !isNaN(parseInt(r.religiao)) ? parseInt(r.religiao) : undefined,
-        healthInsurancePlanId: r.planoSaude && !isNaN(parseInt(r.planoSaude)) ? parseInt(r.planoSaude) : undefined,
+        height:
+          r.altura && r.altura.trim() !== '' && !isNaN(parseFloat(r.altura))
+            ? parseFloat(r.altura)
+            : undefined,
+        weight:
+          r.peso && r.peso.trim() !== '' && !isNaN(parseFloat(r.peso))
+            ? parseFloat(r.peso)
+            : undefined,
+        religionId:
+          r.religiao && !isNaN(parseInt(r.religiao))
+            ? parseInt(r.religiao)
+            : undefined,
+        healthInsurancePlanId:
+          r.planoSaude && !isNaN(parseInt(r.planoSaude))
+            ? parseInt(r.planoSaude)
+            : undefined,
       };
 
       let result;
@@ -865,7 +966,7 @@ export default function ResidentForm() {
         const newResidentId = result.data.id;
         if (!isEditMode && newResidentId) {
           setCurrentResidentId(newResidentId);
-          
+
           // Salvar alergias pendentes
           if (pendingAllergies.length > 0) {
             try {
@@ -873,7 +974,9 @@ export default function ResidentForm() {
                 await ResidentService.addAllergy(newResidentId, allergyId);
               }
               // Recarregar alergias após salvar todas
-              const allergiesRes = await ResidentService.getAllergies(newResidentId);
+              const allergiesRes = await ResidentService.getAllergies(
+                newResidentId
+              );
               if (allergiesRes.success && allergiesRes.data) {
                 setResidentAllergies(allergiesRes.data);
               }
@@ -883,47 +986,58 @@ export default function ResidentForm() {
             }
           }
         }
-        showAlert(`Residente ${isEditMode ? 'alterado' : 'cadastrado'} com sucesso!`, 'success');
+        showAlert(
+          `Residente ${isEditMode ? 'alterado' : 'cadastrado'} com sucesso!`,
+          'success'
+        );
       } else {
         // Tratar erros do backend
         if (result.errors && result.errors.length > 0) {
           const newErrors: FormErrors = {};
           const errorMessages: string[] = [];
-          
+
           result.errors.forEach((err) => {
             if (err.field) {
               // Mapear campos do backend para campos do formulário
               const fieldMap: { [key: string]: string } = {
-                'registeredName': 'residente.nome',
-                'socialName': 'residente.nomeSocial',
-                'cpf': 'residente.cpf',
-                'rg': 'residente.rg',
-                'issuingBody': 'residente.orgaoEmissor',
-                'issuingState': 'residente.estadoEmissor',
-                'pisPasep': 'residente.pisPasep',
-                'dateOfBirth': 'residente.dataNascimento',
-                'sex': 'residente.sexo',
-                'maritalStatus': 'residente.estadoCivil',
-                'ethnicity': 'residente.etnia',
-                'fatherName': 'residente.nomePai',
-                'motherName': 'residente.nomeMae',
+                registeredName: 'residente.nome',
+                socialName: 'residente.nomeSocial',
+                cpf: 'residente.cpf',
+                rg: 'residente.rg',
+                issuingBody: 'residente.orgaoEmissor',
+                issuingState: 'residente.estadoEmissor',
+                pisPasep: 'residente.pisPasep',
+                dateOfBirth: 'residente.dataNascimento',
+                sex: 'residente.sexo',
+                maritalStatus: 'residente.estadoCivil',
+                ethnicity: 'residente.etnia',
+                fatherName: 'residente.nomePai',
+                motherName: 'residente.nomeMae',
               };
               const formField = fieldMap[err.field] || `residente.${err.field}`;
               newErrors[formField] = err.message || 'Erro de validação';
-              errorMessages.push(`${err.field}: ${err.message || 'Erro de validação'}`);
+              errorMessages.push(
+                `${err.field}: ${err.message || 'Erro de validação'}`
+              );
             } else {
               errorMessages.push(err.message || 'Erro de validação');
             }
           });
-          
+
           setErrors(newErrors);
           setStep(0); // Voltar para a primeira aba para mostrar os erros
-          
+
           // Mostrar mensagem detalhada com todos os erros
           const errorList = errorMessages.join('\n');
-          alert(`❌ Erro de validação:\n\n${errorList}\n\nVerifique os campos marcados no formulário.`);
+          alert(
+            `❌ Erro de validação:\n\n${errorList}\n\nVerifique os campos marcados no formulário.`
+          );
         } else {
-          alert(`❌ Erro: ${result.message || 'Não foi possível salvar o residente.'}`);
+          alert(
+            `❌ Erro: ${
+              result.message || 'Não foi possível salvar o residente.'
+            }`
+          );
         }
       }
     } catch (error) {
@@ -950,11 +1064,20 @@ export default function ResidentForm() {
     if (currentResidentId) {
       setLoading(true);
       try {
-        const result = await ResidentService.addAllergy(currentResidentId, allergyId);
+        const result = await ResidentService.addAllergy(
+          currentResidentId,
+          allergyId
+        );
         if (result.success) {
           // Recarregar a lista de alergias do residente
-          const allergiesRes = await ResidentService.getAllergies(currentResidentId);
-          if (allergiesRes.success && allergiesRes.data && allergiesRes.data.length > 0) {
+          const allergiesRes = await ResidentService.getAllergies(
+            currentResidentId
+          );
+          if (
+            allergiesRes.success &&
+            allergiesRes.data &&
+            allergiesRes.data.length > 0
+          ) {
             setResidentAllergies(allergiesRes.data);
           } else {
             // Se o GET retornou vazio, adicionar manualmente mantendo os dados existentes
@@ -965,7 +1088,11 @@ export default function ResidentForm() {
             };
             setResidentAllergies((prev) => {
               // Verificar se já não existe na lista
-              const exists = prev.some(a => a.allergyId === allergyId && a.residentId === currentResidentId);
+              const exists = prev.some(
+                (a) =>
+                  a.allergyId === allergyId &&
+                  a.residentId === currentResidentId
+              );
               if (exists) {
                 return prev;
               }
@@ -987,7 +1114,10 @@ export default function ResidentForm() {
           allergyId: allergyId,
         };
         setResidentAllergies((prev) => {
-          const exists = prev.some(a => a.allergyId === allergyId && a.residentId === currentResidentId);
+          const exists = prev.some(
+            (a) =>
+              a.allergyId === allergyId && a.residentId === currentResidentId
+          );
           if (exists) {
             return prev;
           }
@@ -1005,20 +1135,26 @@ export default function ResidentForm() {
           ...prev,
           alergia: { tipo: '', nome: '' },
         }));
-        showAlert('Alergia adicionada! Ela será salva quando você salvar o residente.', 'success');
+        showAlert(
+          'Alergia adicionada! Ela será salva quando você salvar o residente.',
+          'success'
+        );
       } else {
         showAlert('Esta alergia já foi adicionada.', 'info');
       }
     }
   };
 
-  const handleEditAllergyClick = (allergyId: number, residentAllergyId?: number) => {
+  const handleEditAllergyClick = (
+    allergyId: number,
+    residentAllergyId?: number
+  ) => {
     if (step !== 1) {
       setStep(1);
     }
-    
+
     const allergy = allergies.find((a) => a.id === allergyId);
-    
+
     if (allergy) {
       setEditingAllergyId(allergyId);
       setEditingResidentAllergyId(residentAllergyId || null);
@@ -1029,15 +1165,21 @@ export default function ResidentForm() {
           nome: allergy.id.toString(),
         },
       }));
-      
+
       setTimeout(() => {
         const allergyFormSection = document.querySelector('form');
         if (allergyFormSection) {
-          allergyFormSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          allergyFormSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          });
         }
       }, 100);
     } else {
-      showAlert('Alergia não encontrada na lista de alergias disponíveis. Recarregue a página.', 'error');
+      showAlert(
+        'Alergia não encontrada na lista de alergias disponíveis. Recarregue a página.',
+        'error'
+      );
     }
   };
 
@@ -1065,25 +1207,44 @@ export default function ResidentForm() {
       setLoading(true);
       try {
         if (editingResidentAllergyId) {
-          await ResidentService.removeAllergy(currentResidentId, editingResidentAllergyId);
+          await ResidentService.removeAllergy(
+            currentResidentId,
+            editingResidentAllergyId
+          );
         } else {
-          const residentAllergy = residentAllergies.find(ra => ra.allergyId === editingAllergyId);
+          const residentAllergy = residentAllergies.find(
+            (ra) => ra.allergyId === editingAllergyId
+          );
           if (residentAllergy) {
-            await ResidentService.removeAllergy(currentResidentId, residentAllergy.id);
+            await ResidentService.removeAllergy(
+              currentResidentId,
+              residentAllergy.id
+            );
           } else {
-            setResidentAllergies((prev) => prev.filter(ra => ra.allergyId !== editingAllergyId));
+            setResidentAllergies((prev) =>
+              prev.filter((ra) => ra.allergyId !== editingAllergyId)
+            );
           }
         }
-        
-        const result = await ResidentService.addAllergy(currentResidentId, newAllergyId);
+
+        const result = await ResidentService.addAllergy(
+          currentResidentId,
+          newAllergyId
+        );
         if (result.success) {
-          const allergiesRes = await ResidentService.getAllergies(currentResidentId);
-          if (allergiesRes.success && allergiesRes.data && allergiesRes.data.length > 0) {
+          const allergiesRes = await ResidentService.getAllergies(
+            currentResidentId
+          );
+          if (
+            allergiesRes.success &&
+            allergiesRes.data &&
+            allergiesRes.data.length > 0
+          ) {
             setResidentAllergies(allergiesRes.data);
           } else {
             // Se o GET retornou vazio, atualizar manualmente mantendo os dados existentes
             setResidentAllergies((prev) => {
-              const filtered = prev.filter(ra => {
+              const filtered = prev.filter((ra) => {
                 if (editingResidentAllergyId) {
                   return ra.id !== editingResidentAllergyId;
                 }
@@ -1109,7 +1270,7 @@ export default function ResidentForm() {
         }
       } catch (error) {
         setResidentAllergies((prev) => {
-          const filtered = prev.filter(ra => {
+          const filtered = prev.filter((ra) => {
             if (editingResidentAllergyId) {
               return ra.id !== editingResidentAllergyId;
             }
@@ -1146,11 +1307,17 @@ export default function ResidentForm() {
         ...prev,
         alergia: { tipo: '', nome: '' },
       }));
-      showAlert('Alergia atualizada! Ela será salva quando você salvar o residente.', 'success');
+      showAlert(
+        'Alergia atualizada! Ela será salva quando você salvar o residente.',
+        'success'
+      );
     }
   };
 
-  const handleRemoveAllergyClick = (allergyId: number, residentAllergyId?: number) => {
+  const handleRemoveAllergyClick = (
+    allergyId: number,
+    residentAllergyId?: number
+  ) => {
     if (!currentResidentId) return;
     setDeleteAllergyId(residentAllergyId || allergyId);
     setDeleteAllergyResidentId(currentResidentId);
@@ -1159,7 +1326,7 @@ export default function ResidentForm() {
 
   const handleConfirmRemoveAllergy = async () => {
     if (!deleteAllergyId || !deleteAllergyResidentId) return;
-    
+
     setIsDeleteAllergyConfirmOpen(false);
     const residentAllergyId = deleteAllergyId;
     const resId = deleteAllergyResidentId;
@@ -1168,14 +1335,23 @@ export default function ResidentForm() {
 
     setLoading(true);
     try {
-      const result = await ResidentService.removeAllergy(resId, residentAllergyId);
+      const result = await ResidentService.removeAllergy(
+        resId,
+        residentAllergyId
+      );
       if (result.success) {
         const allergiesRes = await ResidentService.getAllergies(resId);
-        if (allergiesRes.success && allergiesRes.data && allergiesRes.data.length > 0) {
+        if (
+          allergiesRes.success &&
+          allergiesRes.data &&
+          allergiesRes.data.length > 0
+        ) {
           setResidentAllergies(allergiesRes.data);
         } else {
           // Se o GET retornou vazio, remover manualmente mantendo os dados existentes
-          setResidentAllergies((prev) => prev.filter(a => a.id !== residentAllergyId));
+          setResidentAllergies((prev) =>
+            prev.filter((a) => a.id !== residentAllergyId)
+          );
         }
         showAlert('Alergia removida com sucesso!', 'success');
       } else {
@@ -1225,11 +1401,14 @@ export default function ResidentForm() {
           cep: relative.postalCode || '',
         },
       }));
-      
+
       setTimeout(() => {
         const relativeFormSection = document.querySelector('form');
         if (relativeFormSection) {
-          relativeFormSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          relativeFormSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          });
         }
       }, 100);
     }
@@ -1262,7 +1441,7 @@ export default function ResidentForm() {
 
   const handleAddRelative = async () => {
     const f = formData.familiar;
-    
+
     // Validação de campos obrigatórios
     if (!f.nomeFamiliar || f.nomeFamiliar.trim() === '') {
       alert('⚠️ Nome do familiar é obrigatório.');
@@ -1275,10 +1454,13 @@ export default function ResidentForm() {
     }
 
     if (!currentResidentId) {
-      showAlert('Salve o residente primeiro antes de adicionar familiares.', 'error');
+      showAlert(
+        'Salve o residente primeiro antes de adicionar familiares.',
+        'error'
+      );
       return;
     }
-    
+
     // Se estiver editando, atualizar em vez de adicionar
     if (editingRelativeId) {
       await handleUpdateRelative();
@@ -1339,11 +1521,20 @@ export default function ResidentForm() {
         issuingBody: f.orgaoEmissor?.trim() || undefined,
       };
 
-      const result = await ResidentService.addRelative(currentResidentId, relativeDTO);
+      const result = await ResidentService.addRelative(
+        currentResidentId,
+        relativeDTO
+      );
       if (result.success) {
         // Recarregar familiares
-        const relativesRes = await ResidentService.getRelatives(currentResidentId);
-        if (relativesRes.success && relativesRes.data && relativesRes.data.length > 0) {
+        const relativesRes = await ResidentService.getRelatives(
+          currentResidentId
+        );
+        if (
+          relativesRes.success &&
+          relativesRes.data &&
+          relativesRes.data.length > 0
+        ) {
           setResidentRelatives(relativesRes.data);
         } else {
           // Se o GET retornou vazio, adicionar manualmente mantendo os dados existentes
@@ -1385,9 +1576,9 @@ export default function ResidentForm() {
 
   const handleUpdateRelative = async () => {
     if (!editingRelativeId || !currentResidentId) return;
-    
+
     const f = formData.familiar;
-    
+
     if (!f.nomeFamiliar || f.nomeFamiliar.trim() === '') {
       alert('⚠️ Nome do familiar é obrigatório.');
       return;
@@ -1451,15 +1642,25 @@ export default function ResidentForm() {
         issuingBody: f.orgaoEmissor?.trim() || undefined,
       };
 
-      const result = await ResidentService.updateRelative(currentResidentId, editingRelativeId, relativeDTO);
+      const result = await ResidentService.updateRelative(
+        currentResidentId,
+        editingRelativeId,
+        relativeDTO
+      );
       if (result.success) {
-        const relativesRes = await ResidentService.getRelatives(currentResidentId);
-        if (relativesRes.success && relativesRes.data && relativesRes.data.length > 0) {
+        const relativesRes = await ResidentService.getRelatives(
+          currentResidentId
+        );
+        if (
+          relativesRes.success &&
+          relativesRes.data &&
+          relativesRes.data.length > 0
+        ) {
           setResidentRelatives(relativesRes.data);
         } else {
           // Se o GET retornou vazio, atualizar manualmente mantendo os dados existentes
           setResidentRelatives((prev) => {
-            const updated = prev.map(rel => {
+            const updated = prev.map((rel) => {
               if (rel.id === editingRelativeId) {
                 return {
                   ...rel,
@@ -1514,7 +1715,7 @@ export default function ResidentForm() {
 
   const handleConfirmRemoveRelative = async () => {
     if (!deleteRelativeId || !deleteRelativeResidentId) return;
-    
+
     setIsDeleteRelativeConfirmOpen(false);
     const relativeId = deleteRelativeId;
     const resId = deleteRelativeResidentId;
@@ -1526,11 +1727,17 @@ export default function ResidentForm() {
       const result = await ResidentService.removeRelative(resId, relativeId);
       if (result.success) {
         const relativesRes = await ResidentService.getRelatives(resId);
-        if (relativesRes.success && relativesRes.data && relativesRes.data.length > 0) {
+        if (
+          relativesRes.success &&
+          relativesRes.data &&
+          relativesRes.data.length > 0
+        ) {
           setResidentRelatives(relativesRes.data);
         } else {
           // Se o GET retornou vazio, remover manualmente mantendo os dados existentes
-          setResidentRelatives((prev) => prev.filter(rel => rel.id !== relativeId));
+          setResidentRelatives((prev) =>
+            prev.filter((rel) => rel.id !== relativeId)
+          );
         }
         if (editingRelativeId === relativeId) {
           handleCancelEditRelative();
@@ -1597,14 +1804,18 @@ export default function ResidentForm() {
     setModalPlanoData({ tipo: '', nomePlano: '', abreviacao: '' });
     setIsModalPlanoOpen(true);
   };
-  
+
   const handleClosePlanoModal = () => {
     setIsModalPlanoOpen(false);
     setModalPlanoData({ tipo: '', nomePlano: '', abreviacao: '' });
   };
 
   const handleSubmitPlanoModal = async (_data?: unknown) => {
-    if (!modalPlanoData.tipo || !modalPlanoData.nomePlano.trim() || !modalPlanoData.abreviacao.trim()) {
+    if (
+      !modalPlanoData.tipo ||
+      !modalPlanoData.nomePlano.trim() ||
+      !modalPlanoData.abreviacao.trim()
+    ) {
       alert('⚠️ Preencha todos os campos obrigatórios.');
       return;
     }
@@ -1785,7 +1996,7 @@ export default function ResidentForm() {
           })}
         </div>
 
-        <form 
+        <form
           className='bg-white shadow-lg p-8 relative'
           onSubmit={(e) => {
             e.preventDefault();
@@ -1943,7 +2154,10 @@ export default function ResidentForm() {
                   label='Religião:'
                   name='religiao'
                   value={formData.residente.religiao}
-                  options={religions.map((r) => ({ label: r.name, value: r.id }))}
+                  options={religions.map((r) => ({
+                    label: r.name,
+                    value: r.id,
+                  }))}
                   onChange={(key, v) => updateSection('residente', key, v)}
                   error={errors['residente.religiao']}
                 />
@@ -2137,13 +2351,13 @@ export default function ResidentForm() {
                       />
                     </>
                   ) : (
-                  <Button
-                    label='+ Adicionar alergia do residente'
+                    <Button
+                      label='+ Adicionar alergia do residente'
                       onClick={handleAddAllergy}
-                    color='success'
-                    className='whitespace-nowrap'
+                      color='success'
+                      className='whitespace-nowrap'
                       disabled={loading}
-                  />
+                    />
                   )}
                 </div>
               </div>
@@ -2167,12 +2381,12 @@ export default function ResidentForm() {
                       );
                     }
                     return (
-                  <Table
+                      <Table
                         columns={allergyColumns}
                         data={allAllergies}
                         rowsPerPage={5}
                         actions={(id) => {
-                          const allergy = allAllergies.find(a => a.id === id);
+                          const allergy = allAllergies.find((a) => a.id === id);
                           if (!allergy) {
                             return <></>;
                           }
@@ -2181,17 +2395,26 @@ export default function ResidentForm() {
                             return (
                               <>
                                 <button
-                                  onClick={() => handleEditAllergyClick(allergy.allergyId, undefined)}
+                                  onClick={() =>
+                                    handleEditAllergyClick(
+                                      allergy.allergyId,
+                                      undefined
+                                    )
+                                  }
                                   className='text-edit hover:text-hoverEdit'
                                 >
                                   <Pencil className='size-6' weight='fill' />
                                 </button>
                                 <button
                                   onClick={() => {
-                                    setPendingAllergies((prev) => 
-                                      prev.filter((aid) => aid !== allergy.allergyId)
+                                    setPendingAllergies((prev) =>
+                                      prev.filter(
+                                        (aid) => aid !== allergy.allergyId
+                                      )
                                     );
-                                    if (editingAllergyId === allergy.allergyId) {
+                                    if (
+                                      editingAllergyId === allergy.allergyId
+                                    ) {
                                       handleCancelEditAllergy();
                                     }
                                   }}
@@ -2207,13 +2430,23 @@ export default function ResidentForm() {
                             return (
                               <>
                                 <button
-                                  onClick={() => handleEditAllergyClick(allergy.allergyId, allergy.id)}
+                                  onClick={() =>
+                                    handleEditAllergyClick(
+                                      allergy.allergyId,
+                                      allergy.id
+                                    )
+                                  }
                                   className='text-edit hover:text-hoverEdit'
                                 >
                                   <Pencil className='size-6' weight='fill' />
                                 </button>
                                 <button
-                                  onClick={() => handleRemoveAllergyClick(allergy.allergyId, allergy.id)}
+                                  onClick={() =>
+                                    handleRemoveAllergyClick(
+                                      allergy.allergyId,
+                                      allergy.id
+                                    )
+                                  }
                                   className='text-danger hover:text-hoverDanger'
                                 >
                                   <Trash className='size-6' weight='fill' />
@@ -2277,7 +2510,7 @@ export default function ResidentForm() {
                       label='Tipo:'
                       name='tipo'
                       value={modalPlanoData.tipo}
-                      options={getHealthInsurancePlanTypeOptions()}
+                      options={getHealthPlanTypeOptions()}
                       onChange={(key, value) =>
                         setModalPlanoData((prev) => ({
                           ...prev,
@@ -2534,47 +2767,51 @@ export default function ResidentForm() {
           {/* Botões de navegação */}
           <div className='flex flex-col items-end mt-8 gap-2'>
             <div className='flex gap-4'>
-            {step > 0 && (
-              <Button
+              {step > 0 && (
+                <Button
                   type='button'
-                label='Voltar'
-                onClick={handleBack}
-                color='neutralLight'
-                size='medium'
-                className='hover:bg-neutralDark/10 text-textPrimary shadow-none'
+                  label='Voltar'
+                  onClick={handleBack}
+                  color='neutralLight'
+                  size='medium'
+                  className='hover:bg-neutralDark/10 text-textPrimary shadow-none'
                   disabled={loading}
-              />
-            )}
+                />
+              )}
 
-            {step < stepTitles.length - 1 ? (
-              <Button
+              {step < stepTitles.length - 1 ? (
+                <Button
                   type='button'
-                label='Avançar'
+                  label='Avançar'
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     handleNext();
                   }}
-                color='primary'
-                size='medium'
-                className='font-medium'
+                  color='primary'
+                  size='medium'
+                  className='font-medium'
                   disabled={loading}
-              />
-            ) : (
-              <Button
-                type='button'
-                label={isEditMode ? 'Atualizar cadastro' : 'Finalizar cadastro de residente'}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleSubmit();
-                }}
-                color='primary'
-                size='medium'
-                className='font-medium'
-                disabled={loading}
-              />
-            )}
+                />
+              ) : (
+                <Button
+                  type='button'
+                  label={
+                    isEditMode
+                      ? 'Atualizar cadastro'
+                      : 'Finalizar cadastro de residente'
+                  }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleSubmit();
+                  }}
+                  color='primary'
+                  size='medium'
+                  className='font-medium'
+                  disabled={loading}
+                />
+              )}
             </div>
           </div>
         </form>
@@ -2612,7 +2849,11 @@ export default function ResidentForm() {
         onClose={() => {
           setIsAlertModalOpen(false);
           // Se for sucesso ao salvar residente, navegar após fechar
-          if (alertMessage.includes('Residente') && (alertMessage.includes('alterado') || alertMessage.includes('cadastrado'))) {
+          if (
+            alertMessage.includes('Residente') &&
+            (alertMessage.includes('alterado') ||
+              alertMessage.includes('cadastrado'))
+          ) {
             navigate('/resident');
           }
         }}

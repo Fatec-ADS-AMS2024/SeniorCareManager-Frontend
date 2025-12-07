@@ -13,6 +13,7 @@ const Relationship: Enum = {
   NEPHEW_NIECE: 7,
   COUSIN: 8,
   SPOUSE: 9,
+  OTHER: 10,
 } as const;
 
 type Relationship = (typeof Relationship)[keyof typeof Relationship];
@@ -28,6 +29,7 @@ const labels: EnumLabels = {
   [Relationship.NEPHEW_NIECE]: 'Sobrinho/Sobrinha',
   [Relationship.COUSIN]: 'Primo/Prima',
   [Relationship.SPOUSE]: 'Cônjuge',
+  [Relationship.OTHER]: 'Outro',
 };
 
 // Criação das funções auxiliares para esse enum

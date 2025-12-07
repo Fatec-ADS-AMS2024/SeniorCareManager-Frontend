@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { HealthInsurancePlanService } from '@/features/healthInsurancePlan';
 import HealthInsurancePlan from '@/types/models/HealthInsurancePlan';
-import { getHealthInsurancePlanTypeLabel } from '@/types/enums/HealthPlanType';
+import { getHealthPlanTypeLabel } from '@/types/enums/HealthPlanType';
 import Table from '@/components/Table';
 import { Pencil, Plus, Trash } from '@phosphor-icons/react';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
@@ -17,7 +17,7 @@ export default function HealthInsurancePlanOverview() {
     {
       label: 'Tipo',
       attribute: 'type',
-      render: (value) => getHealthInsurancePlanTypeLabel(Number(value)),
+      render: (value) => getHealthPlanTypeLabel(Number(value)),
     },
     { label: 'Abreviação', attribute: 'abbreviation' },
   ];
@@ -58,7 +58,7 @@ export default function HealthInsurancePlanOverview() {
     const filteredData = originalData.filter(
       (plan) =>
         plan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        getHealthInsurancePlanTypeLabel(plan.type)
+        getHealthPlanTypeLabel(plan.type)
           .toLowerCase()
           .includes(searchTerm.toLowerCase())
     );

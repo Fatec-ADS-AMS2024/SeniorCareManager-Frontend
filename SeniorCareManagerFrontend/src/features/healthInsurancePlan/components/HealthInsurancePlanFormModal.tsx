@@ -2,7 +2,7 @@ import { SelectInput, TextInput } from '@/components/FormControls';
 import { ModalProps, FormModal } from '@/components/Modal';
 import useFormData from '@/hooks/useFormData';
 import {
-  getHealthInsurancePlanTypeOptions,
+  getHealthPlanTypeOptions,
   HealthPlanType,
 } from '@/types/enums/HealthPlanType';
 import HealthInsurancePlan from '@/types/models/HealthInsurancePlan';
@@ -77,7 +77,7 @@ export default function HealthInsurancePlanFormModal({
           label='Tipo'
           onChange={updateField}
           value={data.type}
-          options={getHealthInsurancePlanTypeOptions()}
+          options={getHealthPlanTypeOptions()}
           required
         />
       </div>

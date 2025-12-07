@@ -8,8 +8,7 @@ const HealthPlanType: Enum = {
   PRIVATE: 2,
 } as const;
 
-type HealthPlanType =
-  (typeof HealthPlanType)[keyof typeof HealthPlanType];
+type HealthPlanType = (typeof HealthPlanType)[keyof typeof HealthPlanType];
 
 // Definição dos rótulos
 const labels: EnumLabels = {
@@ -27,6 +26,6 @@ const { getEnumLabel, getEnumOptions } = createEnumHelpers(
 // ATENÇÃO: as funções auxiliares devem ser exportadas com nomes diferentes para evitar conflito com outros enums
 export {
   HealthPlanType,
-  getEnumLabel as getHealthInsurancePlanTypeLabel,
-  getEnumOptions as getHealthInsurancePlanTypeOptions,
+  getEnumLabel as getHealthPlanTypeLabel,
+  getEnumOptions as getHealthPlanTypeOptions,
 };
