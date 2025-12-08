@@ -2,6 +2,7 @@ import { authRoutes } from '@/features/auth';
 import { healthInsurancePlanRoutes } from '@/features/healthInsurancePlan';
 import { positionRoutes } from '@/features/position';
 import { religionRoutes } from '@/features/religion';
+import { residentRoutes } from '@/features/resident';
 import { technicalResponsibilityRoutes } from '@/features/technicalResponsibility';
 import { allergyRoutes } from '@/features/allergy';
 import { employeeRoutes } from '@/features/employee';
@@ -42,6 +43,7 @@ export const routes = {
   ...healthInsurancePlanRoutes,
   ...positionRoutes,
   ...religionRoutes,
+  ...residentRoutes,
   ...technicalResponsibilityRoutes,
   ...allergyRoutes,
   ...employeeRoutes,

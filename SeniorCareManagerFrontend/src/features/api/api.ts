@@ -9,7 +9,9 @@ const axiosInstance = axios.create({
 let activeRequests = 0;
 
 const dispatchLoadingEvent = (isLoading: boolean) => {
-  window.dispatchEvent(new CustomEvent('api-loading', { detail: { isLoading } }));
+  window.dispatchEvent(
+    new CustomEvent('api-loading', { detail: { isLoading } })
+  );
 };
 
 axiosInstance.interceptors.request.use(

@@ -1,4 +1,11 @@
-import { Cross, FirstAid, Briefcase, ShieldCheck, IdentificationBadge } from '@phosphor-icons/react';
+import {
+  Cross,
+  FirstAid,
+  Briefcase,
+  Users,
+  ShieldCheck,
+  IdentificationBadge,
+} from '@phosphor-icons/react';
 import Card from '@/components/Card';
 import SearchBar from '@/components/SearchBar';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
@@ -27,6 +34,12 @@ export default function Registrations() {
       page: routes.POSITION.path,
     },
     {
+      text: 'Residente',
+      subText: 'Residentes Cadastrados',
+      icon: <Users weight='bold' className='shrink-0 size-full' />,
+      page: routes.RESIDENT.path,
+    },
+    {
       text: 'Responsável Técnico',
       subText: 'Responsáveis Técnicos Cadastrados',
       icon: <ShieldCheck weight='bold' className='shrink-0 size-full' />,
@@ -41,7 +54,9 @@ export default function Registrations() {
     {
       text: 'Funcionário',
       subText: 'Funcionários Cadastrados',
-      icon: <IdentificationBadge weight='bold' className='shrink-0 size-full' />,
+      icon: (
+        <IdentificationBadge weight='bold' className='shrink-0 size-full' />
+      ),
       page: routes.EMPLOYEE.path,
     },
   ];

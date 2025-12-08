@@ -5,6 +5,6 @@ const genericMethods = generateGenericMethods<Allergy>('Allergy');
 
 const AllergyService = {
   ...genericMethods,
-}
+};
 
 export default AllergyService;

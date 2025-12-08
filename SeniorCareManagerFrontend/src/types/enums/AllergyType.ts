@@ -4,24 +4,23 @@ import { Enum, EnumLabels } from '../app/Enum';
 // Declaração do enum e seus valores
 // A chave deve ser escrita em SNAKE_CASE maiúscula
 const AllergyType: Enum = {
-    MEDICATION: 1,
-    FOOD: 2,
-    ENVIRONMENTAL: 3,
-    INSECT_STING: 4,
-    ANIMAL: 5,
-    LATEX: 6,
-    OTHER: 7
+  MEDICATION: 1,
+  FOOD: 2,
+  ENVIRONMENTAL: 3,
+  INSECT_STING: 4,
+  ANIMAL: 5,
+  LATEX: 6,
+  OTHER: 7,
 } as const;
 
-type AllergyType =
-  (typeof AllergyType)[keyof typeof AllergyType];
+type AllergyType = (typeof AllergyType)[keyof typeof AllergyType];
 
 // Definição dos rótulos
 const labels: EnumLabels = {
-  [AllergyType.MEDICATION]: 'Medicação',
-  [AllergyType.FOOD]: 'Comida',
+  [AllergyType.MEDICATION]: 'Medicamento',
+  [AllergyType.FOOD]: 'Alimento',
   [AllergyType.ENVIRONMENTAL]: 'Ambiental',
-  [AllergyType.INSECT_STING]: 'Picada de Inseto',
+  [AllergyType.INSECT_STING]: 'Picada de inseto',
   [AllergyType.ANIMAL]: 'Animal',
   [AllergyType.LATEX]: 'Látex',
   [AllergyType.OTHER]: 'Outro',

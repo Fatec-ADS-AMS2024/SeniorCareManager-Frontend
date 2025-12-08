@@ -79,6 +79,7 @@ export default function generateGenericMethods<T extends { id: number }>(
 }
 
 export function handleServiceError<T>(error: unknown): ServiceResult<T> {
+  console.error(`Erro ao contatar api: ${error}`);
   if (!isAxiosError(error) || !error.response) {
     return {
       success: false,
