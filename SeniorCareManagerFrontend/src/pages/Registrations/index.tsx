@@ -71,7 +71,7 @@ export default function Registrations() {
           <SearchBar placeholder='Digite aqui...' action={console.log} />
         </div>
 
-        <div className='flex flex-wrap gap-8 justify-between'>
+        <div className='flex flex-wrap gap-8'>
           {/* Card Grid */}
           {cards.map(({ text, icon, page, subText }) => (
             <Card
