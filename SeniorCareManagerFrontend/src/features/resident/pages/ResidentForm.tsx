@@ -1,34 +1,21 @@
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import Button from '@/components/Button';
-import SelectInput from '@/components/FormControls/SelectInput';
-import TextInput from '@/components/FormControls/TextInput';
-import { FormModal } from '@/components/Modal';
-import ConfirmModal from '@/components/Modal/ConfirmModal';
 import AlertModal from '@/components/Modal/AlertModal';
-import SearchBar from '@/components/SearchBar';
-import Table from '@/components/Table';
-import { TableColumn } from '@/components/Table/types';
 import ResidentAllergy from '@/types/models/ResidentAllergy';
 import ResidentRelative from '@/types/models/ResidentRelative';
 import Allergy from '@/types/models/Allergy';
+import ResidentDataTab from '../components/ResidentDataTab';
+import AllergiesTab from '../components/AllergiesTab';
+import HealthPlanTab from '../components/HealthPlanTab';
+import RelativesTab from '../components/RelativesTab';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import ResidentService, {
-  ResidentDTO,
-  ResidentRelativeDTO,
-} from '../services/residentService';
+import ResidentService from '../services/residentService';
 import AllergyService from '@/features/allergy/services/allergyService';
 import HealthInsurancePlanService from '@/features/healthInsurancePlan/services/healthInsurancePlanService';
-import { getSexOptions } from '@/types/enums/Sex';
-import { getMaritalStatusOptions } from '@/types/enums/MaritalStatus';
-import { getEthnicityOptions } from '@/types/enums/Ethnicity';
-import { getRelationshipOptions } from '@/types/enums/Relationship';
-import { getAllergyTypeOptions } from '@/types/enums/AllergyType';
-import {
-  getHealthPlanTypeOptions,
-  HealthPlanType,
-} from '@/types/enums/HealthPlanType';
-import { CheckCircle, Circle, Trash, Pencil } from '@phosphor-icons/react';
+import { CheckCircle, Circle } from '@phosphor-icons/react';
+import ResidentAllergyService from '../services/residentAllergyService';
+import Resident from '@/types/models/Resident';
 
 interface FormErrors {
   [key: string]: string;
@@ -51,13 +38,13 @@ export default function ResidentForm() {
   );
   const [pendingAllergies, setPendingAllergies] = useState<number[]>([]);
   const [healthPlans, setHealthPlans] = useState<any[]>([]);
-  const [religions] = useState<any[]>([]);
+  const [religions, setReligions] = useState<any[]>([]);
   const [residentRelatives, setResidentRelatives] = useState<
     ResidentRelative[]
   >([]);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isModalPlanoOpen, setIsModalPlanoOpen] = useState(false);
+  const [pendingRelatives, setPendingRelatives] = useState<ResidentRelative[]>(
+    []
+  );
 
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -65,44 +52,11 @@ export default function ResidentForm() {
     'info'
   );
 
-  const [isDeleteAllergyConfirmOpen, setIsDeleteAllergyConfirmOpen] =
-    useState(false);
-  const [deleteAllergyId, setDeleteAllergyId] = useState<number | null>(null);
-  const [deleteAllergyResidentId, setDeleteAllergyResidentId] = useState<
-    number | null
-  >(null);
-
-  const [editingAllergyId, setEditingAllergyId] = useState<number | null>(null);
-  const [editingResidentAllergyId, setEditingResidentAllergyId] = useState<
-    number | null
-  >(null);
-
-  const [editingRelativeId, setEditingRelativeId] = useState<number | null>(
-    null
-  );
-
-  const [isDeleteRelativeConfirmOpen, setIsDeleteRelativeConfirmOpen] =
-    useState(false);
-  const [deleteRelativeId, setDeleteRelativeId] = useState<number | null>(null);
-  const [deleteRelativeResidentId, setDeleteRelativeResidentId] = useState<
-    number | null
-  >(null);
-
   const showAlert = (message: string, type: 'info' | 'success' | 'error') => {
     setAlertMessage(message);
     setAlertType(type);
     setIsAlertModalOpen(true);
   };
-
-  const [modalAllergyData, setModalAllergyData] = useState({
-    tipo: '',
-    nomeAlergia: '',
-  });
-  const [modalPlanoData, setModalPlanoData] = useState({
-    tipo: '',
-    nomePlano: '',
-    abreviacao: '',
-  });
 
   const [formData, setFormData] = useState({
     residente: {
@@ -177,11 +131,17 @@ export default function ResidentForm() {
           setHealthPlans(plansRes.data);
         }
 
-        // Carregar religiões (se houver serviço)
-        // const religionsRes = await ReligionService.getAll();
-        // if (religionsRes.success && religionsRes.data) {
-        //   setReligions(religionsRes.data);
-        // }
+        try {
+          const { default: ReligionService } = await import(
+            '@/features/religion/services/religionService'
+          );
+          const religionsRes = await ReligionService.getAll();
+          if (religionsRes.success && religionsRes.data) {
+            setReligions(religionsRes.data);
+          }
+        } catch (error) {
+          // Serviço de religiões não disponível
+        }
 
         // Se estiver editando, carregar dados do residente
         if (currentResidentId) {
@@ -223,7 +183,10 @@ export default function ResidentForm() {
                 planoSaude: resident.healthInsurancePlanId?.toString() || '',
               },
               alergia: { tipo: '', nome: '' },
-              planoSaude: { plano: '', numeroCarteirinha: '' },
+              planoSaude: {
+                plano: resident.healthInsurancePlanId?.toString() || '',
+                numeroCarteirinha: resident.privateHealthCardNumber || '',
+              },
               familiar: {
                 nomeFamiliar: '',
                 parentesco: '',
@@ -251,6 +214,9 @@ export default function ResidentForm() {
                 );
                 if (allergiesRes.success && allergiesRes.data) {
                   setResidentAllergies(allergiesRes.data);
+                  setPendingAllergies(
+                    allergiesRes.data.map((ra) => ra.allergyId)
+                  );
                 }
               } catch (error) {
                 // Ignora erros 404
@@ -262,6 +228,7 @@ export default function ResidentForm() {
                 );
                 if (relativesRes.success && relativesRes.data) {
                   setResidentRelatives(relativesRes.data);
+                  setPendingRelatives(relativesRes.data);
                 }
               } catch (error) {
                 // Ignora erros 404
@@ -271,6 +238,7 @@ export default function ResidentForm() {
         } else {
           setResidentAllergies([]);
           setResidentRelatives([]);
+          setPendingRelatives([]);
         }
       } catch (error) {
         // Erro ao carregar dados
@@ -911,7 +879,7 @@ export default function ResidentForm() {
         }
       }
 
-      const residentDTO: ResidentDTO = {
+      const resident: Resident = {
         registeredName: r.nome.trim(),
         socialName: r.nomeSocial?.trim() || '', // Obrigatório
         dateOfBirth:
@@ -955,10 +923,10 @@ export default function ResidentForm() {
 
       let result;
       if (isEditMode && currentResidentId) {
-        residentDTO.id = currentResidentId;
-        result = await ResidentService.update(currentResidentId, residentDTO);
+        resident.id = currentResidentId;
+        result = await ResidentService.update(currentResidentId, resident);
       } else {
-        result = await ResidentService.create(residentDTO);
+        result = await ResidentService.create(resident);
       }
 
       if (result.success && result.data) {
@@ -971,7 +939,7 @@ export default function ResidentForm() {
           if (pendingAllergies.length > 0) {
             try {
               for (const allergyId of pendingAllergies) {
-                await ResidentService.addAllergy(newResidentId, allergyId);
+                await ResidentAllergyService.create(newResidentId, allergyId);
               }
               // Recarregar alergias após salvar todas
               const allergiesRes = await ResidentService.getAllergies(
@@ -1047,880 +1015,6 @@ export default function ResidentForm() {
     }
   };
 
-  const handleAddAllergy = async () => {
-    if (!formData.alergia.nome || !formData.alergia.tipo) {
-      showAlert('Selecione uma alergia para adicionar.', 'error');
-      return;
-    }
-
-    // Se estava editando, cancelar a edição primeiro
-    if (editingAllergyId) {
-      setEditingAllergyId(null);
-    }
-
-    const allergyId = parseInt(formData.alergia.nome);
-
-    // Se já tem residentId, salva diretamente
-    if (currentResidentId) {
-      setLoading(true);
-      try {
-        const result = await ResidentService.addAllergy(
-          currentResidentId,
-          allergyId
-        );
-        if (result.success) {
-          // Recarregar a lista de alergias do residente
-          const allergiesRes = await ResidentService.getAllergies(
-            currentResidentId
-          );
-          if (
-            allergiesRes.success &&
-            allergiesRes.data &&
-            allergiesRes.data.length > 0
-          ) {
-            setResidentAllergies(allergiesRes.data);
-          } else {
-            // Se o GET retornou vazio, adicionar manualmente mantendo os dados existentes
-            const newAllergy: ResidentAllergy = {
-              id: result.data?.id || Date.now(),
-              residentId: currentResidentId,
-              allergyId: allergyId,
-            };
-            setResidentAllergies((prev) => {
-              // Verificar se já não existe na lista
-              const exists = prev.some(
-                (a) =>
-                  a.allergyId === allergyId &&
-                  a.residentId === currentResidentId
-              );
-              if (exists) {
-                return prev;
-              }
-              return [...prev, newAllergy];
-            });
-          }
-          setFormData((prev) => ({
-            ...prev,
-            alergia: { tipo: '', nome: '' },
-          }));
-          showAlert('Alergia adicionada com sucesso!', 'success');
-        } else {
-          showAlert(`Erro: ${result.message}`, 'error');
-        }
-      } catch (error) {
-        const newAllergy: ResidentAllergy = {
-          id: Date.now(),
-          residentId: currentResidentId,
-          allergyId: allergyId,
-        };
-        setResidentAllergies((prev) => {
-          const exists = prev.some(
-            (a) =>
-              a.allergyId === allergyId && a.residentId === currentResidentId
-          );
-          if (exists) {
-            return prev;
-          }
-          return [...prev, newAllergy];
-        });
-        showAlert('Alergia adicionada com sucesso!', 'success');
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      // Se não tem residentId, adiciona à lista pendente
-      if (!pendingAllergies.includes(allergyId)) {
-        setPendingAllergies((prev) => [...prev, allergyId]);
-        setFormData((prev) => ({
-          ...prev,
-          alergia: { tipo: '', nome: '' },
-        }));
-        showAlert(
-          'Alergia adicionada! Ela será salva quando você salvar o residente.',
-          'success'
-        );
-      } else {
-        showAlert('Esta alergia já foi adicionada.', 'info');
-      }
-    }
-  };
-
-  const handleEditAllergyClick = (
-    allergyId: number,
-    residentAllergyId?: number
-  ) => {
-    if (step !== 1) {
-      setStep(1);
-    }
-
-    const allergy = allergies.find((a) => a.id === allergyId);
-
-    if (allergy) {
-      setEditingAllergyId(allergyId);
-      setEditingResidentAllergyId(residentAllergyId || null);
-      setFormData((prev) => ({
-        ...prev,
-        alergia: {
-          tipo: allergy.type.toString(),
-          nome: allergy.id.toString(),
-        },
-      }));
-
-      setTimeout(() => {
-        const allergyFormSection = document.querySelector('form');
-        if (allergyFormSection) {
-          allergyFormSection.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-          });
-        }
-      }, 100);
-    } else {
-      showAlert(
-        'Alergia não encontrada na lista de alergias disponíveis. Recarregue a página.',
-        'error'
-      );
-    }
-  };
-
-  const handleCancelEditAllergy = () => {
-    setEditingAllergyId(null);
-    setEditingResidentAllergyId(null);
-    setFormData((prev) => ({
-      ...prev,
-      alergia: { tipo: '', nome: '' },
-    }));
-  };
-
-  const handleUpdateAllergy = async () => {
-    if (!formData.alergia.nome || !formData.alergia.tipo) {
-      showAlert('Selecione uma alergia para atualizar.', 'error');
-      return;
-    }
-
-    if (!editingAllergyId) return;
-
-    const newAllergyId = parseInt(formData.alergia.nome);
-
-    // Se já tem residentId, atualiza diretamente
-    if (currentResidentId) {
-      setLoading(true);
-      try {
-        if (editingResidentAllergyId) {
-          await ResidentService.removeAllergy(
-            currentResidentId,
-            editingResidentAllergyId
-          );
-        } else {
-          const residentAllergy = residentAllergies.find(
-            (ra) => ra.allergyId === editingAllergyId
-          );
-          if (residentAllergy) {
-            await ResidentService.removeAllergy(
-              currentResidentId,
-              residentAllergy.id
-            );
-          } else {
-            setResidentAllergies((prev) =>
-              prev.filter((ra) => ra.allergyId !== editingAllergyId)
-            );
-          }
-        }
-
-        const result = await ResidentService.addAllergy(
-          currentResidentId,
-          newAllergyId
-        );
-        if (result.success) {
-          const allergiesRes = await ResidentService.getAllergies(
-            currentResidentId
-          );
-          if (
-            allergiesRes.success &&
-            allergiesRes.data &&
-            allergiesRes.data.length > 0
-          ) {
-            setResidentAllergies(allergiesRes.data);
-          } else {
-            // Se o GET retornou vazio, atualizar manualmente mantendo os dados existentes
-            setResidentAllergies((prev) => {
-              const filtered = prev.filter((ra) => {
-                if (editingResidentAllergyId) {
-                  return ra.id !== editingResidentAllergyId;
-                }
-                return ra.allergyId !== editingAllergyId;
-              });
-              const newAllergy: ResidentAllergy = {
-                id: result.data?.id || Date.now(),
-                residentId: currentResidentId,
-                allergyId: newAllergyId,
-              };
-              return [...filtered, newAllergy];
-            });
-          }
-          setEditingAllergyId(null);
-          setEditingResidentAllergyId(null);
-          setFormData((prev) => ({
-            ...prev,
-            alergia: { tipo: '', nome: '' },
-          }));
-          showAlert('Alergia atualizada com sucesso!', 'success');
-        } else {
-          showAlert(`Erro: ${result.message}`, 'error');
-        }
-      } catch (error) {
-        setResidentAllergies((prev) => {
-          const filtered = prev.filter((ra) => {
-            if (editingResidentAllergyId) {
-              return ra.id !== editingResidentAllergyId;
-            }
-            return ra.allergyId !== editingAllergyId;
-          });
-          const newAllergy: ResidentAllergy = {
-            id: Date.now(),
-            residentId: currentResidentId,
-            allergyId: newAllergyId,
-          };
-          return [...filtered, newAllergy];
-        });
-        setEditingAllergyId(null);
-        setEditingResidentAllergyId(null);
-        setFormData((prev) => ({
-          ...prev,
-          alergia: { tipo: '', nome: '' },
-        }));
-        showAlert('Alergia atualizada com sucesso!', 'success');
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      setPendingAllergies((prev) => {
-        const updated = prev.filter((aid) => aid !== editingAllergyId);
-        if (!updated.includes(newAllergyId)) {
-          updated.push(newAllergyId);
-        }
-        return updated;
-      });
-      setEditingAllergyId(null);
-      setEditingResidentAllergyId(null);
-      setFormData((prev) => ({
-        ...prev,
-        alergia: { tipo: '', nome: '' },
-      }));
-      showAlert(
-        'Alergia atualizada! Ela será salva quando você salvar o residente.',
-        'success'
-      );
-    }
-  };
-
-  const handleRemoveAllergyClick = (
-    allergyId: number,
-    residentAllergyId?: number
-  ) => {
-    if (!currentResidentId) return;
-    setDeleteAllergyId(residentAllergyId || allergyId);
-    setDeleteAllergyResidentId(currentResidentId);
-    setIsDeleteAllergyConfirmOpen(true);
-  };
-
-  const handleConfirmRemoveAllergy = async () => {
-    if (!deleteAllergyId || !deleteAllergyResidentId) return;
-
-    setIsDeleteAllergyConfirmOpen(false);
-    const residentAllergyId = deleteAllergyId;
-    const resId = deleteAllergyResidentId;
-    setDeleteAllergyId(null);
-    setDeleteAllergyResidentId(null);
-
-    setLoading(true);
-    try {
-      const result = await ResidentService.removeAllergy(
-        resId,
-        residentAllergyId
-      );
-      if (result.success) {
-        const allergiesRes = await ResidentService.getAllergies(resId);
-        if (
-          allergiesRes.success &&
-          allergiesRes.data &&
-          allergiesRes.data.length > 0
-        ) {
-          setResidentAllergies(allergiesRes.data);
-        } else {
-          // Se o GET retornou vazio, remover manualmente mantendo os dados existentes
-          setResidentAllergies((prev) =>
-            prev.filter((a) => a.id !== residentAllergyId)
-          );
-        }
-        showAlert('Alergia removida com sucesso!', 'success');
-      } else {
-        showAlert(`Erro: ${result.message}`, 'error');
-      }
-    } catch (error) {
-      showAlert('Erro ao remover alergia.', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Função para validar email
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  // Função para validar CEP
-  const validateCEP = (cep: string): boolean => {
-    const cepClean = cep.replace(/\D/g, '');
-    return cepClean.length === 8;
-  };
-
-  const handleEditRelativeClick = (relativeId: number) => {
-    const relative = residentRelatives.find((r) => r.id === relativeId);
-    if (relative) {
-      setEditingRelativeId(relativeId);
-      setFormData((prev) => ({
-        ...prev,
-        familiar: {
-          nomeFamiliar: relative.name || '',
-          parentesco: relative.relationship || '',
-          rg: '',
-          orgaoEmissor: relative.issuingBody || '',
-          estadoEmissor: relative.state || '',
-          cpf: relative.citizenship || '',
-          email: relative.email || '',
-          celular: relative.mobileNumber || '',
-          telefoneResidencial: relative.homePhoneNumber || '',
-          rua: relative.street || '',
-          numero: relative.number || '',
-          complemento: relative.addressComplement || '',
-          bairro: '',
-          cidade: relative.city || '',
-          estado: relative.state || '',
-          cep: relative.postalCode || '',
-        },
-      }));
-
-      setTimeout(() => {
-        const relativeFormSection = document.querySelector('form');
-        if (relativeFormSection) {
-          relativeFormSection.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-          });
-        }
-      }, 100);
-    }
-  };
-
-  const handleCancelEditRelative = () => {
-    setEditingRelativeId(null);
-    setFormData((prev) => ({
-      ...prev,
-      familiar: {
-        nomeFamiliar: '',
-        parentesco: '',
-        rg: '',
-        orgaoEmissor: '',
-        estadoEmissor: '',
-        cpf: '',
-        email: '',
-        celular: '',
-        telefoneResidencial: '',
-        rua: '',
-        numero: '',
-        complemento: '',
-        bairro: '',
-        cidade: '',
-        estado: '',
-        cep: '',
-      },
-    }));
-  };
-
-  const handleAddRelative = async () => {
-    const f = formData.familiar;
-
-    // Validação de campos obrigatórios
-    if (!f.nomeFamiliar || f.nomeFamiliar.trim() === '') {
-      alert('⚠️ Nome do familiar é obrigatório.');
-      return;
-    }
-
-    if (!f.parentesco || f.parentesco.trim() === '') {
-      alert('⚠️ Parentesco é obrigatório.');
-      return;
-    }
-
-    if (!currentResidentId) {
-      showAlert(
-        'Salve o residente primeiro antes de adicionar familiares.',
-        'error'
-      );
-      return;
-    }
-
-    // Se estiver editando, atualizar em vez de adicionar
-    if (editingRelativeId) {
-      await handleUpdateRelative();
-      return;
-    }
-
-    // Validações de campos opcionais
-    if (f.email && f.email.trim() !== '' && !validateEmail(f.email.trim())) {
-      alert('⚠️ Email inválido.');
-      return;
-    }
-
-    if (f.celular && f.celular.trim() !== '') {
-      const celularClean = f.celular.replace(/\D/g, '');
-      if (celularClean.length < 10 || celularClean.length > 11) {
-        alert('⚠️ Celular deve ter 10 ou 11 dígitos.');
-        return;
-      }
-    }
-
-    if (f.telefoneResidencial && f.telefoneResidencial.trim() !== '') {
-      const telefoneClean = f.telefoneResidencial.replace(/\D/g, '');
-      if (telefoneClean.length < 10 || telefoneClean.length > 11) {
-        alert('⚠️ Telefone residencial deve ter 10 ou 11 dígitos.');
-        return;
-      }
-    }
-
-    if (f.cep && f.cep.trim() !== '' && !validateCEP(f.cep.trim())) {
-      alert('⚠️ CEP deve ter 8 dígitos.');
-      return;
-    }
-
-    if (f.cpf && f.cpf.trim() !== '') {
-      const cpfClean = f.cpf.replace(/\D/g, '');
-      if (cpfClean.length !== 11) {
-        alert('⚠️ CPF deve ter 11 dígitos.');
-        return;
-      }
-    }
-
-    setLoading(true);
-    try {
-      const relativeDTO: ResidentRelativeDTO = {
-        residentId: currentResidentId,
-        name: f.nomeFamiliar.trim(),
-        relationship: f.parentesco ? f.parentesco.trim() : '',
-        citizenship: f.cpf?.trim() || undefined,
-        mobileNumber: f.celular?.trim() || undefined,
-        homePhoneNumber: f.telefoneResidencial?.trim() || undefined,
-        email: f.email?.trim() || undefined,
-        street: f.rua?.trim() || undefined,
-        number: f.numero?.trim() || undefined,
-        addressComplement: f.complemento?.trim() || undefined,
-        city: f.cidade?.trim() || undefined,
-        state: f.estado?.trim() || undefined,
-        postalCode: f.cep?.trim() || undefined,
-        issuingBody: f.orgaoEmissor?.trim() || undefined,
-      };
-
-      const result = await ResidentService.addRelative(
-        currentResidentId,
-        relativeDTO
-      );
-      if (result.success) {
-        // Recarregar familiares
-        const relativesRes = await ResidentService.getRelatives(
-          currentResidentId
-        );
-        if (
-          relativesRes.success &&
-          relativesRes.data &&
-          relativesRes.data.length > 0
-        ) {
-          setResidentRelatives(relativesRes.data);
-        } else {
-          // Se o GET retornou vazio, adicionar manualmente mantendo os dados existentes
-          if (result.data) {
-            setResidentRelatives((prev) => [...prev, result.data!]);
-          }
-        }
-        setFormData((prev) => ({
-          ...prev,
-          familiar: {
-            nomeFamiliar: '',
-            parentesco: '',
-            rg: '',
-            orgaoEmissor: '',
-            estadoEmissor: '',
-            cpf: '',
-            email: '',
-            celular: '',
-            telefoneResidencial: '',
-            rua: '',
-            numero: '',
-            complemento: '',
-            bairro: '',
-            cidade: '',
-            estado: '',
-            cep: '',
-          },
-        }));
-        showAlert('Familiar adicionado com sucesso!', 'success');
-      } else {
-        showAlert(`Erro: ${result.message}`, 'error');
-      }
-    } catch (error) {
-      showAlert('Erro ao adicionar familiar.', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleUpdateRelative = async () => {
-    if (!editingRelativeId || !currentResidentId) return;
-
-    const f = formData.familiar;
-
-    if (!f.nomeFamiliar || f.nomeFamiliar.trim() === '') {
-      alert('⚠️ Nome do familiar é obrigatório.');
-      return;
-    }
-
-    if (!f.parentesco || f.parentesco.trim() === '') {
-      alert('⚠️ Parentesco é obrigatório.');
-      return;
-    }
-
-    if (f.email && f.email.trim() !== '' && !validateEmail(f.email.trim())) {
-      alert('⚠️ Email inválido.');
-      return;
-    }
-
-    if (f.celular && f.celular.trim() !== '') {
-      const celularClean = f.celular.replace(/\D/g, '');
-      if (celularClean.length < 10 || celularClean.length > 11) {
-        alert('⚠️ Celular deve ter 10 ou 11 dígitos.');
-        return;
-      }
-    }
-
-    if (f.telefoneResidencial && f.telefoneResidencial.trim() !== '') {
-      const telefoneClean = f.telefoneResidencial.replace(/\D/g, '');
-      if (telefoneClean.length < 10 || telefoneClean.length > 11) {
-        alert('⚠️ Telefone residencial deve ter 10 ou 11 dígitos.');
-        return;
-      }
-    }
-
-    if (f.cep && f.cep.trim() !== '' && !validateCEP(f.cep.trim())) {
-      alert('⚠️ CEP deve ter 8 dígitos.');
-      return;
-    }
-
-    if (f.cpf && f.cpf.trim() !== '') {
-      const cpfClean = f.cpf.replace(/\D/g, '');
-      if (cpfClean.length !== 11) {
-        alert('⚠️ CPF deve ter 11 dígitos.');
-        return;
-      }
-    }
-
-    setLoading(true);
-    try {
-      const relativeDTO: ResidentRelativeDTO = {
-        residentId: currentResidentId,
-        name: f.nomeFamiliar.trim(),
-        relationship: f.parentesco ? f.parentesco.trim() : '',
-        citizenship: f.cpf?.trim() || undefined,
-        mobileNumber: f.celular?.trim() || undefined,
-        homePhoneNumber: f.telefoneResidencial?.trim() || undefined,
-        email: f.email?.trim() || undefined,
-        street: f.rua?.trim() || undefined,
-        number: f.numero?.trim() || undefined,
-        addressComplement: f.complemento?.trim() || undefined,
-        city: f.cidade?.trim() || undefined,
-        state: f.estado?.trim() || undefined,
-        postalCode: f.cep?.trim() || undefined,
-        issuingBody: f.orgaoEmissor?.trim() || undefined,
-      };
-
-      const result = await ResidentService.updateRelative(
-        currentResidentId,
-        editingRelativeId,
-        relativeDTO
-      );
-      if (result.success) {
-        const relativesRes = await ResidentService.getRelatives(
-          currentResidentId
-        );
-        if (
-          relativesRes.success &&
-          relativesRes.data &&
-          relativesRes.data.length > 0
-        ) {
-          setResidentRelatives(relativesRes.data);
-        } else {
-          // Se o GET retornou vazio, atualizar manualmente mantendo os dados existentes
-          setResidentRelatives((prev) => {
-            const updated = prev.map((rel) => {
-              if (rel.id === editingRelativeId) {
-                return {
-                  ...rel,
-                  ...relativeDTO,
-                  id: editingRelativeId,
-                };
-              }
-              return rel;
-            });
-            return updated;
-          });
-        }
-        setEditingRelativeId(null);
-        setFormData((prev) => ({
-          ...prev,
-          familiar: {
-            nomeFamiliar: '',
-            parentesco: '',
-            rg: '',
-            orgaoEmissor: '',
-            estadoEmissor: '',
-            cpf: '',
-            email: '',
-            celular: '',
-            telefoneResidencial: '',
-            rua: '',
-            numero: '',
-            complemento: '',
-            bairro: '',
-            cidade: '',
-            estado: '',
-            cep: '',
-          },
-        }));
-        showAlert('Familiar atualizado com sucesso!', 'success');
-      } else {
-        showAlert(`Erro: ${result.message}`, 'error');
-      }
-    } catch (error) {
-      showAlert('Erro ao atualizar familiar.', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRemoveRelativeClick = (relativeId: number) => {
-    if (!currentResidentId) return;
-    setDeleteRelativeId(relativeId);
-    setDeleteRelativeResidentId(currentResidentId);
-    setIsDeleteRelativeConfirmOpen(true);
-  };
-
-  const handleConfirmRemoveRelative = async () => {
-    if (!deleteRelativeId || !deleteRelativeResidentId) return;
-
-    setIsDeleteRelativeConfirmOpen(false);
-    const relativeId = deleteRelativeId;
-    const resId = deleteRelativeResidentId;
-    setDeleteRelativeId(null);
-    setDeleteRelativeResidentId(null);
-
-    setLoading(true);
-    try {
-      const result = await ResidentService.removeRelative(resId, relativeId);
-      if (result.success) {
-        const relativesRes = await ResidentService.getRelatives(resId);
-        if (
-          relativesRes.success &&
-          relativesRes.data &&
-          relativesRes.data.length > 0
-        ) {
-          setResidentRelatives(relativesRes.data);
-        } else {
-          // Se o GET retornou vazio, remover manualmente mantendo os dados existentes
-          setResidentRelatives((prev) =>
-            prev.filter((rel) => rel.id !== relativeId)
-          );
-        }
-        if (editingRelativeId === relativeId) {
-          handleCancelEditRelative();
-        }
-        showAlert('Familiar removido com sucesso!', 'success');
-      } else {
-        showAlert(`Erro: ${result.message}`, 'error');
-      }
-    } catch (error) {
-      showAlert('Erro ao remover familiar.', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleOpenModal = () => {
-    setModalAllergyData({ tipo: '', nomeAlergia: '' });
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setModalAllergyData({ tipo: '', nomeAlergia: '' });
-  };
-
-  const handleSubmitModal = async (_data?: unknown) => {
-    if (!modalAllergyData.tipo || !modalAllergyData.nomeAlergia.trim()) {
-      alert('⚠️ Preencha todos os campos obrigatórios.');
-      return;
-    }
-
-    const typeValue = Number(modalAllergyData.tipo);
-    if (Number.isNaN(typeValue)) {
-      alert('⚠️ Selecione um tipo válido.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const result = await AllergyService.create({
-        id: 0,
-        name: modalAllergyData.nomeAlergia.trim(),
-        type: typeValue,
-      } as any);
-
-      if (result.success) {
-        const allergiesRes = await AllergyService.getAll();
-        if (allergiesRes.success && allergiesRes.data) {
-          setAllergies(allergiesRes.data);
-        }
-        alert('✅ Alergia cadastrada com sucesso!');
-        handleCloseModal();
-      } else {
-        alert(`❌ Erro: ${result.message}`);
-      }
-    } catch (error) {
-      alert('❌ Erro ao cadastrar alergia.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleOpenPlanoModal = () => {
-    setModalPlanoData({ tipo: '', nomePlano: '', abreviacao: '' });
-    setIsModalPlanoOpen(true);
-  };
-
-  const handleClosePlanoModal = () => {
-    setIsModalPlanoOpen(false);
-    setModalPlanoData({ tipo: '', nomePlano: '', abreviacao: '' });
-  };
-
-  const handleSubmitPlanoModal = async (_data?: unknown) => {
-    if (
-      !modalPlanoData.tipo ||
-      !modalPlanoData.nomePlano.trim() ||
-      !modalPlanoData.abreviacao.trim()
-    ) {
-      alert('⚠️ Preencha todos os campos obrigatórios.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const newPlan = {
-        name: modalPlanoData.nomePlano.trim(),
-        type: parseInt(modalPlanoData.tipo) as HealthPlanType,
-        abbreviation: modalPlanoData.abreviacao.trim(),
-      };
-
-      const result = await HealthInsurancePlanService.create(newPlan as any);
-      if (result.success && result.data) {
-        // Recarregar lista de planos
-        const plansRes = await HealthInsurancePlanService.getAll();
-        if (plansRes.success && plansRes.data) {
-          setHealthPlans(plansRes.data);
-          // Selecionar o plano recém-criado no formulário
-          setFormData((prev) => ({
-            ...prev,
-            residente: {
-              ...prev.residente,
-              planoSaude: result.data?.id.toString() || '',
-            },
-          }));
-        }
-        alert('✅ Plano de saúde cadastrado com sucesso!');
-        handleClosePlanoModal();
-      } else {
-        alert(`❌ Erro: ${result.message}`);
-      }
-    } catch (error) {
-      alert('❌ Erro ao criar plano de saúde. Tente novamente.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Combinar alergias salvas com pendentes para exibição
-  const getAllAllergiesForDisplay = (): ResidentAllergy[] => {
-    const savedAllergies = residentAllergies || [];
-    const pendingAllergiesData = pendingAllergies.map((allergyId, index) => ({
-      id: -index - 1, // IDs temporários negativos para pendentes
-      residentId: currentResidentId || 0,
-      allergyId: allergyId,
-    }));
-    return [...savedAllergies, ...pendingAllergiesData];
-  };
-
-  const allergyColumns: TableColumn<ResidentAllergy>[] = [
-    {
-      label: 'Nome',
-      attribute: 'allergyId',
-      render: (value) => {
-        const allergy = allergies.find((a) => a.id === value);
-        return allergy?.name || '';
-      },
-    },
-    {
-      label: 'Tipo',
-      attribute: 'allergyId',
-      render: (value) => {
-        const allergy = allergies.find((a) => a.id === value);
-        if (!allergy) return '';
-        const tipoOption = getAllergyTypeOptions().find(
-          (option) => option.value?.toString() === allergy.type.toString()
-        );
-        return tipoOption?.label || allergy.type;
-      },
-    },
-  ];
-
-  const relationshipOptions = getRelationshipOptions().map((option) => ({
-    label: option.label,
-    value: option.label,
-  }));
-
-  const filteredAllergies = formData.alergia.tipo
-    ? allergies.filter((a) => a.type.toString() === formData.alergia.tipo)
-    : allergies;
-
-  const relativeColumns: TableColumn<ResidentRelative>[] = [
-    {
-      label: 'Nome',
-      attribute: 'name',
-    },
-    {
-      label: 'Parentesco',
-      attribute: 'relationship',
-    },
-    {
-      label: 'CPF',
-      attribute: 'citizenship',
-    },
-    {
-      label: 'E-mail',
-      attribute: 'email',
-    },
-    {
-      label: 'Telefone',
-      attribute: 'mobileNumber',
-    },
-  ];
-
   const tabLabels = [
     'Residente',
     'Alergias',
@@ -1952,7 +1046,6 @@ export default function ResidentForm() {
         title={isEditMode ? 'Editar Residente' : 'Cadastro Residente'}
       />
       <div className='flex flex-col p-12'>
-        {/* Abas */}
         <div className='flex flex-row w-full mx-auto bg-white'>
           {tabLabels.map((label, index) => {
             const isActive = index === step;
@@ -2004,767 +1097,90 @@ export default function ResidentForm() {
             return false;
           }}
         >
-          {/* Título da aba */}
           <h2 className={titleClasses}>{stepTitles[step]}</h2>
 
-          {/* Conteúdo das abas */}
           {step === 0 && (
-            <div className='flex flex-col'>
-              {/* 1ª LINHA DE CAMPOS (Nome e Nome Social) */}
-              <div className='grid grid-cols-2 gap-4 mb-4'>
-                <TextInput
-                  label='Nome'
-                  name='nome'
-                  value={formData.residente.nome}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.nome']}
-                  required
-                />
-                <TextInput
-                  label='Nome social'
-                  name='nomeSocial'
-                  value={formData.residente.nomeSocial}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.nomeSocial']}
-                  required
-                />
-              </div>
-
-              {/* 2ª LINHA DE CAMPOS (Documentos: CPF, PIS/PASEP) */}
-              <div className='grid grid-cols-2 gap-4 mb-4'>
-                <TextInput
-                  label='CPF'
-                  name='cpf'
-                  value={formData.residente.cpf}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.cpf']}
-                  required
-                />
-                <TextInput
-                  label='PIS/PASEP'
-                  name='pisPasep'
-                  value={formData.residente.pisPasep}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.pisPasep']}
-                  required
-                />
-              </div>
-
-              {/* 3ª LINHA DE CAMPOS (Documentos: RG, Órgão e Estado Emissor) */}
-              <div className='grid grid-cols-4 gap-4 mb-4'>
-                <div className='col-span-2'>
-                  <TextInput
-                    label='RG:'
-                    name='rg'
-                    value={formData.residente.rg}
-                    onChange={(key, v) => updateSection('residente', key, v)}
-                    error={errors['residente.rg']}
-                    required
-                  />
-                </div>
-                <TextInput
-                  label='Órgão Emissor:'
-                  name='orgaoEmissor'
-                  value={formData.residente.orgaoEmissor}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.orgaoEmissor']}
-                  required
-                />
-                <TextInput
-                  label='Estado Emissor:'
-                  name='estadoEmissor'
-                  value={formData.residente.estadoEmissor}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.estadoEmissor']}
-                  required
-                />
-              </div>
-
-              {/* 4ª LINHA DE CAMPOS (Data Nascimento e Idade) */}
-              <div className='grid grid-cols-2 gap-4 mb-4'>
-                <TextInput
-                  label='Data de nascimento:'
-                  name='dataNascimento'
-                  type='text'
-                  value={formData.residente.dataNascimento}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.dataNascimento']}
-                  required
-                />
-                <TextInput
-                  label='Idade:'
-                  name='idade'
-                  type='number'
-                  value={getValidNumberValue(formData.residente.idade)}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.idade']}
-                  readOnly
-                />
-              </div>
-
-              {/* 5ª LINHA DE CAMPOS (Sexo e Etnia) */}
-              <div className='grid grid-cols-2 gap-4 mb-4'>
-                <SelectInput
-                  label='Sexo:'
-                  name='sexo'
-                  value={formData.residente.sexo}
-                  options={getSexOptions()}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.sexo']}
-                  required
-                />
-                <SelectInput
-                  label='Etnia:'
-                  name='etnia'
-                  value={formData.residente.etnia}
-                  options={getEthnicityOptions()}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.etnia']}
-                  required
-                />
-              </div>
-
-              {/* 6ª LINHA DE CAMPOS (Altura e Peso) */}
-              <div className='grid grid-cols-2 gap-4 mb-4'>
-                <TextInput
-                  label='Altura:'
-                  name='altura'
-                  type='number'
-                  step='0.01'
-                  min='0'
-                  value={getValidNumberValue(formData.residente.altura)}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.altura']}
-                />
-                <TextInput
-                  label='Peso:'
-                  name='peso'
-                  type='number'
-                  step='0.01'
-                  min='0'
-                  value={getValidNumberValue(formData.residente.peso)}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.peso']}
-                />
-              </div>
-
-              {/* 7ª LINHA DE CAMPOS (Religião e Escolaridade) */}
-              <div className='grid grid-cols-2 gap-4 mb-6'>
-                <SelectInput
-                  label='Religião:'
-                  name='religiao'
-                  value={formData.residente.religiao}
-                  options={religions.map((r) => ({
-                    label: r.name,
-                    value: r.id,
-                  }))}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.religiao']}
-                />
-                <SelectInput
-                  label='Plano de Saúde:'
-                  name='planoSaude'
-                  value={formData.residente.planoSaude}
-                  options={healthPlans.map((p) => ({
-                    label: p.name,
-                    value: p.id,
-                  }))}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.planoSaude']}
-                />
-              </div>
-
-              <hr className='w-full border-t border-textPrimary mt-4 mb-8' />
-
-              {/* 8ª LINHA DE CAMPOS (Filiação) */}
-              <div className='grid grid-cols-2 gap-4 mb-4'>
-                <TextInput
-                  label='Nome do pai:'
-                  name='nomePai'
-                  value={formData.residente.nomePai}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.nomePai']}
-                  required
-                />
-                <TextInput
-                  label='Nome da mãe:'
-                  name='nomeMae'
-                  value={formData.residente.nomeMae}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.nomeMae']}
-                  required
-                />
-              </div>
-
-              {/* 9ª LINHA DE CAMPOS (Estado Civil e Cônjuge) */}
-              <div className='grid grid-cols-2 gap-4 mb-6'>
-                <SelectInput
-                  label='Estado Civil:'
-                  name='estadoCivil'
-                  value={formData.residente.estadoCivil}
-                  options={getMaritalStatusOptions()}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.estadoCivil']}
-                  required
-                />
-                <TextInput
-                  label='Nome do cônjuge:'
-                  name='nomeConjuge'
-                  value={formData.residente.nomeConjuge}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.nomeConjuge']}
-                />
-              </div>
-
-              <hr className='w-full border-t border-textPrimary mt-4 mb-8' />
-
-              {/* 10ª LINHA DE CAMPOS (Cartões de Saúde) */}
-              <div className='grid grid-cols-2 gap-4 mb-6'>
-                <TextInput
-                  label='Número do cartão de saúde nacional (CNS):'
-                  name='cns'
-                  value={formData.residente.cns}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.cns']}
-                />
-                <TextInput
-                  label='Número do cartão de saúde privado:'
-                  name='cartaoPrivado'
-                  value={formData.residente.cartaoPrivado}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.cartaoPrivado']}
-                />
-              </div>
-
-              <hr className='w-full border-t border-textPrimary mt-4 mb-8' />
-
-              {/* 11ª LINHA DE CAMPOS (Telefones) */}
-              <div className='grid grid-cols-2 gap-4 mb-6'>
-                <TextInput
-                  label='Número do celular:'
-                  name='celular'
-                  type='text'
-                  value={formData.residente.celular}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.celular']}
-                />
-                <TextInput
-                  label='Número do telefone residencial:'
-                  name='telefone'
-                  type='text'
-                  value={formData.residente.telefone}
-                  onChange={(key, v) => updateSection('residente', key, v)}
-                  error={errors['residente.telefone']}
-                />
-              </div>
-
-              <hr className='w-full border-t border-textPrimary mt-4 mb-8' />
-            </div>
+            <ResidentDataTab
+              formData={formData.residente}
+              errors={errors}
+              healthPlans={healthPlans}
+              religions={religions}
+              onUpdate={(field, value) =>
+                updateSection('residente', field, value)
+              }
+              getValidNumberValue={getValidNumberValue}
+            />
           )}
 
           {step === 1 && (
-            <div>
-              <div className='grid grid-cols-2 gap-4 mb-6'>
-                <SelectInput
-                  label='Tipo:'
-                  name='tipo'
-                  value={formData.alergia.tipo}
-                  options={getAllergyTypeOptions()}
-                  onChange={(key, v) => updateSection('alergia', key, v)}
-                />
-                <SelectInput
-                  label='Nome:'
-                  name='nome'
-                  value={formData.alergia.nome}
-                  options={filteredAllergies.map((a) => ({
-                    label: a.name,
-                    value: a.id.toString(),
-                  }))}
-                  onChange={(key, v) => updateSection('alergia', key, v)}
-                />
-              </div>
-
-              <div className='flex items-center justify-between gap-4 mb-4'>
-                <div />
-                <div className='flex items-center gap-4'>
-                  <a
-                    href='#'
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleOpenModal();
-                    }}
-                    className='text-textSecondary underline hover:text-secondary text-sm font-medium'
-                  >
-                    Alergia não encontrada
-                  </a>
-
-                  <FormModal
-                    isOpen={isModalOpen}
-                    onClose={handleCloseModal}
-                    onSubmit={handleSubmitModal}
-                    title='Cadastrar nova alergia'
-                  >
-                    <div className='flex flex-col gap-4'>
-                      <SelectInput
-                        label='Tipo:'
-                        name='tipo'
-                        value={modalAllergyData.tipo}
-                        options={getAllergyTypeOptions()}
-                        onChange={(key, value) =>
-                          setModalAllergyData((prev) => ({
-                            ...prev,
-                            [key as string]: value,
-                          }))
-                        }
-                        required
-                      />
-                      <TextInput
-                        label='Nome da alergia:'
-                        name='nomeAlergia'
-                        value={modalAllergyData.nomeAlergia}
-                        onChange={(key, value) =>
-                          setModalAllergyData((prev) => ({
-                            ...prev,
-                            [key as string]: value,
-                          }))
-                        }
-                        required
-                      />
-                    </div>
-                  </FormModal>
-
-                  {editingAllergyId ? (
-                    <>
-                      <Button
-                        label='Cancelar'
-                        onClick={handleCancelEditAllergy}
-                        color='textSecondary'
-                        className='whitespace-nowrap'
-                        disabled={loading}
-                      />
-                      <Button
-                        label='Atualizar alergia'
-                        onClick={handleUpdateAllergy}
-                        color='success'
-                        className='whitespace-nowrap'
-                        disabled={loading}
-                      />
-                    </>
-                  ) : (
-                    <Button
-                      label='+ Adicionar alergia do residente'
-                      onClick={handleAddAllergy}
-                      color='success'
-                      className='whitespace-nowrap'
-                      disabled={loading}
-                    />
-                  )}
-                </div>
-              </div>
-
-              <div className='relative -left-8 -right-8 w-[calc(100%+64px)] bg-background mt-12 shadow-sm'>
-                <hr className='w-full border-t border-textPrimary mt-4' />
-                <div className='w-full p-8'>
-                  <h1 className='text-textPrimary text-xl font-semibold mb-6'>
-                    Alergias do Residente
-                  </h1>
-                  <div className='mb-4'>
-                    <SearchBar placeholder='Buscar alergia...' />
-                  </div>
-                  {(() => {
-                    const allAllergies = getAllAllergiesForDisplay();
-                    if (allAllergies.length === 0) {
-                      return (
-                        <p className='text-textSecondary text-center py-8'>
-                          Nenhuma alergia cadastrada para este residente.
-                        </p>
-                      );
-                    }
-                    return (
-                      <Table
-                        columns={allergyColumns}
-                        data={allAllergies}
-                        rowsPerPage={5}
-                        actions={(id) => {
-                          const allergy = allAllergies.find((a) => a.id === id);
-                          if (!allergy) {
-                            return <></>;
-                          }
-                          // Se for alergia pendente (ID negativo), permitir editar e remover da lista pendente
-                          if (id < 0) {
-                            return (
-                              <>
-                                <button
-                                  onClick={() =>
-                                    handleEditAllergyClick(
-                                      allergy.allergyId,
-                                      undefined
-                                    )
-                                  }
-                                  className='text-edit hover:text-hoverEdit'
-                                >
-                                  <Pencil className='size-6' weight='fill' />
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    setPendingAllergies((prev) =>
-                                      prev.filter(
-                                        (aid) => aid !== allergy.allergyId
-                                      )
-                                    );
-                                    if (
-                                      editingAllergyId === allergy.allergyId
-                                    ) {
-                                      handleCancelEditAllergy();
-                                    }
-                                  }}
-                                  className='text-danger hover:text-hoverDanger'
-                                >
-                                  <Trash className='size-6' weight='fill' />
-                                </button>
-                              </>
-                            );
-                          }
-                          // Se for alergia salva, permitir editar e remover
-                          if (currentResidentId) {
-                            return (
-                              <>
-                                <button
-                                  onClick={() =>
-                                    handleEditAllergyClick(
-                                      allergy.allergyId,
-                                      allergy.id
-                                    )
-                                  }
-                                  className='text-edit hover:text-hoverEdit'
-                                >
-                                  <Pencil className='size-6' weight='fill' />
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    handleRemoveAllergyClick(
-                                      allergy.allergyId,
-                                      allergy.id
-                                    )
-                                  }
-                                  className='text-danger hover:text-hoverDanger'
-                                >
-                                  <Trash className='size-6' weight='fill' />
-                                </button>
-                              </>
-                            );
-                          }
-                          return <></>;
-                        }}
-                      />
-                    );
-                  })()}
-                </div>
-              </div>
-            </div>
+            <AllergiesTab
+              formData={formData.alergia}
+              allergies={allergies}
+              residentAllergies={residentAllergies}
+              pendingAllergies={pendingAllergies}
+              currentResidentId={currentResidentId}
+              onUpdate={(field, value) =>
+                updateSection('alergia', field, value)
+              }
+              onAllergiesReload={setAllergies}
+              onResidentAllergiesReload={setResidentAllergies}
+              onPendingAllergiesUpdate={setPendingAllergies}
+              onShowAlert={showAlert}
+            />
           )}
 
           {step === 2 && (
-            <div>
-              <div className='grid grid-cols-2 gap-4'>
-                <SelectInput
-                  label='Plano de Saúde:'
-                  name='plano'
-                  value={formData.planoSaude.plano}
-                  options={[
-                    { label: 'Nenhum', value: '' },
-                    ...healthPlans.map((p) => ({
-                      label: p.name,
-                      value: p.id.toString(),
-                    })),
-                  ]}
-                  onChange={(key, v) => updateSection('planoSaude', key, v)}
-                />
-                <TextInput
-                  label='Número da Carteirinha:'
-                  name='numeroCarteirinha'
-                  value={formData.planoSaude.numeroCarteirinha}
-                  onChange={(key, v) => updateSection('planoSaude', key, v)}
-                />
-              </div>
-              <div className='flex justify-end mt-6'>
-                <a
-                  href='#'
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleOpenPlanoModal();
-                  }}
-                  className='text-textSecondary underline hover:text-secondary text-sm font-medium mt-2'
-                >
-                  Plano de saúde não encontrado
-                </a>
-
-                <FormModal
-                  isOpen={isModalPlanoOpen}
-                  onClose={handleClosePlanoModal}
-                  onSubmit={handleSubmitPlanoModal}
-                  title='Cadastrar novo plano de saúde'
-                >
-                  <div className='flex flex-col gap-4'>
-                    <SelectInput
-                      label='Tipo:'
-                      name='tipo'
-                      value={modalPlanoData.tipo}
-                      options={getHealthPlanTypeOptions()}
-                      onChange={(key, value) =>
-                        setModalPlanoData((prev) => ({
-                          ...prev,
-                          [key as string]: value,
-                        }))
-                      }
-                      required
-                    />
-                    <TextInput
-                      label='Nome do plano:'
-                      name='nomePlano'
-                      value={modalPlanoData.nomePlano}
-                      onChange={(key, value) =>
-                        setModalPlanoData((prev) => ({
-                          ...prev,
-                          [key as string]: value,
-                        }))
-                      }
-                      required
-                    />
-                    <TextInput
-                      label='Abreviação:'
-                      name='abreviacao'
-                      value={modalPlanoData.abreviacao}
-                      onChange={(key, value) =>
-                        setModalPlanoData((prev) => ({
-                          ...prev,
-                          [key as string]: value,
-                        }))
-                      }
-                      required
-                    />
-                  </div>
-                </FormModal>
-              </div>
-              <hr className='w-full border-t border-textPrimary mt-4 mb-8' />
-            </div>
+            <HealthPlanTab
+              formData={formData.planoSaude}
+              healthPlans={healthPlans}
+              onUpdate={(field, value) =>
+                updateSection('planoSaude', field, value)
+              }
+              onHealthPlansReload={setHealthPlans}
+              onSelectPlan={(planId) =>
+                updateSection('residente', 'planoSaude', planId)
+              }
+            />
           )}
 
           {step === 3 && (
-            <div className='flex flex-col'>
-              {/* Linha 1: Nome e Parentesco */}
-              <div className='grid grid-cols-2 gap-4 mb-4'>
-                <TextInput
-                  label='Nome'
-                  name='nomeFamiliar'
-                  value={formData.familiar.nomeFamiliar}
-                  onChange={(key, v) => updateSection('familiar', key, v)}
-                  required
-                />
-                <SelectInput
-                  label='Parentesco'
-                  name='parentesco'
-                  value={formData.familiar.parentesco}
-                  options={relationshipOptions}
-                  onChange={(key, v) => updateSection('familiar', key, v)}
-                />
-              </div>
-
-              {/* Linha 2: RG, Órgão Emissor, Estado Emissor */}
-              <div className='grid grid-cols-4 gap-4 mb-4'>
-                <div className='col-span-2'>
-                  <TextInput
-                    label='RG'
-                    name='rg'
-                    value={formData.familiar.rg}
-                    onChange={(key, v) => updateSection('familiar', key, v)}
-                  />
-                </div>
-                <TextInput
-                  label='Órgão Emissor'
-                  name='orgaoEmissor'
-                  value={formData.familiar.orgaoEmissor}
-                  onChange={(key, v) => updateSection('familiar', key, v)}
-                />
-                <TextInput
-                  label='Estado Emissor'
-                  name='estadoEmissor'
-                  value={formData.familiar.estadoEmissor}
-                  onChange={(key, v) => updateSection('familiar', key, v)}
-                />
-              </div>
-
-              {/* Linha 3: CPF e E-mail */}
-              <div className='grid grid-cols-2 gap-4 mb-4'>
-                <TextInput
-                  label='CPF'
-                  name='cpf'
-                  value={formData.familiar.cpf}
-                  onChange={(key, v) => updateSection('familiar', key, v)}
-                />
-                <TextInput
-                  label='E-mail'
-                  name='email'
-                  type='email'
-                  value={formData.familiar.email}
-                  onChange={(key, v) => updateSection('familiar', key, v)}
-                />
-              </div>
-
-              {/* Linha 4: Telefones */}
-              <div className='grid grid-cols-2 gap-4 mb-4'>
-                <TextInput
-                  label='Número de celular'
-                  name='celular'
-                  type='text'
-                  value={formData.familiar.celular}
-                  onChange={(key, v) => updateSection('familiar', key, v)}
-                />
-                <TextInput
-                  label='Número de telefone residencial'
-                  name='telefoneResidencial'
-                  type='text'
-                  value={formData.familiar.telefoneResidencial}
-                  onChange={(key, v) => updateSection('familiar', key, v)}
-                />
-              </div>
-
-              <hr className='w-full border-t border-textPrimary mt-4 mb-8' />
-
-              {/* Linha 5: Endereço */}
-              <div className='grid grid-cols-4 gap-4 mb-4'>
-                <div className='col-span-2'>
-                  <TextInput
-                    label='Rua'
-                    name='rua'
-                    value={formData.familiar.rua}
-                    onChange={(key, v) => updateSection('familiar', key, v)}
-                  />
-                </div>
-                <TextInput
-                  label='Número'
-                  name='numero'
-                  value={formData.familiar.numero}
-                  onChange={(key, v) => updateSection('familiar', key, v)}
-                />
-                <TextInput
-                  label='CEP'
-                  name='cep'
-                  value={formData.familiar.cep}
-                  onChange={(key, v) => updateSection('familiar', key, v)}
-                />
-              </div>
-
-              <div className='grid grid-cols-2 gap-4 mb-4'>
-                <TextInput
-                  label='Bairro'
-                  name='bairro'
-                  value={formData.familiar.bairro}
-                  onChange={(key, v) => updateSection('familiar', key, v)}
-                />
-                <TextInput
-                  label='Complemento (opcional)'
-                  name='complemento'
-                  value={formData.familiar.complemento}
-                  onChange={(key, v) => updateSection('familiar', key, v)}
-                />
-              </div>
-
-              <div className='grid grid-cols-4 gap-4 mb-4'>
-                <div className='col-span-2'>
-                  <TextInput
-                    label='Cidade'
-                    name='cidade'
-                    value={formData.familiar.cidade}
-                    onChange={(key, v) => updateSection('familiar', key, v)}
-                  />
-                </div>
-                <TextInput
-                  label='Estado'
-                  name='estado'
-                  value={formData.familiar.estado}
-                  onChange={(key, v) => updateSection('familiar', key, v)}
-                />
-              </div>
-
-              {/* Botão de adicionar/atualizar familiar */}
-              <div className='flex justify-end mt-6 gap-4'>
-                {editingRelativeId ? (
-                  <>
-                    <Button
-                      label='Cancelar'
-                      onClick={handleCancelEditRelative}
-                      color='textSecondary'
-                      className='whitespace-nowrap'
-                      disabled={loading}
-                    />
-                    <Button
-                      label='Atualizar familiar'
-                      onClick={handleAddRelative}
-                      color='success'
-                      size='medium'
-                      className='font-medium whitespace-nowrap'
-                      disabled={loading}
-                    />
-                  </>
-                ) : (
-                  <Button
-                    label='+ Adicionar familiar do residente'
-                    onClick={handleAddRelative}
-                    color='success'
-                    size='medium'
-                    className='font-medium'
-                    disabled={loading}
-                  />
-                )}
-              </div>
-
-              {/* Seção: Lista de familiares */}
-              <div className='relative -left-8 -right-8 w-[calc(100%+64px)] bg-background mt-12 shadow-sm'>
-                <hr className='w-full border-t border-textPrimary' />
-                <div className='w-full p-8'>
-                  <h2 className='text-textPrimary text-xl font-semibold mb-6'>
-                    Familiares do Residente
-                  </h2>
-                  <div className='mb-4'>
-                    <SearchBar placeholder='Buscar familiar...' />
-                  </div>
-                  {residentRelatives.length === 0 ? (
-                    <p className='text-textSecondary text-center py-8'>
-                      Nenhum familiar cadastrado para este residente.
-                    </p>
-                  ) : (
-                    <Table
-                      columns={relativeColumns}
-                      data={residentRelatives}
-                      rowsPerPage={5}
-                      actions={(id) => {
-                        if (!currentResidentId) return <></>;
-                        return (
-                          <>
-                            <button
-                              onClick={() => handleEditRelativeClick(id)}
-                              className='text-edit hover:text-hoverEdit'
-                            >
-                              <Pencil className='size-6' weight='fill' />
-                            </button>
-                            <button
-                              onClick={() => handleRemoveRelativeClick(id)}
-                              className='text-danger hover:text-hoverDanger'
-                            >
-                              <Trash className='size-6' weight='fill' />
-                            </button>
-                          </>
-                        );
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
+            <RelativesTab
+              formData={formData.familiar}
+              residentRelatives={residentRelatives}
+              pendingRelatives={pendingRelatives}
+              currentResidentId={currentResidentId}
+              onUpdate={(field, value) =>
+                updateSection('familiar', field, value)
+              }
+              onRelativesReload={setResidentRelatives}
+              onPendingRelativesUpdate={setPendingRelatives}
+              onShowAlert={showAlert}
+              onClearForm={() =>
+                setFormData((prev) => ({
+                  ...prev,
+                  familiar: {
+                    nomeFamiliar: '',
+                    parentesco: '',
+                    rg: '',
+                    orgaoEmissor: '',
+                    estadoEmissor: '',
+                    cpf: '',
+                    email: '',
+                    celular: '',
+                    telefoneResidencial: '',
+                    rua: '',
+                    numero: '',
+                    complemento: '',
+                    bairro: '',
+                    cidade: '',
+                    estado: '',
+                    cep: '',
+                  },
+                }))
+              }
+            />
           )}
 
-          {/* Botões de navegação */}
           <div className='flex flex-col items-end mt-8 gap-2'>
             <div className='flex gap-4'>
               {step > 0 && (
@@ -2817,38 +1233,10 @@ export default function ResidentForm() {
         </form>
       </div>
 
-      {/* Modal de confirmação de exclusão de alergia */}
-      <ConfirmModal
-        isOpen={isDeleteAllergyConfirmOpen}
-        onClose={() => {
-          setIsDeleteAllergyConfirmOpen(false);
-          setDeleteAllergyId(null);
-          setDeleteAllergyResidentId(null);
-        }}
-        onConfirm={handleConfirmRemoveAllergy}
-        title='Deseja realmente remover essa alergia?'
-        message='Ao remover esta alergia, ela será removida permanentemente da lista.'
-      />
-
-      {/* Modal de confirmação de exclusão de familiar */}
-      <ConfirmModal
-        isOpen={isDeleteRelativeConfirmOpen}
-        onClose={() => {
-          setIsDeleteRelativeConfirmOpen(false);
-          setDeleteRelativeId(null);
-          setDeleteRelativeResidentId(null);
-        }}
-        onConfirm={handleConfirmRemoveRelative}
-        title='Deseja realmente remover esse familiar?'
-        message='Ao remover este familiar, ele será removido permanentemente da lista.'
-      />
-
-      {/* Modal de alerta (sucesso/erro) */}
       <AlertModal
         isOpen={isAlertModalOpen}
         onClose={() => {
           setIsAlertModalOpen(false);
-          // Se for sucesso ao salvar residente, navegar após fechar
           if (
             alertMessage.includes('Residente') &&
             (alertMessage.includes('alterado') ||
