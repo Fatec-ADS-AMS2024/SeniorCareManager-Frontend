@@ -8,4 +8,3 @@ const AllergyService = {
 };
 
 export default AllergyService;
-

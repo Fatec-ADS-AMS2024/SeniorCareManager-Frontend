@@ -1,4 +1,11 @@
-import { Cross, FirstAid, Briefcase, Users } from '@phosphor-icons/react';
+import {
+  Cross,
+  FirstAid,
+  Briefcase,
+  Users,
+  ShieldCheck,
+  IdentificationBadge,
+} from '@phosphor-icons/react';
 import Card from '@/components/Card';
 import SearchBar from '@/components/SearchBar';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
@@ -32,6 +39,26 @@ export default function Registrations() {
       icon: <Users weight='bold' className='shrink-0 size-full' />,
       page: routes.RESIDENT.path,
     },
+    {
+      text: 'Responsável Técnico',
+      subText: 'Responsáveis Técnicos Cadastrados',
+      icon: <ShieldCheck weight='bold' className='shrink-0 size-full' />,
+      page: routes.TECHNICAL_RESPONSIBILITY.path,
+    },
+    {
+      text: 'Alergia',
+      subText: 'Alergias Cadastradas',
+      icon: <FirstAid weight='bold' className='shrink-0 size-full' />,
+      page: routes.ALLERGY.path,
+    },
+    {
+      text: 'Funcionário',
+      subText: 'Funcionários Cadastrados',
+      icon: (
+        <IdentificationBadge weight='bold' className='shrink-0 size-full' />
+      ),
+      page: routes.EMPLOYEE.path,
+    },
   ];
 
   return (
@@ -44,7 +71,7 @@ export default function Registrations() {
           <SearchBar placeholder='Digite aqui...' action={console.log} />
         </div>
 
-        <div className='flex flex-wrap gap-8 justify-center'>
+        <div className='flex flex-wrap gap-8 justify-between'>
           {/* Card Grid */}
           {cards.map(({ text, icon, page, subText }) => (
             <Card
