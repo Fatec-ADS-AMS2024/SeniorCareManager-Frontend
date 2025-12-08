@@ -62,25 +62,23 @@ export default function RelativesTab(props: RelativesTabProps) {
     return cepClean.length === 8;
   };
 
-  const handleEditClick = (relativeId: number) => {
-    const allRelatives = getAllRelativesForDisplay();
-    const index = allRelatives.findIndex((r) => r.id === relativeId);
-    if (index !== -1) {
-      const relative = allRelatives[index];
+  const handleEditClick = (index: number) => {
+    const relative = props.pendingRelatives[index];
+    if (relative) {
       setEditingRelativeIndex(index);
       props.onUpdate('nomeFamiliar', relative.name || '');
-      props.onUpdate('parentesco', relative.relationship || '');
-      props.onUpdate('rg', '');
+      props.onUpdate('parentesco', String(relative.relationship) || '');
+      props.onUpdate('rg', relative.rg || '');
       props.onUpdate('orgaoEmissor', relative.issuingBody || '');
-      props.onUpdate('estadoEmissor', relative.state || '');
-      props.onUpdate('cpf', relative.citizenship || '');
+      props.onUpdate('estadoEmissor', relative.issuingState || '');
+      props.onUpdate('cpf', relative.cpf || '');
       props.onUpdate('email', relative.email || '');
       props.onUpdate('celular', relative.mobileNumber || '');
       props.onUpdate('telefoneResidencial', relative.homePhoneNumber || '');
       props.onUpdate('rua', relative.street || '');
       props.onUpdate('numero', relative.number || '');
       props.onUpdate('complemento', relative.addressComplement || '');
-      props.onUpdate('bairro', '');
+      props.onUpdate('bairro', relative.district || '');
       props.onUpdate('cidade', relative.city || '');
       props.onUpdate('estado', relative.state || '');
       props.onUpdate('cep', relative.postalCode || '');
@@ -193,20 +191,28 @@ export default function RelativesTab(props: RelativesTabProps) {
     }
 
     const relativeDTO: ResidentRelative = {
+      id:
+        editingRelativeIndex !== null
+          ? props.pendingRelatives[editingRelativeIndex]?.id
+          : 0,
       residentId: props.currentResidentId || 0,
       name: f.nomeFamiliar.trim(),
-      relationship: f.parentesco.trim(),
-      citizenship: f.cpf?.trim() || undefined,
-      mobileNumber: f.celular?.trim() || undefined,
-      homePhoneNumber: f.telefoneResidencial?.trim() || undefined,
-      email: f.email?.trim() || undefined,
-      street: f.rua?.trim() || undefined,
-      number: f.numero?.trim() || undefined,
-      addressComplement: f.complemento?.trim() || undefined,
-      city: f.cidade?.trim() || undefined,
-      state: f.estado?.trim() || undefined,
-      postalCode: f.cep?.trim() || undefined,
-      issuingBody: f.orgaoEmissor?.trim() || undefined,
+      relationship: Number(f.parentesco.trim()),
+      cpf: f.cpf?.trim() || '',
+      rg: f.rg?.trim() || '',
+      issuingBody: f.orgaoEmissor?.trim(),
+      issuingState: f.estadoEmissor?.trim() || '',
+      citizenship: f.cpf?.trim(),
+      mobileNumber: f.celular?.trim() || '',
+      homePhoneNumber: f.telefoneResidencial?.trim(),
+      email: f.email?.trim(),
+      street: f.rua?.trim() || '',
+      number: f.numero?.trim() || '',
+      district: f.bairro?.trim() || '',
+      addressComplement: f.complemento?.trim(),
+      city: f.cidade?.trim() || '',
+      state: f.estado?.trim() || '',
+      postalCode: f.cep?.trim() || '',
     };
 
     if (editingRelativeIndex !== null) {
@@ -224,16 +230,12 @@ export default function RelativesTab(props: RelativesTabProps) {
     handleCancelEdit();
   };
 
-  const handleRemoveClick = (relativeId: number) => {
-    const allRelatives = getAllRelativesForDisplay();
-    const index = allRelatives.findIndex((r) => r.id === relativeId);
-    if (index !== -1) {
-      props.onPendingRelativesUpdate(
-        props.pendingRelatives.filter((_, idx) => idx !== index)
-      );
-      if (editingRelativeIndex === index) handleCancelEdit();
-      props.onShowAlert('Familiar removido da lista!', 'success');
-    }
+  const handleRemoveClick = (index: number) => {
+    props.onPendingRelativesUpdate(
+      props.pendingRelatives.filter((_, idx) => idx !== index)
+    );
+    if (editingRelativeIndex === index) handleCancelEdit();
+    props.onShowAlert('Familiar removido da lista!', 'success');
   };
 
   const relationshipOptions = getRelationshipOptions().map((option) => ({
@@ -243,11 +245,22 @@ export default function RelativesTab(props: RelativesTabProps) {
 
   const relativeColumns: TableColumn<ResidentRelative>[] = [
     { label: 'Nome', attribute: 'name' },
-    { label: 'Parentesco', attribute: 'relationship' },
-    { label: 'CPF', attribute: 'citizenship' },
+    {
+      label: 'Parentesco',
+      attribute: 'relationship',
+      render: (value) => {
+        const option = getRelationshipOptions().find(
+          (opt) => opt.value === value
+        );
+        return option?.label || value || '';
+      },
+    },
+    { label: 'CPF', attribute: 'cpf' },
     { label: 'E-mail', attribute: 'email' },
     { label: 'Telefone', attribute: 'mobileNumber' },
   ];
+
+  const allRelatives = getAllRelativesForDisplay();
 
   return (
     <div className='flex flex-col'>
@@ -429,31 +442,35 @@ export default function RelativesTab(props: RelativesTabProps) {
           <div className='mb-4'>
             <SearchBar placeholder='Buscar familiar...' />
           </div>
-          {getAllRelativesForDisplay().length === 0 ? (
+          {allRelatives.length === 0 ? (
             <p className='text-textSecondary text-center py-8'>
               Nenhum familiar cadastrado para este residente.
             </p>
           ) : (
             <Table
               columns={relativeColumns}
-              data={getAllRelativesForDisplay()}
+              data={allRelatives}
               rowsPerPage={5}
-              actions={(id) => (
-                <>
-                  <button
-                    onClick={() => handleEditClick(id)}
-                    className='text-edit hover:text-hoverEdit'
-                  >
-                    <Pencil className='size-6' weight='fill' />
-                  </button>
-                  <button
-                    onClick={() => handleRemoveClick(id)}
-                    className='text-danger hover:text-hoverDanger'
-                  >
-                    <Trash className='size-6' weight='fill' />
-                  </button>
-                </>
-              )}
+              actions={(id) => {
+                const index = allRelatives.findIndex((r) => r.id === id);
+                if (index === -1) return <></>;
+                return (
+                  <>
+                    <button
+                      onClick={() => handleEditClick(index)}
+                      className='text-edit hover:text-hoverEdit'
+                    >
+                      <Pencil className='size-6' weight='fill' />
+                    </button>
+                    <button
+                      onClick={() => handleRemoveClick(index)}
+                      className='text-danger hover:text-hoverDanger'
+                    >
+                      <Trash className='size-6' weight='fill' />
+                    </button>
+                  </>
+                );
+              }}
             />
           )}
         </div>

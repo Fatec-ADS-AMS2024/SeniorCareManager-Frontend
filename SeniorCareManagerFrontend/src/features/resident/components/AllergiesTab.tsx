@@ -11,22 +11,33 @@ import Allergy from '@/types/models/Allergy';
 import { getAllergyTypeOptions } from '@/types/enums/AllergyType';
 import { Pencil, Trash } from '@phosphor-icons/react';
 import AllergyService from '@/features/allergy/services/allergyService';
+import { DateTimeInput } from '@/components/FormControls';
 
 interface AllergyFormData {
   tipo: string;
   nome: string;
+  descricao: string;
+  dataDeteccao: string;
+  dataLiberacao: string;
+}
+
+interface PendingAllergy {
+  allergyId: number;
+  description?: string;
+  detectionDate?: string;
+  releasedDate?: string;
 }
 
 interface AllergiesTabProps {
   formData: AllergyFormData;
   allergies: Allergy[];
   residentAllergies: ResidentAllergy[];
-  pendingAllergies: number[];
+  pendingAllergies: PendingAllergy[];
   currentResidentId: number | null;
   onUpdate: (field: string, value: string) => void;
   onAllergiesReload: (allergies: Allergy[]) => void;
   onResidentAllergiesReload: (residentAllergies: ResidentAllergy[]) => void;
-  onPendingAllergiesUpdate: (allergies: number[]) => void;
+  onPendingAllergiesUpdate: (allergies: PendingAllergy[]) => void;
   onShowAlert: (message: string, type: 'info' | 'success' | 'error') => void;
 }
 
@@ -35,19 +46,19 @@ export default function AllergiesTab(props: AllergiesTabProps) {
   const [loading, setLoading] = useState(false);
   const [modalData, setModalData] = useState({ tipo: '', nomeAlergia: '' });
   const [editingAllergyId, setEditingAllergyId] = useState<number | null>(null);
-  const [editingResidentAllergyId, setEditingResidentAllergyId] = useState<
-    number | null
-  >(null);
 
   const filteredAllergies = props.formData.tipo
     ? props.allergies.filter((a) => a.type.toString() === props.formData.tipo)
     : props.allergies;
 
   const getAllAllergiesForDisplay = (): ResidentAllergy[] => {
-    return props.pendingAllergies.map((allergyId, index) => ({
+    return props.pendingAllergies.map((pending, index) => ({
       id: -index - 1,
       residentId: props.currentResidentId || 0,
-      allergyId: allergyId,
+      allergyId: pending.allergyId,
+      description: pending.description,
+      detectionDate: pending.detectionDate,
+      releasedDate: pending.releasedDate,
     }));
   };
 
@@ -79,7 +90,7 @@ export default function AllergiesTab(props: AllergiesTabProps) {
         id: 0,
         name: modalData.nomeAlergia.trim(),
         type: typeValue,
-      } as any);
+      });
 
       if (result.success) {
         const allergiesRes = await AllergyService.getAll();
@@ -91,8 +102,9 @@ export default function AllergiesTab(props: AllergiesTabProps) {
       } else {
         alert(`❌ Erro: ${result.message}`);
       }
-    } catch (error) {
+    } catch (err) {
       alert('❌ Erro ao cadastrar alergia.');
+      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -110,23 +122,39 @@ export default function AllergiesTab(props: AllergiesTabProps) {
 
     const allergyId = parseInt(props.formData.nome);
 
-    if (!props.pendingAllergies.includes(allergyId)) {
-      props.onPendingAllergiesUpdate([...props.pendingAllergies, allergyId]);
+    if (!props.pendingAllergies.find((p) => p.allergyId === allergyId)) {
+      props.onPendingAllergiesUpdate([
+        ...props.pendingAllergies,
+        {
+          allergyId,
+          description: props.formData.descricao || undefined,
+          detectionDate: props.formData.dataDeteccao || undefined,
+          releasedDate: props.formData.dataLiberacao || undefined,
+        },
+      ]);
       props.onUpdate('tipo', '');
       props.onUpdate('nome', '');
+      props.onUpdate('descricao', '');
+      props.onUpdate('dataDeteccao', '');
+      props.onUpdate('dataLiberacao', '');
       props.onShowAlert('Alergia adicionada à lista!', 'success');
     } else {
       props.onShowAlert('Esta alergia já foi adicionada.', 'info');
     }
   };
 
-  const handleEditClick = (allergyId: number, residentAllergyId?: number) => {
+  const handleEditClick = (allergyId: number) => {
     const allergy = props.allergies.find((a) => a.id === allergyId);
+    const pending = props.pendingAllergies.find(
+      (p) => p.allergyId === allergyId
+    );
     if (allergy) {
       setEditingAllergyId(allergyId);
-      setEditingResidentAllergyId(residentAllergyId || null);
       props.onUpdate('tipo', allergy.type.toString());
       props.onUpdate('nome', allergy.id.toString());
+      props.onUpdate('descricao', pending?.description || '');
+      props.onUpdate('dataDeteccao', pending?.detectionDate || '');
+      props.onUpdate('dataLiberacao', pending?.releasedDate || '');
     } else {
       props.onShowAlert(
         'Alergia não encontrada na lista de alergias disponíveis. Recarregue a página.',
@@ -137,9 +165,11 @@ export default function AllergiesTab(props: AllergiesTabProps) {
 
   const handleCancelEdit = () => {
     setEditingAllergyId(null);
-    setEditingResidentAllergyId(null);
     props.onUpdate('tipo', '');
     props.onUpdate('nome', '');
+    props.onUpdate('descricao', '');
+    props.onUpdate('dataDeteccao', '');
+    props.onUpdate('dataLiberacao', '');
   };
 
   const handleUpdateAllergy = () => {
@@ -154,15 +184,22 @@ export default function AllergiesTab(props: AllergiesTabProps) {
 
     if (
       newAllergyId !== editingAllergyId &&
-      props.pendingAllergies.includes(newAllergyId)
+      props.pendingAllergies.find((p) => p.allergyId === newAllergyId)
     ) {
       props.onShowAlert('Esta alergia já está na lista.', 'info');
       return;
     }
 
     props.onPendingAllergiesUpdate(
-      props.pendingAllergies.map((aid) =>
-        aid === editingAllergyId ? newAllergyId : aid
+      props.pendingAllergies.map((p) =>
+        p.allergyId === editingAllergyId
+          ? {
+              allergyId: newAllergyId,
+              description: props.formData.descricao || undefined,
+              detectionDate: props.formData.dataDeteccao || undefined,
+              releasedDate: props.formData.dataLiberacao || undefined,
+            }
+          : p
       )
     );
     handleCancelEdit();
@@ -171,7 +208,7 @@ export default function AllergiesTab(props: AllergiesTabProps) {
 
   const handleRemoveClick = (allergyId: number) => {
     props.onPendingAllergiesUpdate(
-      props.pendingAllergies.filter((aid) => aid !== allergyId)
+      props.pendingAllergies.filter((p) => p.allergyId !== allergyId)
     );
     if (editingAllergyId === allergyId) handleCancelEdit();
     props.onShowAlert('Alergia removida da lista!', 'success');
@@ -197,13 +234,29 @@ export default function AllergiesTab(props: AllergiesTabProps) {
         );
       },
     },
+    {
+      label: 'Descrição',
+      attribute: 'description',
+    },
+    {
+      label: 'Data de Detecção',
+      attribute: 'detectionDate',
+      render: (value) =>
+        value ? new Date(value).toLocaleDateString('pt-BR') : '',
+    },
+    {
+      label: 'Data de Liberação',
+      attribute: 'releasedDate',
+      render: (value) =>
+        value ? new Date(value).toLocaleDateString('pt-BR') : '',
+    },
   ];
 
   const allAllergies = getAllAllergiesForDisplay();
 
   return (
     <div>
-      <div className='grid grid-cols-2 gap-4 mb-6'>
+      <div className='grid grid-cols-2 gap-4 mb-4'>
         <SelectInput
           label='Tipo:'
           name='tipo'
@@ -219,6 +272,28 @@ export default function AllergiesTab(props: AllergiesTabProps) {
             label: a.name,
             value: a.id.toString(),
           }))}
+          onChange={(key, v) => props.onUpdate(key, v)}
+        />
+      </div>
+      <div className='mb-4'>
+        <TextInput
+          label='Descrição:'
+          name='descricao'
+          value={props.formData.descricao}
+          onChange={(key, v) => props.onUpdate(key, v)}
+        />
+      </div>
+      <div className='grid grid-cols-2 gap-4 mb-6'>
+        <DateTimeInput
+          label='Data de Detecção:'
+          name='dataDeteccao'
+          value={props.formData.dataDeteccao}
+          onChange={(key, v) => props.onUpdate(key, v)}
+        />
+        <DateTimeInput
+          label='Data de Liberação:'
+          name='dataLiberacao'
+          value={props.formData.dataLiberacao}
           onChange={(key, v) => props.onUpdate(key, v)}
         />
       </div>
@@ -321,9 +396,7 @@ export default function AllergiesTab(props: AllergiesTabProps) {
                 return (
                   <>
                     <button
-                      onClick={() =>
-                        handleEditClick(allergy.allergyId, undefined)
-                      }
+                      onClick={() => handleEditClick(allergy.allergyId)}
                       className='text-edit hover:text-hoverEdit'
                     >
                       <Pencil className='size-6' weight='fill' />

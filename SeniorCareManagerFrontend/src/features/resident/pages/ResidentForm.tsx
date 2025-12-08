@@ -16,9 +16,18 @@ import HealthInsurancePlanService from '@/features/healthInsurancePlan/services/
 import { CheckCircle, Circle } from '@phosphor-icons/react';
 import ResidentAllergyService from '../services/residentAllergyService';
 import Resident from '@/types/models/Resident';
+import HealthInsurancePlan from '@/types/models/HealthInsurancePlan';
+import Religion from '@/types/models/Religion';
 
 interface FormErrors {
   [key: string]: string;
+}
+
+interface PendingAllergy {
+  allergyId: number;
+  description?: string;
+  detectionDate?: string;
+  releasedDate?: string;
 }
 
 export default function ResidentForm() {
@@ -36,9 +45,11 @@ export default function ResidentForm() {
   const [residentAllergies, setResidentAllergies] = useState<ResidentAllergy[]>(
     []
   );
-  const [pendingAllergies, setPendingAllergies] = useState<number[]>([]);
-  const [healthPlans, setHealthPlans] = useState<any[]>([]);
-  const [religions, setReligions] = useState<any[]>([]);
+  const [pendingAllergies, setPendingAllergies] = useState<PendingAllergy[]>(
+    []
+  );
+  const [healthPlans, setHealthPlans] = useState<HealthInsurancePlan[]>([]);
+  const [religions, setReligions] = useState<Religion[]>([]);
   const [residentRelatives, setResidentRelatives] = useState<
     ResidentRelative[]
   >([]);
@@ -87,6 +98,9 @@ export default function ResidentForm() {
     alergia: {
       tipo: '',
       nome: '',
+      descricao: '',
+      dataDeteccao: '',
+      dataLiberacao: '',
     },
     planoSaude: {
       plano: '',
@@ -115,136 +129,133 @@ export default function ResidentForm() {
   useEffect(() => {
     const loadInitialData = async () => {
       setLoading(true);
-      try {
-        try {
-          const allergiesRes = await AllergyService.getAll();
-          if (allergiesRes.success && allergiesRes.data) {
-            setAllergies(allergiesRes.data);
-          }
-        } catch (error) {
-          // Silenciosamente ignora erros do endpoint de alergias (pode não existir)
-          // Não faz nada, apenas não carrega alergias
-        }
+      const allergiesRes = await AllergyService.getAll();
+      if (allergiesRes.success && allergiesRes.data) {
+        setAllergies(allergiesRes.data);
+      }
 
-        const plansRes = await HealthInsurancePlanService.getAll();
-        if (plansRes.success && plansRes.data) {
-          setHealthPlans(plansRes.data);
-        }
+      const plansRes = await HealthInsurancePlanService.getAll();
+      if (plansRes.success && plansRes.data) {
+        setHealthPlans(plansRes.data);
+      }
 
-        try {
-          const { default: ReligionService } = await import(
-            '@/features/religion/services/religionService'
-          );
-          const religionsRes = await ReligionService.getAll();
-          if (religionsRes.success && religionsRes.data) {
-            setReligions(religionsRes.data);
-          }
-        } catch (error) {
-          // Serviço de religiões não disponível
-        }
+      const { default: ReligionService } = await import(
+        '@/features/religion/services/religionService'
+      );
+      const religionsRes = await ReligionService.getAll();
+      if (religionsRes.success && religionsRes.data) {
+        setReligions(religionsRes.data);
+      }
 
-        // Se estiver editando, carregar dados do residente
-        if (currentResidentId) {
-          const residentRes = await ResidentService.getById(currentResidentId);
-          if (residentRes.success && residentRes.data) {
-            const resident = residentRes.data;
-            setFormData({
-              residente: {
-                nome: resident.registeredName || '',
-                nomeSocial: resident.socialName || '',
-                cpf: resident.cpf || '',
-                pisPasep: resident.pisPasep || '',
-                rg: resident.rg || '',
-                orgaoEmissor: resident.issuingBody || '',
-                estadoEmissor: resident.issuingState || '',
-                dataNascimento: resident.dateOfBirth
-                  ? new Date(resident.dateOfBirth).toISOString().split('T')[0]
+      // Se estiver editando, carregar dados do residente
+      if (currentResidentId) {
+        const residentRes = await ResidentService.getById(currentResidentId);
+        if (residentRes.success && residentRes.data) {
+          const resident = residentRes.data;
+          setFormData({
+            residente: {
+              nome: resident.registeredName || '',
+              nomeSocial: resident.socialName || '',
+              cpf: resident.cpf || '',
+              pisPasep: resident.pisPasep || '',
+              rg: resident.rg || '',
+              orgaoEmissor: resident.issuingBody || '',
+              estadoEmissor: resident.issuingState || '',
+              dataNascimento: resident.dateOfBirth
+                ? new Date(resident.dateOfBirth).toISOString().split('T')[0]
+                : '',
+              idade: resident.age || '',
+              sexo: resident.sex?.toString() || '',
+              etnia: resident.ethnicity?.toString() || '',
+              altura:
+                resident.height != null && !isNaN(Number(resident.height))
+                  ? resident.height.toString()
                   : '',
-                idade: resident.age || '',
-                sexo: resident.sex?.toString() || '',
-                etnia: resident.ethnicity?.toString() || '',
-                altura:
-                  resident.height != null && !isNaN(Number(resident.height))
-                    ? resident.height.toString()
-                    : '',
-                peso:
-                  resident.weight != null && !isNaN(Number(resident.weight))
-                    ? resident.weight.toString()
-                    : '',
-                religiao: resident.religionId?.toString() || '',
-                nomePai: resident.fatherName || '',
-                nomeMae: resident.motherName || '',
-                estadoCivil: resident.maritalStatus?.toString() || '',
-                nomeConjuge: resident.spouseName || '',
-                cns: resident.nationalHealthCardNumber || '',
-                cartaoPrivado: resident.privateHealthCardNumber || '',
-                celular: resident.mobileNumber || '',
-                telefone: resident.homePhoneNumber || '',
-                planoSaude: resident.healthInsurancePlanId?.toString() || '',
-              },
-              alergia: { tipo: '', nome: '' },
-              planoSaude: {
-                plano: resident.healthInsurancePlanId?.toString() || '',
-                numeroCarteirinha: resident.privateHealthCardNumber || '',
-              },
-              familiar: {
-                nomeFamiliar: '',
-                parentesco: '',
-                rg: '',
-                orgaoEmissor: '',
-                estadoEmissor: '',
-                cpf: '',
-                email: '',
-                celular: '',
-                telefoneResidencial: '',
-                rua: '',
-                numero: '',
-                complemento: '',
-                bairro: '',
-                cidade: '',
-                estado: '',
-                cep: '',
-              },
-            });
+              peso:
+                resident.weight != null && !isNaN(Number(resident.weight))
+                  ? resident.weight.toString()
+                  : '',
+              religiao: resident.religionId?.toString() || '',
+              nomePai: resident.fatherName || '',
+              nomeMae: resident.motherName || '',
+              estadoCivil: resident.maritalStatus?.toString() || '',
+              nomeConjuge: resident.spouseName || '',
+              cns: resident.nationalHealthCardNumber || '',
+              cartaoPrivado: resident.privateHealthCardNumber || '',
+              celular: resident.mobileNumber || '',
+              telefone: resident.homePhoneNumber || '',
+              planoSaude: resident.healthInsurancePlanId?.toString() || '',
+            },
+            alergia: {
+              tipo: '',
+              nome: '',
+              descricao: '',
+              dataDeteccao: '',
+              dataLiberacao: '',
+            },
+            planoSaude: {
+              plano: resident.healthInsurancePlanId?.toString() || '',
+              numeroCarteirinha: resident.privateHealthCardNumber || '',
+            },
+            familiar: {
+              nomeFamiliar: '',
+              parentesco: '',
+              rg: '',
+              orgaoEmissor: '',
+              estadoEmissor: '',
+              cpf: '',
+              email: '',
+              celular: '',
+              telefoneResidencial: '',
+              rua: '',
+              numero: '',
+              complemento: '',
+              bairro: '',
+              cidade: '',
+              estado: '',
+              cep: '',
+            },
+          });
 
-            if (currentResidentId) {
-              try {
-                const allergiesRes = await ResidentService.getAllergies(
-                  currentResidentId
-                );
-                if (allergiesRes.success && allergiesRes.data) {
-                  setResidentAllergies(allergiesRes.data);
-                  setPendingAllergies(
-                    allergiesRes.data.map((ra) => ra.allergyId)
-                  );
-                }
-              } catch (error) {
-                // Ignora erros 404
-              }
+          if (currentResidentId) {
+            const allergiesRes = await ResidentService.getAllergies(
+              currentResidentId
+            );
+            if (allergiesRes.success && allergiesRes.data) {
+              setResidentAllergies(allergiesRes.data);
+              setPendingAllergies(
+                allergiesRes.data.map((ra) => ({
+                  allergyId: ra.allergyId,
+                  description: ra.description,
+                  detectionDate: ra.detectionDate
+                    ? typeof ra.detectionDate === 'string'
+                      ? ra.detectionDate.split('T')[0]
+                      : ra.detectionDate.toISOString().split('T')[0]
+                    : undefined,
+                  releasedDate: ra.releasedDate
+                    ? typeof ra.releasedDate === 'string'
+                      ? ra.releasedDate.split('T')[0]
+                      : ra.releasedDate.toISOString().split('T')[0]
+                    : undefined,
+                }))
+              );
+            }
 
-              try {
-                const relativesRes = await ResidentService.getRelatives(
-                  currentResidentId
-                );
-                if (relativesRes.success && relativesRes.data) {
-                  setResidentRelatives(relativesRes.data);
-                  setPendingRelatives(relativesRes.data);
-                }
-              } catch (error) {
-                // Ignora erros 404
-              }
+            const relativesRes = await ResidentService.getRelatives(
+              currentResidentId
+            );
+            if (relativesRes.success && relativesRes.data) {
+              setResidentRelatives(relativesRes.data);
+              setPendingRelatives(relativesRes.data);
             }
           }
-        } else {
-          setResidentAllergies([]);
-          setResidentRelatives([]);
-          setPendingRelatives([]);
         }
-      } catch (error) {
-        // Erro ao carregar dados
-      } finally {
-        setLoading(false);
+      } else {
+        setResidentAllergies([]);
+        setResidentRelatives([]);
+        setPendingRelatives([]);
       }
+      setLoading(false);
     };
 
     loadInitialData();
@@ -880,6 +891,7 @@ export default function ResidentForm() {
       }
 
       const resident: Resident = {
+        id: 0,
         registeredName: r.nome.trim(),
         socialName: r.nomeSocial?.trim() || '', // Obrigatório
         dateOfBirth:
@@ -906,11 +918,11 @@ export default function ResidentForm() {
         height:
           r.altura && r.altura.trim() !== '' && !isNaN(parseFloat(r.altura))
             ? parseFloat(r.altura)
-            : undefined,
+            : 0,
         weight:
           r.peso && r.peso.trim() !== '' && !isNaN(parseFloat(r.peso))
             ? parseFloat(r.peso)
-            : undefined,
+            : 0,
         religionId:
           r.religiao && !isNaN(parseInt(r.religiao))
             ? parseInt(r.religiao)
@@ -932,26 +944,86 @@ export default function ResidentForm() {
       if (result.success && result.data) {
         // Se foi criado um novo residente, atualizar o ID atual
         const newResidentId = result.data.id;
-        if (!isEditMode && newResidentId) {
+        if (newResidentId) {
           setCurrentResidentId(newResidentId);
 
-          // Salvar alergias pendentes
-          if (pendingAllergies.length > 0) {
-            try {
-              for (const allergyId of pendingAllergies) {
-                await ResidentAllergyService.create(newResidentId, allergyId);
+          // Salvar/atualizar alergias
+          if (isEditMode) {
+            // Modo edição: comparar alergias antigas com novas
+            const oldAllergyIds = residentAllergies.map((ra) => ra.allergyId);
+            const newAllergyIds = pendingAllergies.map((p) => p.allergyId);
+
+            // Remover alergias que não estão mais na lista
+            for (const oldId of oldAllergyIds) {
+              if (!newAllergyIds.includes(oldId)) {
+                const ra = residentAllergies.find((r) => r.allergyId === oldId);
+                if (ra?.id) await ResidentAllergyService.deleteById(ra.id);
               }
-              // Recarregar alergias após salvar todas
-              const allergiesRes = await ResidentService.getAllergies(
-                newResidentId
-              );
-              if (allergiesRes.success && allergiesRes.data) {
-                setResidentAllergies(allergiesRes.data);
-              }
-              setPendingAllergies([]);
-            } catch (error) {
-              // Erro ao salvar alergias pendentes
             }
+
+            // Adicionar novas alergias e atualizar existentes
+            for (const pending of pendingAllergies) {
+              if (!oldAllergyIds.includes(pending.allergyId)) {
+                await ResidentAllergyService.create({
+                  id: 0,
+                  residentId: newResidentId,
+                  allergyId: pending.allergyId,
+                  description: pending.description,
+                  detectionDate: pending.detectionDate,
+                  releasedDate: pending.releasedDate,
+                });
+              } else {
+                const existingAllergy = residentAllergies.find(
+                  (ra) => ra.allergyId === pending.allergyId
+                );
+                if (existingAllergy?.id) {
+                  await ResidentAllergyService.update(existingAllergy.id, {
+                    id: existingAllergy.id,
+                    residentId: newResidentId,
+                    allergyId: pending.allergyId,
+                    description: pending.description,
+                    detectionDate: pending.detectionDate,
+                    releasedDate: pending.releasedDate,
+                  });
+                }
+              }
+            }
+          } else {
+            // Modo criação: adicionar todas as alergias
+            for (const pending of pendingAllergies) {
+              await ResidentAllergyService.create({
+                id: 0,
+                residentId: newResidentId,
+                allergyId: pending.allergyId,
+                description: pending.description,
+                detectionDate: pending.detectionDate,
+                releasedDate: pending.releasedDate,
+              });
+            }
+          }
+
+          // Recarregar alergias
+          const allergiesRes = await ResidentService.getAllergies(
+            newResidentId
+          );
+          if (allergiesRes.success && allergiesRes.data) {
+            setResidentAllergies(allergiesRes.data);
+            setPendingAllergies(
+              allergiesRes.data.map((ra) => ({
+                allergyId: ra.allergyId,
+                description: ra.description,
+                detectionDate: ra.detectionDate
+                  ? typeof ra.detectionDate === 'string'
+                    ? ra.detectionDate.split('T')[0]
+                    : ra.detectionDate.toISOString().split('T')[0]
+                  : undefined,
+                releasedDate: ra.releasedDate
+                  ? typeof ra.releasedDate === 'string'
+                    ? ra.releasedDate.split('T')[0]
+                    : ra.releasedDate.toISOString().split('T')[0]
+                  : undefined,
+              }))
+            );
           }
         }
         showAlert(
@@ -1010,6 +1082,7 @@ export default function ResidentForm() {
       }
     } catch (error) {
       alert('❌ Erro ao salvar residente. Tente novamente.');
+      console.log(error);
     } finally {
       setLoading(false);
     }

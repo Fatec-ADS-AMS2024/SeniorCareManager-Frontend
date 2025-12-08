@@ -52,12 +52,13 @@ export default function HealthPlanTab(props: HealthPlanTabProps) {
 
     try {
       const newPlan = {
+        id: 0,
         name: modalData.nomePlano.trim(),
         type: parseInt(modalData.tipo) as HealthPlanType,
         abbreviation: modalData.abreviacao.trim(),
       };
 
-      const result = await HealthInsurancePlanService.create(newPlan as any);
+      const result = await HealthInsurancePlanService.create(newPlan);
       if (result.success && result.data) {
         const plansRes = await HealthInsurancePlanService.getAll();
         if (plansRes.success && plansRes.data) {
@@ -71,6 +72,7 @@ export default function HealthPlanTab(props: HealthPlanTabProps) {
       }
     } catch (error) {
       alert('❌ Erro ao criar plano de saúde. Tente novamente.');
+      console.log(error);
     }
   };
 
