@@ -120,7 +120,7 @@ export default function CompanyOverview() {
     )
       return 'Já existe uma Empresa com esse CNPJ.';
 
-    if (email && !/^\S+@\S+\.\S+$/.test(email))
+    if (!email || !/^\S+@\S+\.\S+$/.test(email))
       return 'E-mail inválido.';
 
     return null;

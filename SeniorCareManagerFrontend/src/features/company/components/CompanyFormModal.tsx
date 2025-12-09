@@ -25,7 +25,7 @@ export default function CompanyFormModal({
       street: '',
       number: '',
       district: '',
-      addreesComplement: '',
+      addressComplement: '',
       city: '',
       state: '',
       postalCode: '',
@@ -74,35 +74,35 @@ export default function CompanyFormModal({
         />
         <TextInput<Company>
           name='tradeName'
-          label='Troca'
+          label='Nome Fantasia'
           onChange={updateField}
           value={data.tradeName}
           required
         />
         <TextInput<Company>
           name='cnpj'
-          label='Cnpj'
+          label='CNPJ'
           onChange={updateField}
           value={data.cnpj}
           required
         />
         <TextInput<Company>
           name='email'
-          label='Email'
+          label='E-mail'
           onChange={updateField}
           value={data.email}
           required
         />
         <TextInput<Company>
           name='street'
-          label='Street'
+          label='Rua'
           onChange={updateField}
           value={data.street}
           required
         />
          <TextInput<Company>
           name='number'
-          label='Numero'
+          label='Número'
           onChange={updateField}
           value={data.number}
           required
@@ -115,10 +115,10 @@ export default function CompanyFormModal({
           required
         />
         <TextInput<Company>
-          name='addreesComplement'
+          name='addressComplement'
           label='Complemento de endereço'
           onChange={updateField}
-          value={data.addreesComplement}
+          value={data.addressComplement}
         />
         <TextInput<Company>
           name='city'
@@ -136,7 +136,7 @@ export default function CompanyFormModal({
         />
         <TextInput<Company>
           name='postalCode'
-          label='Codigo Postal'
+          label='Código Postal'
           onChange={updateField}
           value={data.postalCode}
           required
