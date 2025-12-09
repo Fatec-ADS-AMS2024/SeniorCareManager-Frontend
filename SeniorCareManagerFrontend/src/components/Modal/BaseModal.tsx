@@ -80,6 +80,7 @@ export const ModalHeader = ({
             type='button'
             className='ml-auto h-6 w-6 flex items-center justify-center bg-transparent text-textSecondary'
             onClick={onClose}
+            aria-label='Fechar modal'
           >
             <X size={24} />
           </button>

@@ -5,6 +5,7 @@ import {
   Users,
   ShieldCheck,
   IdentificationBadge,
+  Buildings,
 } from '@phosphor-icons/react';
 import Card from '@/components/Card';
 import SearchBar from '@/components/SearchBar';
@@ -32,6 +33,12 @@ export default function Registrations() {
       subText: 'Cargos Cadastrados',
       icon: <Briefcase weight='bold' className='shrink-0 size-full' />,
       page: routes.POSITION.path,
+    },
+    {
+      text: 'Empresa',
+      subText: 'Empresas Cadastradas',
+      icon: <Buildings weight='bold' className='shrink-0 size-full' />,
+      page: routes.COMPANY.path,
     },
     {
       text: 'Residente',
