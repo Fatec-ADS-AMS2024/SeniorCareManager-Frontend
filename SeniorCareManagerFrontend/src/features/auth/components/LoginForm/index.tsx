@@ -1,15 +1,27 @@
+import useAppRoutes from '@/hooks/useAppRoutes';
 import { Envelope, Eye, EyeSlash, Lock } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const routes = useAppRoutes();
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
   };
 
+  const handleLogin = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    navigate(routes.REGISTRATIONS.path);
+  };
+
   return (
-    <form className='flex flex-col justify-center items-center'>
+    <form
+      className='flex flex-col justify-center items-center'
+      onSubmit={handleLogin}
+    >
       <h3 className='font-bold text-4xl md:text-5xl mb-4 text-secondary'>
         Login
       </h3>
