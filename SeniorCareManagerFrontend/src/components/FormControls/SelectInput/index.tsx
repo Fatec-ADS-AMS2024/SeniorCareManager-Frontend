@@ -32,7 +32,7 @@ export default function SelectInput<T>({
         value={value}
         name={String(name)}
         onChange={(e) => onChange(e.target.name as keyof T, e.target.value)}
-        className={`w-full py-2 text-sm text-textPrimary rounded border focus:outline-none focus:border-neutralDarker ${
+        className={`w-full py-2 text-sm text-textPrimary rounded border focus:outline-none focus:border-neutralDarker bg-inherit ${
           error ? 'border-danger' : 'border-neutralDark'
         } ${icon ? 'pr-2 pl-7' : 'px-1'}`}
         {...props}

@@ -3,6 +3,10 @@ import { healthInsurancePlanRoutes } from '@/features/healthInsurancePlan';
 import { positionRoutes } from '@/features/position';
 import { religionRoutes } from '@/features/religion';
 import { companyRoutes } from '@/features/company';
+import { residentRoutes } from '@/features/resident';
+import { technicalResponsibilityRoutes } from '@/features/technicalResponsibility';
+import { allergyRoutes } from '@/features/allergy';
+import { employeeRoutes } from '@/features/employee';
 import AccessibilityPage from '@/pages/AccessibilityPage';
 import AdminOverview from '@/pages/Admin/AdminOverview';
 import LandingPage from '@/pages/LandingPage';
@@ -41,4 +45,8 @@ export const routes = {
   ...positionRoutes,
   ...companyRoutes,
   ...religionRoutes,
+  ...residentRoutes,
+  ...technicalResponsibilityRoutes,
+  ...allergyRoutes,
+  ...employeeRoutes,
 } as const;
